@@ -1,0 +1,18 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    x:Class="MDM.Views.Resources.Styles.resMDMStyle_Textbox"
+                    x:ClassModifier="public">
+    
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="resMDMColors.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style x:Key="baseStyle_Common_Textbox" TargetType="TextBox">
+
+    </Style>
+    <Style x:Key="baseStyle_Number_Textbox" TargetType="TextBox" BasedOn="{StaticResource baseStyle_Common_Textbox}">
+        <EventSetter Event="PreviewTextInput" Handler="txtbox_Number_PreviewTextInput"/>
+        <EventSetter Event="DataObject.Pasting" Handler="txtbox_Number_Pasting"/>
+    </Style>
+
+</ResourceDictionary>

@@ -1,0 +1,17 @@
+﻿################################################################################
+# 이 .gitignore 파일은 Microsoft(R) Visual Studio에서 자동으로 만들어졌습니다.
+################################################################################
+
+/MDM.Commons/bin/Debug
+/MDM.Commons/obj
+/MDM.Helpers/bin/Debug
+/MDM.Helpers/obj
+/MDM.Models/bin/Debug
+/MDM.Models/obj
+/MDM.RegistryManager/obj
+/MDM.Views/bin/Debug
+/MDM.Views/obj
+/MDM_Visual_Module/bin/Debug
+/MDM_Visual_Module/obj
+/Release/buildFiles
+*.exe

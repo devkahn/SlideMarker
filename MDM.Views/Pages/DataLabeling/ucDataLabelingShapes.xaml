@@ -1,0 +1,588 @@
+﻿<UserControl x:Class="MDM.Views.Pages.DataLabeling.ucDataLabelingShapes"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MDM.Views.Pages.DataLabeling"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Resources/Styles/resMDMColors.xaml"/>
+                <ResourceDictionary Source="../../Resources/Styles/resMDMStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border Grid.Column="0" Style="{StaticResource baseStyle_WholePanel_Border}">
+        <Grid DataContext="{Binding CurrentSlide}" DataContextChanged="Grid_DataContextChanged">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition/>
+                <RowDefinition Height="35"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0"  Style="{StaticResource baseStyle_TopSubPanel_Border}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Style="{StaticResource baseStyle_TitlePanel_StackPanel}">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource baseStyle_PanelTitle_Textblock}">
+                                    <Setter Property="Foreground" Value="{StaticResource color_Yellow}"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <TextBlock Text="{Binding Display_Index}" />
+                            <TextBlock Text="." />
+                        </StackPanel>
+                        <TextBlock Text="Slide" Style="{StaticResource baseStyle_PanelTitle_Textblock}" FontSize="12" Margin="5,2,5,0"/>
+                        <StackPanel Orientation="Horizontal" Margin="3,2,5,0">
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource baseStyle_PanelTitle_Textblock}">
+                                    <Setter Property="FontSize" Value="11"/>
+                                    <Setter Property="FontWeight" Value="Normal"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <TextBlock Text="(" />
+                            <TextBlock Text="{Binding Items.Count, ElementName=datagrid_Shapes}"  Margin="3,0,3,0"/>
+                            <TextBlock Text=")" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedItems, ElementName=datagrid_Shapes}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedItems.Count, ElementName=datagrid_Shapes}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource baseStyle_PanelTitle_Textblock}">
+                                    <Setter Property="FontSize" Value="11"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <TextBlock Text="[선택한 항목 수 : "/>
+                            <TextBlock Text="{Binding SelectedItems.Count, ElementName=datagrid_Shapes}" Foreground="Red" Margin="3,0,3,0"/>
+                            <TextBlock Text="]"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Uid="LineGroup" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5">
+                        <RadioButton Uid="0" x:Name="rBtn_AllItemn_Filter" Content="전체" Style="{StaticResource baseStyle_LeftEnd_RadioButton}" Checked="rBtn_LineFilter_Check" IsChecked="True"/>
+                        <RadioButton Uid="210" Content="제목" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="rBtn_LineFilter_Check"/>
+                        <RadioButton Uid="220" Content="본문" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="rBtn_LineFilter_Check"/>
+                        <RadioButton Uid="221" Content="글" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="rBtn_LineFilter_Check"/>
+                        <RadioButton Uid="222" Content="그림" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="rBtn_LineFilter_Check"/>
+                        <RadioButton Uid="223" Content="표" Style="{StaticResource baseStyle_RightEnd_RadioButton}" Checked="rBtn_LineFilter_Check"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Background="{StaticResource color_Gray2}" BorderBrush="{StaticResource color_Gray3}" BorderThickness="0,0,0,1">
+                    <StackPanel Orientation="Horizontal" Margin="3,0,3,0">
+                        <StackPanel.Resources>
+                            <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                                <Setter Property="Margin" Value="3,0,0,0"/>
+                            </Style>
+                            
+                        </StackPanel.Resources>
+                        <StackPanel Uid="SelectionManager" Orientation="Horizontal" Margin="3,5,3,5">
+                            <ToggleButton Checked="toggle_AllSelect_Checked" Unchecked="toggle_AllSelect_Checked">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton" BasedOn="{StaticResource baseStyle_Common_ToggleButton}">
+                                        <Setter Property="Content" Value="전체 선택"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter Property="Content" Value="전체 해제"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
+                        </StackPanel>
+                        <StackPanel Uid="RowManager" Orientation="Horizontal" Margin="10,5,5,5">
+                            <Button x:Name="btn_AddItem" Content="행 추가" Click="btn_AddItem_Click"/>
+                            <Button x:Name="btn_RemoveItem" Content="행 삭제" Click="btn_RemoveItem_Click"/>
+                        </StackPanel>
+                        <StackPanel Uid="LineManager" Orientation="Horizontal" Margin="5">
+                            <Button x:Name="btn_MergeLines" Content="행 병합" Click="btn_MergeLines_Click"/>
+                            <Button x:Name="btn_MergeShapes" Content="그룹 병합" Click="btn_MergeShapes_Click"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <Button x:Name="btn_SplitLines" Content="행 분리" Click="btn_SplitLines_Click"/>
+                        </StackPanel>
+                        <StackPanel Uid="AlignManager" Orientation="Horizontal" Margin="5">
+                            <Button x:Name="btn_AlignLines" Content="정렬" Click="btn_AlignLines_Click"/>
+                            <Button x:Name="btn_ClearLines" Content="빈 칸 정리" Click="btn_ClearLines_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <DataGrid Grid.Row="1" x:Name="datagrid_Shapes"  SelectedItem="{Binding CurrentItem}"
+                          SelectionChanged="datagrid_Shapes_SelectionChanged" >
+                    <DataGrid.Style>
+                        <Style TargetType="DataGrid" BasedOn="{StaticResource baseStyle_Common_Datagrid}">
+                            <Setter Property="HeadersVisibility" Value="None"/>
+                            <Setter Property="MinRowHeight" Value="35"/>
+                            <Setter Property="SelectionUnit" Value="FullRow"/>
+                        </Style>
+                    </DataGrid.Style>
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridCell" BasedOn="{StaticResource baseStyle_Common_DatagridCell}"/>
+                        <Style TargetType="DataGridRow">
+                            
+                            <Setter Property="Visibility" Value="{Binding RowVisibility}"/>
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Order" Width="35">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border  Background="{StaticResource color_Gray2}" >
+                                        <Grid Height="35" VerticalAlignment="Top">
+                                            <TextBlock Text="{Binding RowIndex}" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="IsSelected" Width="35">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid Height="35" VerticalAlignment="Top">
+                                        <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding IsSelected}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="IsHeading" Width="95">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,5,0,5" Height="21" HorizontalAlignment="Right" VerticalAlignment="Top" > 
+                                        <Grid.Resources>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="White"/>
+                                                <Setter Property="BorderBrush" Value="White"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                                <Setter Property="FontSize" Value="10"/>
+                                                <Setter Property="Foreground" Value="{StaticResource color_Gray4}"/>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsHeader}" Value="True"/>
+                                                            <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=DataGridRow}}" Value="True"/>
+                                                        </MultiDataTrigger.Conditions>
+                                                        <MultiDataTrigger.Setters>
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </MultiDataTrigger.Setters>
+                                                    </MultiDataTrigger>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="{StaticResource color_Gray2}"/>
+                                                        <Setter Property="Foreground" Value="{StaticResource color_Gray5}"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Resources>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="12"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="12"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Button Grid.Column="0" Uid="DownLevel" Content="◀" Click="btn_DownLevel_Click"/>
+                                        <ToggleButton Grid.Column="1" x:Name="toggle_IsHeading" Checked="toggle_IsHeading_Checked" Unchecked="toggle_IsHeading_Checked">
+                                            <ToggleButton.Style>
+                                                <Style TargetType="ToggleButton">
+                                                    <Setter Property="IsChecked" Value="False"/>
+                                                    <Setter Property="Background" Value="{StaticResource color_YellowGreen}"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource color_Gray2}"/>
+                                                    <Setter Property="BorderThickness" Value="1"/>
+                                                    <Setter Property="Content" Value="본문"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource color_Gray1}"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                    <Setter Property="Margin" Value="2,0,2,0"/>
+                                                    <Setter Property="Width" Value="45"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="ToggleButton">
+                                                                <Border CornerRadius="4"  Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                                                    <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="7,1,7,0"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsHeader}" Value="True">
+                                                            <Setter Property="Content">
+                                                                <Setter.Value>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBlock Text="제목_Lv "/>
+                                                                        <TextBlock Text="{Binding Display_Level}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                    </StackPanel>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                            <Setter Property="Width" Value="65"/>
+                                                            <Setter Property="Background" Value="Green"/>
+                                                            <Setter Property="BorderBrush" Value="Green"/>
+                                                            <Setter Property="Foreground" Value="White"/>
+                                                        </DataTrigger>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Foreground" Value="{StaticResource color_Gray6}"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ToggleButton.Style>
+                                        </ToggleButton>
+                                        <Button Grid.Column="2" Content="▶" Click="btn_UpLevel_Click"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Value" Width="*">
+                            <DataGridTemplateColumn.CellEditingTemplate>
+                                <DataTemplate>
+                                    <Grid >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="4"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" HorizontalAlignment="Right" Width="3" Background="{StaticResource color_DarkPurple}" Visibility="{Binding ParentShape.SameShape}"/>
+                                        <Grid Grid.Column="1" Margin="{Binding RowMarigin}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <ContentPresenter Grid.Column="0" Content="{Binding Display_Indent}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,5,0">
+                                                <ContentPresenter.Resources>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Width" Value="35"/>
+                                                        <Setter Property="Height" Value="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=Grid}}"/>
+                                                        <Setter Property="Background" Value="Red"/>
+                                                        <Setter Property="BorderBrush" Value="Gray"/>
+                                                        <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                                                        <Setter Property="VerticalAlignment" Value="Stretch"/>
+                                                        <Setter Property="Opacity" Value="0.1"/>
+                                                    </Style>
+                                                </ContentPresenter.Resources>
+                                            </ContentPresenter>
+                                            <Grid Grid.Column="1">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="25"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <Border Grid.Column="1" Background="{StaticResource color_White}" BorderBrush="{StaticResource color_Gray3}" BorderThickness="1" Margin="5">
+                                                    <Grid Grid.Column="1" >
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition Width="25"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBox Grid.Column="0" x:Name="txtbox_ItemContent" Text="{Binding Temp.LineText}" Margin="3,0,3,0" AcceptsReturn="True"  VerticalContentAlignment="Center"
+                                                                 BorderBrush="Transparent" BorderThickness="0"
+                                                                 KeyUp="TextBox_KeyUp" />
+                                                        <Button Grid.Column="1"  Style="{StaticResource baseStyle_Common_Button}" BorderBrush="Transparent" Tag="{Binding ElementName=txtbox_ItemContent}"
+                                                                Click="btn_EditCompleted_Click">
+                                                            <Image Grid.Column="0" Source="/MDM.Views;component/Resources/Images/SaveMark.png"  Margin="-1"  />
+                                                        </Button>
+                                                    </Grid>
+                                                </Border>
+                                            </Grid>
+                                            <Button Grid.Column="2" x:Name="btn_SplitCurrent" Content="분할" Width="35" Margin="0,5,5,5" Tag="{Binding ElementName=txtbox_ItemContent}" Style="{StaticResource baseStyle_Common_Button}" 
+                                                    Click="btn_SplitCurrent_Click"/>
+                                        </Grid>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellEditingTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate >
+                                    <Grid >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="4"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" HorizontalAlignment="Right" Width="3" Background="{StaticResource color_DarkPurple}" Visibility="{Binding ParentShape.SameShape}"/>
+                                        <Grid Grid.Column="1" Margin="{Binding RowMarigin}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <ContentPresenter Grid.Column="0" Content="{Binding Display_Indent}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0,5,0">
+                                                <ContentPresenter.Resources>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Width" Value="35"/>
+                                                        <Setter Property="Height" Value="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=Grid}}"/>
+                                                        <Setter Property="Background" Value="Red"/>
+                                                        <Setter Property="BorderBrush" Value="Gray"/>
+                                                        <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                                                        <Setter Property="VerticalAlignment" Value="Stretch"/>
+                                                        <Setter Property="Opacity" Value="0.1"/>
+                                                    </Style>
+                                                </ContentPresenter.Resources>
+                                            </ContentPresenter>
+                                            <Grid Grid.Column="1" >
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="25"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid Grid.Column="0" Height="35" VerticalAlignment="Top">
+                                                    <ToggleButton Grid.Column="0" Checked="toggle_showhideChildren_Check" Unchecked="toggle_showhideChildren_Check" >
+                                                        <ToggleButton.Style>
+                                                            <Style TargetType="ToggleButton">
+                                                                <Setter Property="Background" Value="Transparent"/>
+                                                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                                                <Setter Property="BorderThickness" Value="1"/>
+                                                                <Setter Property="Content" Value="▶"/>
+                                                                <Setter Property="Foreground" Value="{StaticResource color_Gray4}"/>
+                                                                <Setter Property="FontSize" Value="10"/>
+                                                                <Setter Property="Width" Value="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
+                                                                <Setter Property="Margin" Value="0,7,0,7"/>
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="ToggleButton">
+                                                                            <Border CornerRadius="20" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                                                                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                                <Style.Triggers>
+                                                                    <MultiDataTrigger>
+                                                                        <MultiDataTrigger.Conditions>
+                                                                            <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=DataGridRow}}" Value="True"/>
+                                                                        </MultiDataTrigger.Conditions>
+                                                                        <MultiDataTrigger.Setters>
+                                                                            <Setter Property="Background" Value="{StaticResource color_Gray2}"/>
+                                                                            <Setter Property="Foreground" Value="{StaticResource color_Gray5}"/>
+                                                                        </MultiDataTrigger.Setters>
+                                                                    </MultiDataTrigger>
+                                                                    <DataTrigger Binding="{Binding IsHeader}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                    <Trigger Property="IsChecked" Value="False">
+                                                                        <Setter Property="Content" Value="▼"/>
+                                                                    </Trigger>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="BorderBrush" Value="{StaticResource color_Gray5}"/>
+                                                                        <Setter Property="Foreground" Value="{StaticResource color_Gray8}"/>
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </ToggleButton.Style>
+                                                    </ToggleButton>
+                                                    <Button x:Name="btn_SelectItemType" Click="btn_SelectItemType_Click">
+                                                        <Button.Style>
+                                                            <Style TargetType="Button">
+                                                                <Setter Property="Background" Value="{StaticResource color_White}"/>
+                                                                <Setter Property="BorderThickness" Value="1"/>
+                                                                <Setter Property="BorderBrush" Value="DarkGreen"/>
+                                                                <Setter Property="Content" Value="글"/>
+                                                                <Setter Property="Foreground" Value="{Binding BorderBrush, RelativeSource={RelativeSource Mode=Self}}"/>
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Setter Property="Margin" Value="2"/>
+                                                                <Setter Property="Height" Value="{Binding ActualWidth, RelativeSource={RelativeSource Mode=Self}}"/>
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="Button">
+                                                                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                                                                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsHeader}" Value="False">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding ItemTypeCode}" Value="221">
+                                                                        <Setter Property="BorderBrush" Value="DarkGreen"/>
+                                                                        <Setter Property="Content" Value="글"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding ItemTypeCode}" Value="222">
+                                                                        <Setter Property="BorderBrush" Value="DarkBlue"/>
+                                                                        <Setter Property="Content" Value="이"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding ItemTypeCode}" Value="223">
+                                                                        <Setter Property="BorderBrush" Value="DarkOrange"/>
+                                                                        <Setter Property="Content" Value="표"/>
+                                                                    </DataTrigger>
+                                                                    <MultiDataTrigger>
+                                                                        <MultiDataTrigger.Conditions>
+                                                                            <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=DataGridRow}}" Value="True"/>
+                                                                        </MultiDataTrigger.Conditions>
+                                                                        <MultiDataTrigger.Setters>
+                                                                            <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Mode=Self}}"/>
+                                                                            <Setter Property="Foreground" Value="{StaticResource color_White}"/>
+                                                                        </MultiDataTrigger.Setters>
+                                                                    </MultiDataTrigger>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Foreground" Value="{StaticResource color_Gray3}"/>
+                                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+                                                    </Button>
+                                                </Grid>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                                        <Border Grid.Column="0" Margin="0,5,0,5" BorderBrush="Gray" BorderThickness="0" >
+                                                            <Border.Style>
+                                                                <Style TargetType="Border">
+                                                                    <Setter Property="Width" Value="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Style.Triggers>
+                                                                        <MultiDataTrigger>
+                                                                            <MultiDataTrigger.Conditions>
+                                                                                <Condition Binding="{Binding ItemTypeCode}" Value="222"/>
+                                                                                <Condition Binding="{Binding IsImageFileExist}" Value="True"/>
+                                                                            </MultiDataTrigger.Conditions>
+                                                                            <MultiDataTrigger.Setters>
+                                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                            </MultiDataTrigger.Setters>
+                                                                        </MultiDataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Border.Style>
+                                                            <Image Grid.Column="0" Source="/MDM.Views;component/Resources/Images/SaveMark.png"  Margin="-1"  />
+                                                        </Border>
+                                                        <ContentPresenter Grid.Column="0" Content="{Binding Display_Text}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5">
+                                                            <ContentPresenter.Resources>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="FontWeight" Value="Normal"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsHeader}" Value="True">
+                                                                            <Setter Property="FontWeight" Value="Bold"/>
+                                                                            <Setter Property="FontSize" Value="14"/>
+                                                                            <Setter Property="FontStyle" Value="Italic"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </ContentPresenter.Resources>
+                                                        </ContentPresenter>
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                        <StackPanel.Style>
+                                                            <Style TargetType="StackPanel">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ItemTypeCode}" Value="222">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </StackPanel.Style>
+                                                        <StackPanel.Resources>
+                                                            <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                                                                <Setter Property="Margin" Value="5,7,5,7"/>
+                                                                <Setter Property="FontSize" Value="10"/>
+                                                            </Style>
+                                                        </StackPanel.Resources>
+                                                        <Button Content="다운로드" Click="btn_ImageDownload_Click" Visibility="{Binding IsImageFileExist, Converter={StaticResource converter_BoolToVisibleReverse}}"/>
+                                                        <Button Content="불러오기" Click="btn_ImageLoad_Click"/>
+                                                        <Button Content="붙혀넣기" Click="btn_ImagePaste_Click"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Grid>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="top" Height="35">
+                                                <Button x:Name="btn_DeleteRow" Content="×" Click="btn_DeleteRow_Click">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                                                            <Setter Property="Background" Value="Transparent"/>
+                                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                                            <Setter Property="BorderThickness" Value="0"/>
+                                                            <Setter Property="Foreground" Value="{StaticResource color_DarkRed}"/>
+                                                            <Setter Property="FontWeight" Value="UltraBlack"/>
+                                                            <Setter Property="FontSize" Value="15"/>
+                                                            <Setter Property="Width" Value="22"/>
+                                                            <Setter Property="Height" Value="22"/>
+                                                            <Setter Property="Margin" Value="3,3,5,3"/>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Setter Property="ToolTip" Value="해당 아이템 삭제"/>
+                                                            <Setter Property="ToolTipService.InitialShowDelay" Value="100"/>
+                                                            <Style.Triggers>
+                                                                <MultiDataTrigger>
+                                                                    <MultiDataTrigger.Conditions>
+                                                                        <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=DataGridRow}}" Value="True"/>
+                                                                    </MultiDataTrigger.Conditions>
+                                                                    <MultiDataTrigger.Setters>
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </MultiDataTrigger.Setters>
+                                                                </MultiDataTrigger>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="{StaticResource color_DarkRed}"/>
+                                                                    <Setter Property="Foreground" Value="{StaticResource color_Yellow}"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                       
+                                    </Grid>
+
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+            </Grid>
+            <Border Grid.Row="2" Style="{StaticResource baseStyle_BottomSubPanel_Border}">
+                <Grid >
+                    <Grid.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                            <Setter Property="MinWidth" Value="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
+                            <Setter Property="Margin" Value="3,0,0,0"/>
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5">
+                        <Button Content="▲" Click="btn_GoToUp_Click"/>
+                        <Button Content="▼" Click="btn_GoToDown_Click"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                        <Button Content="완료 저장하고 다음" Width="130" Click="btn_CompletedSaveNext_Click"/>
+                    </StackPanel>
+                </Grid>
+
+            </Border>
+            <Border Grid.Row="1" Visibility="{Binding Items.Count, ElementName=datagrid_Shapes, Converter={StaticResource converter_IntToVisibilityReverse}}">
+                <TextBlock Style="{StaticResource baseStyle_NoItem_Textblock}">
+                    슬라이드에 아이템이 없습니다.
+                </TextBlock>
+            </Border>
+
+            <Border Grid.Row="1" Grid.RowSpan="10" Visibility="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=Grid}, Converter={StaticResource converter_NullToVisibility}}">
+                <Grid>
+                    <Border CornerRadius="0,0,5,5" Background="{StaticResource color_Gray5}" Opacity="0.7"/>
+                    <TextBlock Style="{StaticResource baseStyle_NoItem_Textblock}" >
+                        선택된 페이지가 없습니다.<LineBreak/>
+                        페이지를 선택하세요.
+                    </TextBlock>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+        
+</UserControl>

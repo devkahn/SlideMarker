@@ -1,0 +1,42 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+    <SolidColorBrush x:Key="color_Primary" Color="#1B2E5A"/>
+
+    <SolidColorBrush x:Key="color_Primary1" Color="#1C4B70"/>
+    <SolidColorBrush x:Key="color_Primary2" Color="#1A5966"/>
+    <SolidColorBrush x:Key="color_Primary3" Color="#1F3466"/>
+    <SolidColorBrush x:Key="color_Primary4" Color="#132140"/>
+    <SolidColorBrush x:Key="color_Primary5" Color="#2B1A66"/>
+    <SolidColorBrush x:Key="color_Primary6" Color="#1C1F70"/>
+    <SolidColorBrush x:Key="color_Primary7" Color="#20386B"/>
+    <SolidColorBrush x:Key="color_Primary8" Color="#161857"/>
+    <SolidColorBrush x:Key="color_Primary9" Color="#1F227D"/>
+    <SolidColorBrush x:Key="color_Primary10" Color="#4575E6"/>
+    <SolidColorBrush x:Key="color_Primary11" Color="#3255A6"/>
+    <SolidColorBrush x:Key="color_Primary12" Color="DarkSlateBlue"/>
+
+
+    <SolidColorBrush x:Key="color_Gray1" Color="#f9f9f9"/>
+    <SolidColorBrush x:Key="color_Gray2" Color="#e9e9e9"/>
+    <SolidColorBrush x:Key="color_Gray3" Color="#c9c9c9"/>
+    <SolidColorBrush x:Key="color_Gray4" Color="#999999"/>
+    <SolidColorBrush x:Key="color_Gray5" Color="#696969"/>
+    <SolidColorBrush x:Key="color_Gray6" Color="#393939"/>
+    <SolidColorBrush x:Key="color_Gray7" Color="#191919"/>
+    <SolidColorBrush x:Key="color_Gray8" Color="#090909"/>
+
+
+    <SolidColorBrush x:Key="color_Black" Color="Black"/>
+    <SolidColorBrush x:Key="color_Blue" Color="#4575E6"/>
+    <SolidColorBrush x:Key="color_DarkBlue" Color="#3255A6"/>
+    <SolidColorBrush x:Key="color_DarkGreen" Color="#16591A"/>
+    <SolidColorBrush x:Key="color_DarkPurple" Color="#592439"/>
+    <SolidColorBrush x:Key="color_DarkRed" Color="DarkRed"/>
+    <SolidColorBrush x:Key="color_DarkYellow" Color="DarkGoldenrod"/>
+    <SolidColorBrush x:Key="color_Yellow" Color="Gold"/>
+    <SolidColorBrush x:Key="color_YellowGreen" Color="YellowGreen"/>
+    <SolidColorBrush x:Key="color_White" Color="White"/>
+
+</ResourceDictionary>

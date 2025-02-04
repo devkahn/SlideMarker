@@ -1,0 +1,43 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:valueConverter="clr-namespace:MDM.Views.Converters">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="resMDMColors.xaml"/>
+
+
+        <ResourceDictionary Source="resMDMStyle_Border.xaml"/>
+        <ResourceDictionary Source="resMDMStyle_Button.xaml"/>
+        <ResourceDictionary Source="resMDMStyle_Datagrid.xaml"/>
+        <ResourceDictionary Source="resMDMStyle_Listbox.xaml"/>
+        <ResourceDictionary Source="resMDMStyle_RadioButton.xaml"/>
+        <ResourceDictionary Source="resMDMStyle_ScrollViewer.xaml"/>
+        <ResourceDictionary Source="resMDMStyle_StackPanel.xaml"/>
+        <ResourceDictionary Source="resMDMStyle_Textblock.xaml"/>
+        <ResourceDictionary Source="resMDMStyle_Textbox.xaml"/>
+        <ResourceDictionary Source="resMDMStyle_ToggleButton.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+
+    <valueConverter:DoubleToHalfConverter x:Key="converter_DoubleToHalf"/>
+    <valueConverter:BooleanToVisibilityConverter  x:Key="converter_BoolToVisible" />
+    <valueConverter:BooleanToVisibilityConverterReverse  x:Key="converter_BoolToVisibleReverse" />
+
+    <valueConverter:IntToVisibilityConverter x:Key="converter_IntToVisibility"/>
+    <valueConverter:IntToVisibilityConverterReverse x:Key="converter_IntToVisibilityReverse"/>
+
+    <valueConverter:NullToVisibilityConverter x:Key="converter_NullToVisibility"/>
+    <valueConverter:NullToVisibilityConverterReverse x:Key="converter_NullToVisibilityReverse"/>
+
+    <Style TargetType="ToolTip">
+        <Setter Property="ToolTipService.InitialShowDelay" Value="100"/>
+        <Setter Property="ToolTipService.ShowDuration" Value="1500"/>
+        <Setter Property="ToolTipService.HasDropShadow" Value="True"/>
+    </Style>
+
+
+
+    
+
+
+
+</ResourceDictionary>
