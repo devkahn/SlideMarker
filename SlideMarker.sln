@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManualDataManager", "ManualDataManager\ManualDataManager.csproj", "{470BC6BF-3099-4AB7-AED8-FFA3B6A3D708}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SliderMarker", "ManualDataManager\SliderMarker.csproj", "{470BC6BF-3099-4AB7-AED8-FFA3B6A3D708}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDM_Visual_Module", "MDM_Visual_Module\MDM_Visual_Module.csproj", "{1C54859F-EA16-4E3B-AE37-0CCEC0A264C4}"
 EndProject

@@ -15,3 +15,5 @@
 /MDM_Visual_Module/obj
 /Release/buildFiles
 *.exe
+/ManualDataManager/bin/Debug
+/ManualDataManager/obj

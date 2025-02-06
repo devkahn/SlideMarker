@@ -1,0 +1,107 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{00000000-0000-0000-0000-000000000000}|\u003CSolution\u003E|SliderMarker||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D3FF39C5-39C1-44C6-AFB0-EF55CFAA47B5}|MDM.Helpers\\MDM.Helpers.csproj|c:\\users\\h2500009\\documents\\mjlee\\dlenc\\slidemarker\\mdm.helpers\\dbhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D3FF39C5-39C1-44C6-AFB0-EF55CFAA47B5}|MDM.Helpers\\MDM.Helpers.csproj|solutionrelative:mdm.helpers\\dbhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{470BC6BF-3099-4AB7-AED8-FFA3B6A3D708}|ManualDataManager\\ManualDataManager.csproj|C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\manualdatamanager\\views\\pages\\ucdatalabeling.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{470BC6BF-3099-4AB7-AED8-FFA3B6A3D708}|ManualDataManager\\ManualDataManager.csproj|solutionrelative:manualdatamanager\\views\\pages\\ucdatalabeling.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F7358903-D9F4-4030-B203-809C9E3A9750}|MDM.Views\\MDM.Views.csproj|C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\mdm.views\\pages\\datalabeling\\ucdatalabeling.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F7358903-D9F4-4030-B203-809C9E3A9750}|MDM.Views\\MDM.Views.csproj|solutionrelative:mdm.views\\pages\\datalabeling\\ucdatalabeling.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{470BC6BF-3099-4AB7-AED8-FFA3B6A3D708}|ManualDataManager\\ManualDataManager.csproj|C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\manualdatamanager\\views\\windows\\frm_datalabelingbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{470BC6BF-3099-4AB7-AED8-FFA3B6A3D708}|ManualDataManager\\ManualDataManager.csproj|solutionrelative:manualdatamanager\\views\\windows\\frm_datalabelingbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{470BC6BF-3099-4AB7-AED8-FFA3B6A3D708}|ManualDataManager\\SliderMarker.csproj|c:\\users\\h2500009\\documents\\mjlee\\dlenc\\slidemarker\\manualdatamanager\\||{B270807C-D8C6-49EB-8EBE-8E8D566637A1}|5e9a8ac2-4f34-4521-858f-4c248ba31532"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 300,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SliderMarker",
+              "DocumentMoniker": "C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\ManualDataManager\\SliderMarker.csproj",
+              "RelativeDocumentMoniker": "ManualDataManager\\SliderMarker.csproj",
+              "ToolTip": "C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\ManualDataManager\\SliderMarker.csproj",
+              "RelativeToolTip": "ManualDataManager\\SliderMarker.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-02-06T03:57:29.046Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DBHelper.cs",
+              "DocumentMoniker": "C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\MDM.Helpers\\DBHelper.cs",
+              "RelativeDocumentMoniker": "MDM.Helpers\\DBHelper.cs",
+              "ToolTip": "C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\MDM.Helpers\\DBHelper.cs",
+              "RelativeToolTip": "MDM.Helpers\\DBHelper.cs",
+              "ViewState": "AgIAAFQBAAAAAAAAAAAYwGgBAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-06T03:52:27.651Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ucDataLabeling.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\MDM.Views\\Pages\\DataLabeling\\ucDataLabeling.xaml.cs",
+              "RelativeDocumentMoniker": "MDM.Views\\Pages\\DataLabeling\\ucDataLabeling.xaml.cs",
+              "ToolTip": "C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\MDM.Views\\Pages\\DataLabeling\\ucDataLabeling.xaml.cs",
+              "RelativeToolTip": "MDM.Views\\Pages\\DataLabeling\\ucDataLabeling.xaml.cs",
+              "ViewState": "AgIAAG8AAAAAAAAAAAAkwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-06T03:37:29.211Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "frm_DataLabelingBase.cs [\uB514\uC790\uC778]",
+              "DocumentMoniker": "C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\ManualDataManager\\Views\\Windows\\frm_DataLabelingBase.cs",
+              "RelativeDocumentMoniker": "ManualDataManager\\Views\\Windows\\frm_DataLabelingBase.cs",
+              "ToolTip": "C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\ManualDataManager\\Views\\Windows\\frm_DataLabelingBase.cs [\uB514\uC790\uC778]",
+              "RelativeToolTip": "ManualDataManager\\Views\\Windows\\frm_DataLabelingBase.cs [\uB514\uC790\uC778]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-06T03:35:25.787Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ucDataLabeling.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\ManualDataManager\\Views\\Pages\\ucDataLabeling.xaml.cs",
+              "RelativeDocumentMoniker": "ManualDataManager\\Views\\Pages\\ucDataLabeling.xaml.cs",
+              "ToolTip": "C:\\Users\\H2500009\\Documents\\MJLEE\\DLENC\\SlideMarker\\ManualDataManager\\Views\\Pages\\ucDataLabeling.xaml.cs",
+              "RelativeToolTip": "ManualDataManager\\Views\\Pages\\ucDataLabeling.xaml.cs",
+              "ViewState": "AgIAAI4AAAAAAAAAAAAuwKQAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-06T03:31:45.607Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
