@@ -32,4 +32,40 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style x:Key="baseStyle_TopMenu_Button" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource color_White}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource color_Gray3}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Foreground" Value="{StaticResource color_Gray5}"/>
+        <Setter Property="Margin" Value="0,2,2,0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border  Background="{TemplateBinding Background}" />
+                        <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="15,0,15,0"/>
+                        <Border Background="{TemplateBinding BorderBrush}" Height="2" VerticalAlignment="Bottom"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource color_Gray1}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource color_Primary}"/>
+                <Setter Property="Foreground" Value="{StaticResource color_Black}"/>
+                <Setter Property="FontWeight" Value="UltraBold"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{StaticResource color_Gray1}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource color_Gray2}"/>
+                <Setter Property="FontSize" Value="10"/>
+                <Setter Property="Foreground" Value="{StaticResource color_Gray2}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
 </ResourceDictionary>

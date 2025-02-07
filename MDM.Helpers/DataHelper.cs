@@ -204,11 +204,9 @@ namespace MDM.Helpers
             }
         }
 
-
-        public static string GenerateImageLineText(mShape obj)
+        public static string GenerateImageLineText(this mItem newItem, mShape imageShape)
         {
-            return string.Format("![{0}]({1}{2})", obj.Title, obj.Text, Defines.EXTENSION_IMAGE);
+            return string.Format("![{0}]({1}{2})", imageShape.Title, newItem.Uid, Defines.EXTENSION_IMAGE);
         }
-            
     }
 }

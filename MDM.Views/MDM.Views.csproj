@@ -32,6 +32,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EPPlus, Version=7.6.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.7.6.0\lib\net462\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.Interfaces, Version=7.5.0.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.Interfaces.7.5.0\lib\net462\EPPlus.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.System.Drawing, Version=7.5.0.0, Culture=neutral, PublicKeyToken=2308d35469c9bac0, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.System.Drawing.7.5.0\lib\net462\EPPlus.System.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.3.0.1\lib\netstandard2.0\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Office.Interop.PowerPoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
@@ -39,8 +51,30 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Common, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.8.0.4\lib\net462\System.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -63,32 +97,41 @@
     <Compile Include="Converters\IntToVisibilityConverterReverse.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverterReverse.cs" />
-    <Compile Include="Pages\DataLabeling\ucDataLabeling.xaml.cs">
-      <DependentUpon>ucDataLabeling.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\DataLabeling\ucDataLabelingInfo.xaml.cs">
-      <DependentUpon>ucDataLabelingInfo.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\DataLabeling\ucDataLabelingPreviewContentTable.xaml.cs">
-      <DependentUpon>ucDataLabelingPreviewContentTable.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\DataLabeling\ucDataLabelingPreviewItem.xaml.cs">
+    <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewItem.xaml.cs">
       <DependentUpon>ucDataLabelingPreviewItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\DataLabeling\ucDataLabelingPreviewSlide.xaml.cs">
+    <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewSlide.xaml.cs">
       <DependentUpon>ucDataLabelingPreviewSlide.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\DataLabeling\ucDataLabelingPreviewTree.xaml.cs">
+    <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewTree.xaml.cs">
       <DependentUpon>ucDataLabelingPreviewTree.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\DataLabeling\ucDataLabelingPreview.xaml.cs">
-      <DependentUpon>ucDataLabelingPreview.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\DataLabeling\ucDataLabelingShapes.xaml.cs">
+    <Compile Include="DataLabeling\Pages\ucDataLabelingShapes.xaml.cs">
       <DependentUpon>ucDataLabelingShapes.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\DataLabeling\ucDataLabelingSildes.xaml.cs">
+    <Compile Include="DataLabeling\Pages\ucDataLabelingSildes.xaml.cs">
       <DependentUpon>ucDataLabelingSildes.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataLabeling\Pages\ucDataLabeling.xaml.cs">
+      <DependentUpon>ucDataLabeling.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataLabeling\Pages\ucDataLabelingInfo.xaml.cs">
+      <DependentUpon>ucDataLabelingInfo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataLabeling\Pages\ucDataLabelingPreview.xaml.cs">
+      <DependentUpon>ucDataLabelingPreview.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewContentTable.xaml.cs">
+      <DependentUpon>ucDataLabelingPreviewContentTable.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataLabeling\Windows\wndSlidePreview.xaml.cs">
+      <DependentUpon>wndSlidePreview.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\ucMarkCheckerMain.xaml.cs">
+      <DependentUpon>ucMarkCheckerMain.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\ucMarkCheckerOriginExcel.xaml.cs">
+      <DependentUpon>ucMarkCheckerOriginExcel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -111,6 +154,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -131,39 +176,51 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Pages\DataLabeling\ucDataLabeling.xaml">
+    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\DataLabeling\ucDataLabelingInfo.xaml">
+    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewSlide.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\DataLabeling\ucDataLabelingPreviewContentTable.xaml">
+    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewTree.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\DataLabeling\ucDataLabelingPreviewItem.xaml">
+    <Page Include="DataLabeling\Pages\ucDataLabelingShapes.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\DataLabeling\ucDataLabelingPreviewSlide.xaml">
+    <Page Include="DataLabeling\Pages\ucDataLabelingSildes.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\DataLabeling\ucDataLabelingPreviewTree.xaml">
+    <Page Include="DataLabeling\Pages\ucDataLabeling.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\DataLabeling\ucDataLabelingPreview.xaml">
+    <Page Include="DataLabeling\Pages\ucDataLabelingInfo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\DataLabeling\ucDataLabelingShapes.xaml">
+    <Page Include="DataLabeling\Pages\ucDataLabelingPreview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\DataLabeling\ucDataLabelingSildes.xaml">
+    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewContentTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataLabeling\Windows\wndSlidePreview.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\ucMarkCheckerMain.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\ucMarkCheckerOriginExcel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -179,7 +236,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\Styles\resMDMStyle_ControlTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Resources\Styles\resMDMStyle_Button.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\resMDMStyle_Grid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -188,6 +253,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Styles\resMDMStyle_StackPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\resMDMStyle_TabControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

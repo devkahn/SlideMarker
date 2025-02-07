@@ -7,11 +7,14 @@
 
         <ResourceDictionary Source="resMDMStyle_Border.xaml"/>
         <ResourceDictionary Source="resMDMStyle_Button.xaml"/>
+        <ResourceDictionary Source="resMDMStyle_ControlTemplate.xaml"/>
         <ResourceDictionary Source="resMDMStyle_Datagrid.xaml"/>
+        <ResourceDictionary Source="resMDMStyle_Grid.xaml"/>
         <ResourceDictionary Source="resMDMStyle_Listbox.xaml"/>
         <ResourceDictionary Source="resMDMStyle_RadioButton.xaml"/>
         <ResourceDictionary Source="resMDMStyle_ScrollViewer.xaml"/>
         <ResourceDictionary Source="resMDMStyle_StackPanel.xaml"/>
+        <ResourceDictionary Source="resMDMStyle_TabControl.xaml"/>
         <ResourceDictionary Source="resMDMStyle_Textblock.xaml"/>
         <ResourceDictionary Source="resMDMStyle_Textbox.xaml"/>
         <ResourceDictionary Source="resMDMStyle_ToggleButton.xaml"/>

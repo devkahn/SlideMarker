@@ -1,0 +1,182 @@
+﻿<UserControl x:Class="MDM.Views.DataLabeling.Pages.ucDataLabelingPreviewSlide"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MDM.Views.DataLabeling.Pages"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Loaded="UserControl_Loaded" DataContextChanged="UserControl_DataContextChanged">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Resources/Styles/resMDMColors.xaml"/>
+                <ResourceDictionary Source="../../Resources/Styles/resMDMStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="35"/>
+        </Grid.RowDefinitions>
+        <ListBox Grid.Row="0" x:Name="listbox_Preview" ItemsSource="{Binding CurrentSlide.Items}" 
+                 DataContextChanged="listbox_Preview_DataContextChanged">
+            <ListBox.Resources>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Uid" Value="{Binding Temp.Level}"/>
+                    <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                    <Setter Property="Background" Value="{StaticResource color_White}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource color_Gray1}"/>
+                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                    <Setter Property="Template" Value="{StaticResource template_Text_ControlTempalte}"/>
+                    <Style.Triggers>
+                        <!--<MultiDataTrigger x:Uid="H1" >
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="210"/>
+                                <Condition Binding="{Binding Temp.Level}" Value="1"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Heading1_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger x:Uid="H2">
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="210"/>
+                                <Condition Binding="{Binding Temp.Level}" Value="2"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Heading2_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger x:Uid="H3">
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="210"/>
+                                <Condition Binding="{Binding Temp.Level}" Value="3"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Heading3_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger x:Uid="H4">
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="210"/>
+                                <Condition Binding="{Binding Temp.Level}" Value="4"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Heading4_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger x:Uid="H5">
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="210"/>
+                                <Condition Binding="{Binding Temp.Level}" Value="5"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Heading5_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger x:Uid="H6">
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="210"/>
+                                <Condition Binding="{Binding Temp.Level}" Value="6"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Heading6_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger x:Uid="H7">
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="210"/>
+                                <Condition Binding="{Binding Temp.Level}" Value="7"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Heading7_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger x:Uid="H8">
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="210"/>
+                                <Condition Binding="{Binding Temp.Level}" Value="8"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Heading8_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger x:Uid="H9">
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="210"/>
+                                <Condition Binding="{Binding Temp.Level}" Value="9"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Heading9_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger x:Uid="H10">
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="210"/>
+                                <Condition Binding="{Binding Temp.Level}" Value="10"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Heading10_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>-->
+                        <MultiDataTrigger x:Uid="Image">
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="222"/>
+                                <Condition Binding="{Binding IsHeader}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Image_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger x:Uid="table">
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="223"/>
+                                <Condition Binding="{Binding IsHeader}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Table_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger x:Uid="H">
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ItemTypeCode}" Value="210"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="Template" Value="{StaticResource template_Heading_ControlTempalte}"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="LightBlue"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{StaticResource color_Gray2}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                    
+                </Style>
+            </ListBox.Resources>
+        </ListBox>
+
+        
+        <Border Grid.Row="1" Style="{StaticResource baseStyle_BottomSubPanel_Border}">
+            <Grid >
+                <Grid.Resources>
+                    <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}"/>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5">
+                    <Button x:Name="btn_ShowSlidePreviewWindow" Content="창으로 보기" Click="btn_ShowSlidePreviewWindow_Click"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                    <Button x:Name="btn_Refresh" Content="Refresh" Click="btn_Refresh_Click"/>
+                </StackPanel>
+            </Grid>
+
+        </Border>
+    </Grid>
+</UserControl>

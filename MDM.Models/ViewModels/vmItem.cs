@@ -116,6 +116,7 @@ namespace MDM.Models.ViewModels
         {
             get
             {
+                if (this.ItemType != eItemType.Image) return false;
                 if(string.IsNullOrEmpty(this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath)) return false;
 
                 mShape iShape = this.ParentShape.Temp;

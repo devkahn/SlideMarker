@@ -17,3 +17,5 @@
 *.exe
 /ManualDataManager/bin/Debug
 /ManualDataManager/obj
+/MarkChecker/bin/Debug
+/MarkChecker/obj/Debug

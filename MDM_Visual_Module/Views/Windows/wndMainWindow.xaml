@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MDM_Visual_Module.Views.Windows"
-        xmlns:module_Pages="clr-namespace:MDM.Views.Pages.DataLabeling;assembly=MDM.Views"
+        xmlns:module_Pages="clr-namespace:MDM.Views.DataLabeling.Pages;assembly=MDM.Views"
         mc:Ignorable="d"
         Title="wndMainWindow" WindowState="Maximized"  WindowStartupLocation="CenterScreen" Height="450" Width="800">
     <Grid>

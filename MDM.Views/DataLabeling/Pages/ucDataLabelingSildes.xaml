@@ -1,0 +1,422 @@
+﻿<UserControl x:Class="MDM.Views.DataLabeling.Pages.ucDataLabelingSildes"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MDM.Views.DataLabeling.Pages"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Resources/Styles/resMDMColors.xaml"/>
+                <ResourceDictionary Source="../../Resources/Styles/resMDMStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Border Grid.Column="0" Style="{StaticResource baseStyle_WholePanel_Border}">
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition/>
+                <RowDefinition Height="auto" MaxHeight="500"/>
+                <RowDefinition Height="35"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0"  Style="{StaticResource baseStyle_TopSubPanel_Border}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="100"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Style="{StaticResource baseStyle_TitlePanel_StackPanel}">
+                        <TextBlock Text="Pages" Style="{StaticResource baseStyle_PanelTitle_Textblock}"/>
+                        <StackPanel Style="{StaticResource baseStyle_ItemCount_StackPanel}">
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource baseStyle_ItemsCount_Textblock}"/>
+                            </StackPanel.Resources>
+                            <TextBlock Text="("/>
+                            <TextBlock Text="{Binding Items.Count, ElementName=listbox_Pages}" Margin="3,0,3,0"/>
+                            <TextBlock Text=")"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Uid="pageFilter" Orientation="Horizontal" VerticalAlignment="Center" Margin="3,3,5,3">
+                        <RadioButton Uid="0" x:Name="rbtn_PageFilter_All" Content="전체" Style="{StaticResource baseStyle_LeftEnd_RadioButton}" Checked="rBtn_SlideFilter_Check" IsChecked="True"/>
+                        <RadioButton Uid="100" Content="완료" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="rBtn_SlideFilter_Check"/>
+                        <RadioButton Uid="110" Content="보류" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="rBtn_SlideFilter_Check"/>
+                        <RadioButton Uid="120" Content="예외" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="rBtn_SlideFilter_Check"/>
+                        <RadioButton Uid="-1" Content="미완" Style="{StaticResource baseStyle_RightEnd_RadioButton}" Checked="rBtn_SlideFilter_Check"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Background="{StaticResource color_Gray2}" BorderBrush="{StaticResource color_Gray3}" BorderThickness="0,0,0,1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Uid="pageSttus" Orientation="Horizontal" Margin="3,5,3,5">
+                            <RadioButton Uid="0" Content="전체"  Style="{StaticResource baseStyle_LeftEnd_RadioButton}" Checked="rBtn_SlideStatus_Check" IsChecked="True"/>
+                            <RadioButton Uid="910" Content="저장됨" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="rBtn_SlideStatus_Check"/>
+                            <RadioButton Uid="999" Content="변경됨" Style="{StaticResource baseStyle_RightEnd_RadioButton}" Checked="rBtn_SlideStatus_Check"/>
+                        </StackPanel>
+                        <Grid Grid.Column="1" Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" CornerRadius="5,0,0,5" Background="{StaticResource color_White}" BorderBrush="{StaticResource color_Gray4}" BorderThickness="1,1,0,1">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" >
+                                    <StackPanel.Resources>
+                                        <Style TargetType="Button" >
+                                            <Setter Property="Background" Value="{StaticResource color_White}"/>
+                                            <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                                            <Setter Property="Width" Value="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+
+                                    <Button x:Name="btn_MoveFirst" Margin="0,0,0,0"  Click="btn_MoveFirst_Click">
+                                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,3,0">
+                                            <TextBlock Text="◀" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Button}}"/>
+                                            <Border CornerRadius="0.2" Width="1" Height="10" Background="{Binding Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Button}}" Margin="0,3,6.5,0"/>
+                                        </Grid>
+                                    </Button>
+                                    <Button x:Name="btn_MovePre" Content="◀" Click="btn_MovePre_Click"/>
+                                </StackPanel>
+                            </Border>
+                         
+                            <Grid Grid.Column="1">
+                                <TextBox Grid.Column="1" x:Name="txtbox_CurSlideIndex" Text="1" Uid="PAGEMOVE"
+                                        KeyUp="txtbox_CurSlideIndex_KeyUp">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource baseStyle_Number_Textbox}">
+                                            <Setter Property="Margin" Value="0"/>
+                                            <Setter Property="BorderThickness" Value="0,1,0,1"/>
+                                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                            </Grid>
+                            <Border Grid.Column="2" CornerRadius="0,5,5,0" Background="{StaticResource color_White}" BorderBrush="{StaticResource color_Gray4}" BorderThickness="1,1,0,1">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" >
+                                    <StackPanel.Resources>
+                                        <Style TargetType="Button" >
+                                            <Setter Property="Background" Value="{StaticResource color_White}"/>
+                                            <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                                            <Setter Property="Width" Value="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <Button x:Name="btn_MoveNext" Content="▶" Click="btn_MoveNext_Click"/>
+                                    <Button x:Name="btn_MoveLast" Click="btn_MoveLast_Click">
+                                        <Border Margin="0,0,5,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,0,0">
+                                                <TextBlock Text="▶" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Button}}"/>
+                                                <Border CornerRadius="0.2" Width="1" Height="10" Background="{Binding Foreground, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Button}}" Margin="6.5,3,0,0"/>
+                                            </Grid>
+                                        </Border>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <TextBlock Grid.Row="1" Text="페이지가 없습니다.">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource baseStyle_NoItem_Textblock}">
+                            <Setter Property="Visibility" Value="{Binding Items.Count, ElementName=listbox_Pages, Converter= {StaticResource converter_IntToVisibilityReverse}}"/>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                
+                <ListBox Grid.Row="1" x:Name="listbox_Pages" Style="{StaticResource baseStyle_Common_Listbox}" Margin="0,0,0,2"
+                         SelectedItem="{Binding CurrentSlide, Mode=TwoWay}" SelectionChanged="listbox_Pages_SelectionChanged">
+                    <ListBox.Resources>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Height" Value="35"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Grid >
+                                            <Border x:Name="background" Background="Transparent" Opacity="0.2"/>
+                                            <Border x:Name="content" BorderThickness="0" Margin="1">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="25"/>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition Width="auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border Grid.Column="0" Grid.ColumnSpan="10"  Opacity="0.1">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Background" Value="{Binding Status.StatusColor}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Status.StatusCode}" Value="-1">
+                                                                        <Setter Property="Background" Value="Transparent"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                    </Border>
+
+                                                    <Border Grid.Column="0" Margin="5,5,2,5" BorderBrush="Gray" BorderThickness="0" >
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Height" Value="{Binding ActualWidth, RelativeSource={RelativeSource Mode=Self}}"/>
+                                                                <Setter Property="Visibility" Value="{Binding IsChanged, Converter={StaticResource converter_BoolToVisibleReverse}, Mode=TwoWay}"/>
+                                                            </Style>
+                                                        </Border.Style>
+                                                        <Image Grid.Column="0" Source="/MDM.Views;component/Resources/Images/SaveMark.png"  Margin="-1"  />
+                                                    </Border>
+                                                    
+                                                    <TextBlock Grid.Column="1" Text="{Binding Display_Index}" FontWeight="UltraBold" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,5,0" />
+                                                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                                        <StackPanel.Resources>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Uid" Value="{Binding Status.StatusText}" />
+                                                                <Setter Property="Background" Value="{Binding Status.StatusColor}"/>
+                                                                <Setter Property="CornerRadius" Value="5"/>
+                                                                <Setter Property="Margin" Value="3,7,3,7"/>
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Status.StatusCode}" Value="-1">
+                                                                        <Setter Property="Background" Value="Transparent"/>
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="{StaticResource color_White}"/>
+                                                                <Setter Property="FontSize" Value="8"/>
+                                                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                                <Setter Property="Margin" Value="5,0,5,0"/>
+                                                                <Setter Property="Text" Value="{Binding Uid, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=Border}}"/>
+                                                            </Style>
+                                                        </StackPanel.Resources>
+                                                        <Border>  
+                                                            <TextBlock/>
+                                                        </Border>
+     
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="background" Property="Background" Value="{StaticResource color_Primary11}"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Foreground" Value="{StaticResource color_White}"/>
+                                                <Setter TargetName="background" Property="Background" Value="{StaticResource color_Primary11}"/>
+                                                <Setter TargetName="background" Property="Opacity" Value="1"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.Resources>
+                </ListBox>
+            </Grid>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition  Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Background="SlateGray">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Style="{StaticResource baseStyle_TitlePanel_StackPanel}">
+                            <TextBlock Text="Slide Properties" Style="{StaticResource baseStyle_PanelTitle_Textblock}" FontSize="14"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <ToggleButton x:Name="toggle_PropertyFold" IsChecked="False">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton" BasedOn="{StaticResource baseStyle_VerticalFold_ToggleButton}">
+                                        <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=Border}}"/>
+                                        <Setter Property="Foreground" Value="{StaticResource color_White}"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource color_Primary1}"/>
+                                                <Setter Property="Foreground" Value="{StaticResource color_Gray3}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <ScrollViewer Grid.Row="1" Height="270">
+                    <ScrollViewer.Style>
+                        <Style TargetType="ScrollViewer" BasedOn="{StaticResource baseStyle_Common_ScrollViewer}">
+                            <Setter Property="Visibility" Value="{Binding IsChecked, ElementName=toggle_PropertyFold, Converter={StaticResource converter_BoolToVisible}}"/>
+                        </Style>
+                    </ScrollViewer.Style>
+                    <Grid>
+                        <Grid Grid.Row="1" DataContext="{Binding CurrentSlide}" DataContextChanged="Grid_DataContextChanged">
+                            <Grid.Resources>
+                                <Style x:Key="subStyle_Title_Textblock" TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="FontSize" Value="11"/>
+                                    <Setter Property="Margin" Value="10,0,10,0"/>
+                                </Style>
+                                <Style x:Key="subStyle_TitleCell_Border" TargetType="Border">
+                                    <Setter Property="Background" Value="{StaticResource color_White}"/>
+                                    <Setter Property="BorderBrush" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                    <Setter Property="Height" Value="35"/>
+                                    <Setter Property="VerticalAlignment" Value="Top"/>
+                                </Style>
+
+                                <Style x:Key="subStyle_NormalValue_ContentPresenter" TargetType="ContentPresenter">
+                                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="10,6,10,0"/>
+                                </Style>
+                                <Style x:Key="subStyle_ValueCell_Border" TargetType="Border">
+                                    <Setter Property="BorderBrush" Value="{StaticResource color_Gray2}"/>
+                                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                    <Setter Property="Margin" Value="5,0,5,5"/>
+                                </Style>
+                            </Grid.Resources>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource subStyle_TitleCell_Border}">
+                                <TextBlock Text="슬라이드" Style="{StaticResource subStyle_Title_Textblock}"/>
+                            </Border>
+                            <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource subStyle_ValueCell_Border}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ContentPresenter Grid.Column="0" Content="{Binding Display_Index}" Style="{StaticResource subStyle_NormalValue_ContentPresenter}"/>
+                                    <Border Grid.Column="1" CornerRadius="5" Background="{StaticResource color_DarkBlue}" Visibility="{Binding IsChanged, Converter={StaticResource converter_BoolToVisibleReverse}, Mode=TwoWay}" Margin="5,5,5,3">
+                                        <TextBlock Text="저장됨" Foreground="{StaticResource color_White}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,3,5,3"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource subStyle_TitleCell_Border}">
+                                <TextBlock Text="수정 일자"  Margin="10,0,10,0" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="11"/>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource subStyle_ValueCell_Border}">
+                                <ContentPresenter Content="{Binding Display_UpdateDate}" Style="{StaticResource subStyle_NormalValue_ContentPresenter}"/>
+                            </Border>
+
+                            <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource subStyle_TitleCell_Border}">
+                                <TextBlock Text="작업 상태"  Margin="10,0,10,0" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="11"/>
+                            </Border>
+                            <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource subStyle_ValueCell_Border}">
+                                <WrapPanel Uid="slideStatus" Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,5,0">
+                                    <WrapPanel.Resources>
+                                        <Style TargetType="RadioButton" BasedOn="{StaticResource baseStyle_Center_RadioButton}">
+                                            <EventSetter Event="Checked" Handler="rBtn_Status_Check"/>
+                                            <Setter Property="BorderThickness" Value="1,1,0,1"/>
+                                            <Setter Property="MinWidth" Value="50"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter Property="Background" Value="{Binding Status.StatusColor}"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource color_White}"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </WrapPanel.Resources>
+                                    <RadioButton Uid="100" x:Name="rBtn_Completed" Content="완료" />
+                                    <RadioButton Uid="110" x:Name="rBtn_Hold" Content="보류"/>
+                                    <RadioButton Uid="120" x:Name="rBtn_Exception" Content="예외"/>
+                                    <RadioButton Uid='-1' x:Name="rBtn_OnGoing" BorderThickness="1" Content="미완료"/>
+                                </WrapPanel>
+                            </Border>
+                            
+                            <Border Grid.Row="3" Grid.Column="0" Style="{StaticResource subStyle_TitleCell_Border}">
+                                <TextBlock Text="비      고"  Margin="10,0,10,0" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="11"/>
+                            </Border>
+                            <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource subStyle_ValueCell_Border}">
+                                <TextBox x:Name="txtbox_Description" Margin="5" Width="200" Height="145" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                                         LostFocus="txtbox_Description_LostFocus" TextChanged="txtbox_Description_TextChanged"/>
+
+                            </Border>
+                        </Grid>
+                        <Border Grid.Row="1" Background="{StaticResource color_Gray1}" BorderBrush="{StaticResource color_Gray2}" BorderThickness="1" Margin="0">
+                            <Border.Style>
+                                <Style TargetType="Border" BasedOn="{StaticResource baseStyle_NoSelect_Border}">
+                                    <Setter Property="Visibility" Value="{Binding SelectedItem, ElementName=listbox_Pages, Converter={StaticResource converter_NullToVisibility}}"/>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="선택된 페이지가 없습니다." Style="{StaticResource baseStyle_NoItem_Textblock}"/>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+            <Border Grid.Row="3" Style="{StaticResource baseStyle_BottomSubPanel_Border}">
+                <Grid Margin="5,0,5,0">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility" Value="Visible"/>
+
+                            <Style.Triggers>
+                                <!--<DataTrigger Binding="{Binding Items.Count, ElementName=listbox_Pages}" Value="0">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>-->
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <Grid.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                            <Setter Property="Height" Value="25"/>
+                        </Style>
+                    </Grid.Resources>
+                
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="5,0,5,0">
+                        <Button Content="모두 저장하기" Click="btn_AllSave_Click" IsEnabled="False"/>
+                    </StackPanel>
+                    <Grid Grid.Column="1" Margin="5,0,5,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="저장하기" Click="btn_Save_Click"/>
+                        <Button Grid.Column="1" Content="▶" Width="50" Margin="10,0,0,0" Click="btn_MoveNext_Click"/>
+                    </Grid>
+                    
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

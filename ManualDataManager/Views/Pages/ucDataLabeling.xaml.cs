@@ -61,6 +61,7 @@ namespace ManualDataManager.Views.Pages
             {
                 ProgramValues.PowerPointApp.SlideSelectionChanged += this.pgDataLabeling.PowerPointApp_SlideSelectionChanged;
                 
+                
             }
             catch (Exception ee)
             {
@@ -153,18 +154,13 @@ namespace ManualDataManager.Views.Pages
                     List<Shape> shapes = new List<Shape>();
                     foreach (Shape shape in slide.Shapes)
                     {
-                        if (shape.Type == MsoShapeType.msoGroup) shape.Ungroup();
-                        if (shape == null) continue;
-                        try
+                        if (shape.Type == MsoShapeType.msoGroup)
                         {
-                            if (shape.Visible == MsoTriState.msoFalse) continue;
+                            shape.Ungroup();
+                            continue;
                         }
-                        catch (Exception ee)
-                        {
-                            string jsonString = JsonHelper.ToJsonString(shape);
-                            Clipboard.SetText(jsonString);
-                            MessageBox.Show("a", ee.Message);
-                        }
+
+                        
                         
 
                         bool isAny = shapes.Where(x => x != null && x.Id == shape.Id).Any();
@@ -231,8 +227,8 @@ namespace ManualDataManager.Views.Pages
 
                             mItem newItem = new mItem();
                             newItem.Title = newImage.Title;
-                            newItem.LineText =  string.Format("![{0}]({1}{2})", newImage.Title, newImage.Text, Defines.EXTENSION_IMAGE);
-                            newItem.LineText = DataHelper.GenerateImageLineText(newImage);// string.Format("![{0}]({1}{2})", newImage.Title, newImage.Text, Defines.EXTENSION_IMAGE);
+                            newItem.LineText =  string.Format("![{0}]({1}{2})", newImage.Title, newItem.Uid, Defines.EXTENSION_IMAGE);
+                            newItem.LineText = newItem.GenerateImageLineText(newImage);// string.Format("![{0}]({1}{2})", newImage.Title, newImage.Text, Defines.EXTENSION_IMAGE);
                             newItem.ItemType = newImage.ShapeType;
                             newImage.Lines.Add(newItem);
 

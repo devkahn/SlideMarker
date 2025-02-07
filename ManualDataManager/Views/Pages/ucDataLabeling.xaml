@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ManualDataManager.Views.Pages"
-             xmlns:module_Pages="clr-namespace:MDM.Views.Pages.DataLabeling;assembly=MDM.Views"
+             xmlns:dlPages="clr-namespace:MDM.Views.DataLabeling.Pages;assembly=MDM.Views"
              Background="White" FontFamily="Arial"
              Loaded="UserControl_Loaded" Unloaded="UserControl_Unloaded">
 
-    <module_Pages:ucDataLabeling x:Name="pgDataLabeling"/>
+    <dlPages:ucDataLabeling x:Name="pgDataLabeling"/>
 </UserControl>

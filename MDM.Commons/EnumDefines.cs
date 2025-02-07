@@ -64,5 +64,17 @@ namespace MDM.Commons.Enum
         [Description("변경됨")]
         Changed = 999
     }
+
+    public enum eFILE_TYPE
+    {
+        [Description("모든 파일|*.*")]
+        None,
+
+        [Description("Excel 통합 문서|*.xlsx;*.xlsm;*.xlsb;*.xls;*.xltx;*.xltm;*.xlt;*.csv;*.txt;*.xml;*.ods;*.dbf;*.tab")]
+        MSExcel,
+
+        [Description("MPP 파일|*.mpp")]
+        MSProject
+    }
 }
   

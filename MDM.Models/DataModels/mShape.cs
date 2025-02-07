@@ -18,7 +18,6 @@ namespace MDM.Models.DataModels
         public mShape(eShapeType shapeType)
         {
             this.ShapeType = shapeType.GetHashCode();
-            this.Text = Guid.NewGuid().ToString();  
         }
 
         [PropOrder(11)]

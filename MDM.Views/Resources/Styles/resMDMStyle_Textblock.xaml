@@ -24,5 +24,17 @@
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
+    <Style x:Key="baseStyle_BottomRight_Textblock" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="{StaticResource color_Gray3}"/>
+        <Setter Property="Text">
+            <Setter.Value>
+                Copyright 2025. DL E&amp;C all rights reserved.
+            </Setter.Value>
+        </Setter>
+    </Style>
 
 </ResourceDictionary>
