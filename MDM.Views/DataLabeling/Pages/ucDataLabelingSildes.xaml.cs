@@ -362,8 +362,12 @@ namespace MDM.Views.DataLabeling.Pages
                 bool isCodeValid = int.TryParse(rBtn.Uid, out int code);
                 if (!isCodeValid) code = -1;
 
-                this.Material.CurrentSlide.SetStatus((ePageStatus)code);
-                
+                ePageStatus status = (ePageStatus)code;
+
+                this.Material.CurrentSlide.SetStatus(status);
+
+                if (status == ePageStatus.Exception) this.grid_descriptionButtons.Visibility = Visibility.Visible;
+               
             }
             catch (Exception ee)
             {
@@ -476,6 +480,23 @@ namespace MDM.Views.DataLabeling.Pages
                 if (data == null) return;
 
                 if (tb.Text != data.Temp.Description) data.SetDescription(tb.Text);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                string contentString =btn.Content.ToString();
+                this.txtbox_Description.Text = contentString;
+                this.grid_descriptionButtons.Visibility = Visibility.Collapsed;
             }
             catch (Exception ee)
             {

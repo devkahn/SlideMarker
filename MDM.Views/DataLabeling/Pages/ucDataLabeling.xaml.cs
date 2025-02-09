@@ -62,15 +62,7 @@ namespace MDM.Views.DataLabeling.Pages
                 string textValue = FileHelper.ReadTextFile(fInfo);
                 if (string.IsNullOrEmpty(textValue)) return;
 
-                string onlyFilename = Path.GetFileNameWithoutExtension(fInfo.Name);
-                string subDirPath = Path.Combine(fInfo.DirectoryName, onlyFilename);
-                if (!Directory.Exists(subDirPath)) Directory.CreateDirectory(subDirPath);
-
-                string assDirPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string dbOriginPath = Path.Combine(assDirPath, "Resources\\Database", "BaseDB.db");
-                string dbTargetPath = Path.Combine(subDirPath, onlyFilename + ".mdm");
-                if (!File.Exists(dbTargetPath)) File.Copy(dbOriginPath, dbTargetPath, true);
-                DBHelper.ConnectionSting = dbTargetPath;
+                DBHelper.ConnectionSting = fInfo.FullName;
 
                 mMaterial newMaterial = DBHelper.Read();
                 if (newMaterial == null)
@@ -88,35 +80,6 @@ namespace MDM.Views.DataLabeling.Pages
 
                 vmMaterial material = new vmMaterial(newMaterial);
                 material.LoadChildren();
-
-                List<mSlide> slides = JsonHelper.ToObject<List<mSlide>>(textValue);
-                foreach (mSlide slide in slides)
-                {
-                    vmSlide sameSlide = material.Slides.Where(x => x.Temp.Index == slide.Index).FirstOrDefault();
-                    if (sameSlide != null)
-                    {
-                        sameSlide.OnModifyStatusChanged(false);
-                        continue;
-                    }
-
-
-                    foreach (mShape shape in slide.Shapes)
-                    {
-                        string[] lines = TextHelper.SplitText(shape.Text);
-                        foreach (string line in lines)
-                        {
-                            if (string.IsNullOrEmpty(line) || string.IsNullOrWhiteSpace(line)) continue;
-
-                            mItem newLine = new mItem();
-                            newLine.LineText = line;
-                            shape.Lines.Add(newLine);
-                        }
-
-                    }
-
-                    vmSlide newSlide = new vmSlide(slide);
-                    newSlide.SetParent(material);
-                }
                 material.CurrentSlide = material.Slides.FirstOrDefault();
                 material.OrderSlides();
 

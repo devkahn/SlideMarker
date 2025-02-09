@@ -230,6 +230,7 @@
                             </Setter>
                         </Style>
                     </ListBox.Resources>
+                    
                 </ListBox>
             </Grid>
             <Grid Grid.Row="2">
@@ -265,7 +266,7 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-                <ScrollViewer Grid.Row="1" Height="270">
+                <ScrollViewer Grid.Row="1" Height="270" Visibility="Visible">
                     <ScrollViewer.Style>
                         <Style TargetType="ScrollViewer" BasedOn="{StaticResource baseStyle_Common_ScrollViewer}">
                             <Setter Property="Visibility" Value="{Binding IsChecked, ElementName=toggle_PropertyFold, Converter={StaticResource converter_BoolToVisible}}"/>
@@ -364,12 +365,41 @@
                                 <TextBlock Text="비      고"  Margin="10,0,10,0" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="11"/>
                             </Border>
                             <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource subStyle_ValueCell_Border}">
-                                <TextBox x:Name="txtbox_Description" Margin="5" Width="200" Height="145" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                                <Grid Margin="5">
+                                    <TextBox x:Name="txtbox_Description" Width="200" Height="145" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                                          LostFocus="txtbox_Description_LostFocus" TextChanged="txtbox_Description_TextChanged"/>
+                                    <Grid x:Name="grid_descriptionButtons" VerticalAlignment="Bottom" Height="20" Width="196" Margin="2,0,2,3" Visibility="Collapsed">
+                                        <Grid.Resources>
+                                            <Style TargetType="Button">
+                                                <EventSetter Event="Click" Handler="Button_Click"/>
+                                                <Setter Property="Background" Value="{StaticResource color_Gray1}"/>
+                                                <Setter Property="BorderBrush" Value="{StaticResource color_Gray5}"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                                <Setter Property="Foreground" Value="{StaticResource color_Gray3}"/>
+                                                <Setter Property="FontSize" Value="10"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Foreground" Value="Black"/>
+                                                        <Setter Property="BorderThickness" Value="1"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Resources>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Content="표지"/>
+                                        <Button Grid.Column="1" Content="목차"/>
+                                        <Button Grid.Column="2" Content="간지"/>
+                                    </Grid>
+                                </Grid>
+                                 
 
                             </Border>
                         </Grid>
-                        <Border Grid.Row="1" Background="{StaticResource color_Gray1}" BorderBrush="{StaticResource color_Gray2}" BorderThickness="1" Margin="0">
+                        <Border Grid.Row="1" Background="{StaticResource color_Gray1}" BorderBrush="{StaticResource color_Gray2}" BorderThickness="1" Margin="0" Visibility="Collapsed">
                             <Border.Style>
                                 <Style TargetType="Border" BasedOn="{StaticResource baseStyle_NoSelect_Border}">
                                     <Setter Property="Visibility" Value="{Binding SelectedItem, ElementName=listbox_Pages, Converter={StaticResource converter_NullToVisibility}}"/>
