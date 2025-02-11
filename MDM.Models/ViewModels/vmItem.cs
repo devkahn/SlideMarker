@@ -123,7 +123,7 @@ namespace MDM.Models.ViewModels
                 mShape iShape = this.ParentShape.Temp;
                 if(iShape == null) return false;
 
-                string path = Path.Combine(this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath, iShape.Text + Defines.EXTENSION_IMAGE);
+                string path = Path.Combine(this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath, this.Temp.Uid + Defines.EXTENSION_IMAGE);
                 return File.Exists(path);
             }
         }
@@ -168,7 +168,7 @@ namespace MDM.Models.ViewModels
         }
         
 
-        public FileStream ImageFileStream { get; set; }
+        
       
 
 
@@ -235,17 +235,20 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(this.Display_PreviewItem));
             }
         }
-        public object Display_PreviewItem_Slide
+        public object Display_PreviewItem_Slide 
         {
             get
             {
-                return _Display_PreviewItem_Slide;
+                switch (this.ItemType)
+                {
+                    case eItemType.Header: return GenerateHeaderCell(this);
+                        
+                    case eItemType.Image: return GenerateImageCell(this);
+                    case eItemType.Table: return GenerateTableCell(this);
+                    default:return GenerateTextCell(this);
+                }
             }
-            set
-            {
-                _Display_PreviewItem_Slide = value;
-                OnPropertyChanged(nameof(this.Display_PreviewItem_Slide));
-            }
+            
         }
     }
 
@@ -312,27 +315,95 @@ namespace MDM.Models.ViewModels
             for (int i = 0; i < rows.Count(); i++) table.RowDefinitions.Add(new RowDefinition());
             for (int i = 0; i < rows[0].Split('|').Count(); i++) table.ColumnDefinitions.Add(new ColumnDefinition());
 
+            bool isHeader = true;
+            int rowHeaderCnt = 0;
             for (int r = 0; r < rows.Count(); r++)
             {
-                string[] cells = rows[r].Split('|');
+                
+                string value = rows[r].Trim();
+                if (value.Contains('+')) value = value.Replace("+", "|");
+
+                List<string> cells = value.Split('|').ToList();
+                if (cells.FirstOrDefault() == string.Empty) cells.RemoveAt(0);
+                if(cells.LastOrDefault() == string.Empty) cells.RemoveAt(cells.Count- 1);
+
+                #region Column HeaderRow Count
+                var distictList = cells.Distinct();
+                if (distictList.Count() == 1)
+                {
+                    string bar = distictList.First();
+                    bar = bar.Trim();
+
+                    int cnt = bar.Count(x => !x.Equals(' ') && !x.Equals('-'));
+                    if (cnt == 0)
+                    {
+                        value = rows[r].Trim();
+                        #region RowHeaderCount Column Count
+                        if (value.Contains('+'))
+                        {
+                            foreach (char c in value)
+                            {
+                                if (c.Equals('|')) rowHeaderCnt++;
+                                if (c.Equals('+'))
+                                {
+                                    value = value.Replace("+", "|");
+                                    break;
+                                }
+                            }
+                        }
+                        #endregion
+                        isHeader = false;
+                        continue;
+                    }
+                }
+                #endregion
+
                 for (int c = 0; c < cells.Count(); c++)
                 {
                     Border border = new Border();
-                    border.Background = r == 0 ? Brushes.Navy : Brushes.White;
+                    border.Background = isHeader ? Brushes.Navy : c<rowHeaderCnt? Brushes.LightGray : Brushes.White;
                     border.BorderBrush = Brushes.LightGray;
                     border.BorderThickness = new Thickness(0,0,1,1);
                     table.Children.Add(border);
                     Grid.SetColumn(border, c);
                     Grid.SetRow(border, r);
 
-                    TextBlock cellValue = new TextBlock();
-                    cellValue.Text = cells[c];
-                    cellValue.Foreground = r == 0 ? Brushes.White : Brushes.Black;
-                    cellValue.FontWeight = r == 0 ? FontWeights.Bold : FontWeights.Normal;
-                    cellValue.HorizontalAlignment = HorizontalAlignment.Center;
-                    cellValue.VerticalAlignment = VerticalAlignment.Center;
-                    cellValue.Margin = string.IsNullOrEmpty(cellValue.Text) ? new Thickness(0) : new Thickness(10);
-                    border.Child = cellValue;
+                    string cellString = cells[c];
+
+                    Match match = IsImageMarkdown(cellString);
+                    if (match.Success)
+                    {
+                        string imagename = match.Groups[1].Value;
+                        string filename = match.Groups[2].Value;
+
+                        Image cellValue = new Image();
+                        if (this.ParentShape != null)
+                        {
+                            string dir = this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath;
+                            string filePath = Path.Combine(dir, filename + Defines.EXTENSION_IMAGE);
+                            if(File.Exists(filePath))
+                            {
+                                BitmapImage bitmap = new BitmapImage();
+                                bitmap.BeginInit();
+                                Uri url = new Uri(filePath, UriKind.Absolute);
+                                bitmap.UriSource = url; // 이미지 파일 경로
+                                bitmap.EndInit();
+                                cellValue.Source = bitmap;
+                            }
+                        }
+                        border.Child = cellValue;
+                    }
+                    else
+                    {
+                        TextBlock cellValue = new TextBlock();
+                        cellValue.Text = cellString;
+                        cellValue.Foreground = isHeader ? Brushes.White : Brushes.Black;
+                        cellValue.FontWeight = isHeader ? FontWeights.Bold : c < rowHeaderCnt ? FontWeights.Bold : FontWeights.Normal;
+                        cellValue.HorizontalAlignment = HorizontalAlignment.Center;
+                        cellValue.VerticalAlignment = VerticalAlignment.Center;
+                        cellValue.Margin = string.IsNullOrEmpty(cellValue.Text) ? new Thickness(0) : new Thickness(10);
+                        border.Child = cellValue;
+                    }
                 }
             }
 
@@ -362,15 +433,13 @@ namespace MDM.Models.ViewModels
                 if (this.IsImageFileExist && iShape != null)
                 {
                     string dir = this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath;
-                    string filePath = Path.Combine(dir, iShape.Text + Defines.EXTENSION_IMAGE);
+                    string filePath = Path.Combine(dir, item.Temp.Uid + Defines.EXTENSION_IMAGE);
 
                     BitmapImage bitmap = new BitmapImage();
                     bitmap.BeginInit();
                     Uri url = new Uri(filePath, UriKind.Absolute);
                     bitmap.UriSource = url; // 이미지 파일 경로
                     bitmap.EndInit();
-
-                  
 
                     Image img = new Image();
                     img.Source = bitmap;
@@ -462,7 +531,7 @@ namespace MDM.Models.ViewModels
         }
         public void Merge(vmItem mergedItem)
         {
-            string text = mergedItem.Temp.LineText;
+            string text = mergedItem.Temp.LineText.Clone().ToString();
             if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
             {
                 this.Temp.LineText += "\n";
@@ -585,21 +654,19 @@ namespace MDM.Models.ViewModels
             {
                 case eItemType.Header:
                     this.Display_PreviewItem = GenerateHeaderCell(this);
-                    this.Display_PreviewItem_Slide = GenerateHeaderCell(this);
                     break;
                 case eItemType.Image: 
                     this.Display_PreviewItem = GenerateImageCell(this);
-                    this.Display_PreviewItem_Slide = GenerateImageCell(this);
+                    
                     break;
                 case eItemType.Table: 
                     this.Display_PreviewItem = GenerateTableCell(this);
-                    this.Display_PreviewItem_Slide = GenerateTableCell(this);
                     break;
                 default: 
                     this.Display_PreviewItem = GenerateTextCell(this);
-                    this.Display_PreviewItem_Slide = GenerateTextCell(this);
                     break;
             }
+            OnPropertyChanged(nameof(this.Display_PreviewItem_Slide));
         }
         public void Show()
         {
@@ -624,6 +691,10 @@ namespace MDM.Models.ViewModels
             this.Display_Text = this.Temp.LineText = this.Origin.LineText;
         }
 
-        
+        private Match IsImageMarkdown(string input)
+        {
+            string pattern = @"^!\[([^\]]+)\]\(([^\)]+)\.png\)$";
+            return Regex.Match(input, pattern);
+        }
     }
 }

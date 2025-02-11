@@ -95,5 +95,10 @@ namespace MDM.Helpers
         {
             return string.IsNullOrEmpty(input) || string.IsNullOrWhiteSpace(input);
         }
+        public static bool IsImageMarkdown(string input)
+        {
+            string pattern = @"^!\[([^\]]+)\]\([^\)]+\.png\)$";
+            return Regex.IsMatch(input, pattern);
+        }
     }
 }

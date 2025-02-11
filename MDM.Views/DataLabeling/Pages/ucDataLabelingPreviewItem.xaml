@@ -297,6 +297,8 @@
                                     <Setter Property="BorderThickness" Value="0"/>
                                     <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
                                     <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+                                    <Setter Property="AcceptsReturn" Value="True"/>
+                                    <Setter Property="AcceptsTab" Value="True"/>
                                 </Style>
                             </TextBox.Style>
                         </TextBox>

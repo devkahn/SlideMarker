@@ -147,7 +147,14 @@ namespace MDM.Views.DataLabeling.Pages
             {
                 string caption = "아이템 병합";
 
-                var selectedItems = this.Material.CurrentSlide.Items.Where(x => x.IsSelected);
+                //var selectedItems = this.Material.CurrentSlide.Items.Where(x => x.IsSelected);
+                var selectedItems  = new List<vmItem>();
+                foreach (var item in this.datagrid_Shapes.SelectedItems)
+                {
+                    selectedItems.Add(item as vmItem);
+                }
+                selectedItems = selectedItems.OrderBy(x=> x.RowIndex).ToList(); 
+                
                 int total = selectedItems.Count();
                 if(total <= 1)
                 {
@@ -160,13 +167,16 @@ namespace MDM.Views.DataLabeling.Pages
                 if(isAllText)
                 {
                     List<vmItem> items = selectedItems.ToList();
-                    vmItem firstItem = items.First();
+                    vmItem firstItem = items[0];
+                    string temp = firstItem.Temp.LineText;
                     for (int i = 1; i < total; i++)
                     {
                         vmItem cItem = items[i];
-                        firstItem.Merge(cItem);
+                        temp += "\n";
+                        temp += cItem.Temp.LineText;
                         cItem.Delete();
                     }
+                    firstItem.SetText(temp);
                     firstItem.InitializeDisplay();
                 }
                 else
@@ -258,11 +268,10 @@ namespace MDM.Views.DataLabeling.Pages
 
                 mItem newItem = new mItem();
                 vmItem newVM = new vmItem(newItem);
-                if (lastItem != null && selectedItems.Count() > 0) newVM.SetParent(lastItem.ParentShape);
-
-                newVM.SetParentItem(lastItem.IsHeader? lastItem : lastItem.ParentItem, false);
-
+                newVM.SetParentItem(lastItem.IsHeader ? lastItem : lastItem.ParentItem, false);
                 this.Material.CurrentSlide.Items.Insert(index, newVM);
+
+                if (lastItem != null && selectedItems.Count() > 0) newVM.SetParent(lastItem.ParentShape);
 
                 this.datagrid_Shapes.SelectedItem = newVM;
                 this.datagrid_Shapes.ScrollIntoView(this.datagrid_Shapes.SelectedItem);
@@ -379,7 +388,7 @@ namespace MDM.Views.DataLabeling.Pages
                     if (item == null) continue;
                     item.IsSelected = true;
 
-
+                    if (item.ParentShape == null) return;
                     if (this.Material.OriginPresentation != null)
                     {
                         Slide currentSlide = (Slide)this.Material.OriginPresentation.Application.ActiveWindow.View.Slide;
@@ -721,6 +730,7 @@ namespace MDM.Views.DataLabeling.Pages
         private void btn_ImageDownload_Click(object sender, RoutedEventArgs e)
         {
             Bitmap originImage = null;
+            Bitmap croppedImage = null;
             try
             {
                 Button btn = sender as Button;
@@ -736,20 +746,20 @@ namespace MDM.Views.DataLabeling.Pages
                 string tempDirPath = Path.Combine(this.Material.DirectoryPath, "Temp");
                 if(!Directory.Exists(tempDirPath)) Directory.CreateDirectory(tempDirPath);
                 string fullpath = Path.Combine(tempDirPath, string.Format("slide{0}", currentSlide.SlideIndex));
-                if (File.Exists(fullpath)) File.Delete(fullpath);
-
-                currentSlide.Export(fullpath,"png");
-                if (File.Exists(fullpath))
+                if (!File.Exists(fullpath))
                 {
-                    string originPath = fullpath;
-                    fullpath = Path.Combine(tempDirPath, string.Format("slide{0}.png", currentSlide.SlideIndex));
+                    currentSlide.Export(fullpath, "png");
                     if (File.Exists(fullpath))
                     {
-                        File.Delete(fullpath);
+                        string originPath = fullpath;
+                        fullpath = Path.Combine(tempDirPath, string.Format("slide{0}.png", currentSlide.SlideIndex));
+                        if (File.Exists(fullpath))
+                        {
+                            File.Delete(fullpath);
+                        }
+                        File.Move(originPath, fullpath);
                     }
-                    File.Move(originPath, fullpath);
                 }
-
                 originImage = new Bitmap(fullpath);
 
                 #region 해상도 업
@@ -780,16 +790,16 @@ namespace MDM.Views.DataLabeling.Pages
                 float croppedWidth = (iShape.Width * originImage.Width) / slideWidth;
                 float croppedHeight = (iShape.Height * originImage.Height) / slideHeight;
 
-                Rectangle cropArea = new Rectangle((int)cropLeft, (int)cropTop, (int)croppedWidth, (int)croppedHeight);
-                Bitmap croppedImage = originImage.Clone(cropArea, originImage.PixelFormat);
-                string imagePath = Path.Combine(this.Material.DirectoryPath, iShape.Text+ Defines.EXTENSION_IMAGE);
+                Rectangle cropArea = new Rectangle((int)cropLeft-5, (int)cropTop-5, (int)croppedWidth+5, (int)croppedHeight+5);
+                croppedImage = originImage.Clone(cropArea, originImage.PixelFormat);
+                string imagePath = Path.Combine(this.Material.DirectoryPath, data.Temp.Uid + Defines.EXTENSION_IMAGE);
                 if (File.Exists(imagePath))
                 {
                     data.SetPreviewItem(true);
                     File.Delete(imagePath);
                 }
                 croppedImage.Save(imagePath, ImageFormat.Png);
-
+                croppedImage.Dispose();
                 originImage.Dispose();
                 //File.Delete(fullpath);
 
@@ -798,7 +808,8 @@ namespace MDM.Views.DataLabeling.Pages
             }
             catch (Exception ee)
             {
-                if(originImage != null) originImage.Dispose();
+                if (originImage != null) originImage.Dispose();
+                if (croppedImage != null) croppedImage.Dispose();
                 ErrorHelper.ShowError(ee);
             }
         }
@@ -910,6 +921,74 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
   
+        }
+
+        private void btn_ReLoadOrigin_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_ReLoadDb_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                this.Material.CurrentSlide.Shapes.Clear();
+                this.Material.CurrentSlide.LoadChildren();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_AllFold_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var headers = this.Material.CurrentSlide.Items.Where(x => x.IsHeader);
+                foreach (var item in headers)
+                {
+                    vmItem header = item as vmItem;
+                    if (header == null) return;
+
+                    header.IsFolded = true;
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_AllUnFold_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var headers = this.Material.CurrentSlide.Items.Where(x => x.IsHeader);
+                foreach (var item in headers)
+                {
+                    vmItem header = item as vmItem;
+                    if (header == null) return;
+
+                    header.IsFolded = false;
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_AddNEwShape_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

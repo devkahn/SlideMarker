@@ -91,44 +91,60 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Border Grid.Row="0" Background="{StaticResource color_Gray2}" BorderBrush="{StaticResource color_Gray3}" BorderThickness="0,0,0,1">
-                    <StackPanel Orientation="Horizontal" Margin="3,0,3,0">
-                        <StackPanel.Resources>
+                    <Grid>
+                        <Grid.Resources>
                             <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
                                 <Setter Property="Margin" Value="3,0,0,0"/>
                             </Style>
-                            
-                        </StackPanel.Resources>
-                        <StackPanel Uid="SelectionManager" Orientation="Horizontal" Margin="3,5,3,5">
-                            <ToggleButton Checked="toggle_AllSelect_Checked" Unchecked="toggle_AllSelect_Checked">
-                                <ToggleButton.Style>
-                                    <Style TargetType="ToggleButton" BasedOn="{StaticResource baseStyle_Common_ToggleButton}">
-                                        <Setter Property="Content" Value="전체 선택"/>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsChecked" Value="True">
-                                                <Setter Property="Content" Value="전체 해제"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ToggleButton.Style>
-                            </ToggleButton>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="3,0,3,0">
+                            <StackPanel Uid="SelectionManager" Orientation="Horizontal" Margin="3,5,3,5">
+                                <ToggleButton Checked="toggle_AllSelect_Checked" Unchecked="toggle_AllSelect_Checked">
+                                    <ToggleButton.Style>
+                                        <Style TargetType="ToggleButton" BasedOn="{StaticResource baseStyle_Common_ToggleButton}">
+                                            <Setter Property="Content" Value="전체 선택"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter Property="Content" Value="전체 해제"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ToggleButton.Style>
+                                </ToggleButton>
+                            </StackPanel>
+                            <StackPanel Uid="AllFold" Orientation="Horizontal" Margin="3,5,3,5">
+                                <Button x:Name="btn_AllFold" Content="모두 접기" Click="btn_AllFold_Click"/>
+                                <Button x:Name="btn_AllUnFold" Content="모두 펼치기" Click="btn_AllUnFold_Click"/>
+                            </StackPanel>
+                            <StackPanel Uid="RowManager" Orientation="Horizontal" Margin="10,5,5,5">
+                                <Button x:Name="btn_AddItem" Content="행 추가" Click="btn_AddItem_Click"/>
+                                <Button x:Name="btn_RemoveItem" Content="행 삭제" Click="btn_RemoveItem_Click"/>
+                            </StackPanel>
+                            <StackPanel Uid="LineManager" Orientation="Horizontal" Margin="5">
+                                <Button x:Name="btn_MergeLines" Content="행 병합" Click="btn_MergeLines_Click"/>
+                                <Button x:Name="btn_MergeShapes" Content="그룹 병합" Click="btn_MergeShapes_Click"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="5">
+                                <Button x:Name="btn_SplitLines" Content="행 분리" Click="btn_SplitLines_Click"/>
+                            </StackPanel>
+                            <StackPanel Uid="AlignManager" Orientation="Horizontal" Margin="5">
+                                <Button x:Name="btn_AlignLines" Content="정렬" Click="btn_AlignLines_Click"/>
+                                <Button x:Name="btn_ClearLines" Content="빈 칸 정리" Click="btn_ClearLines_Click"/>
+                            </StackPanel>
                         </StackPanel>
-                        <StackPanel Uid="RowManager" Orientation="Horizontal" Margin="10,5,5,5">
-                            <Button x:Name="btn_AddItem" Content="행 추가" Click="btn_AddItem_Click"/>
-                            <Button x:Name="btn_RemoveItem" Content="행 삭제" Click="btn_RemoveItem_Click"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="3,0,3,0">
+                            <Button Content="▲" Click="btn_GoToUp_Click"/>
+                            <Button Content="▼" Click="btn_GoToDown_Click"/>
                         </StackPanel>
-                        <StackPanel Uid="LineManager" Orientation="Horizontal" Margin="5">
-                            <Button x:Name="btn_MergeLines" Content="행 병합" Click="btn_MergeLines_Click"/>
-                            <Button x:Name="btn_MergeShapes" Content="그룹 병합" Click="btn_MergeShapes_Click"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="5">
-                            <Button x:Name="btn_SplitLines" Content="행 분리" Click="btn_SplitLines_Click"/>
-                        </StackPanel>
-                        <StackPanel Uid="AlignManager" Orientation="Horizontal" Margin="5">
-                            <Button x:Name="btn_AlignLines" Content="정렬" Click="btn_AlignLines_Click"/>
-                            <Button x:Name="btn_ClearLines" Content="빈 칸 정리" Click="btn_ClearLines_Click"/>
-                        </StackPanel>
-                    </StackPanel>
+                    </Grid>
+                    
                 </Border>
+                
+                
                 <DataGrid Grid.Row="1" x:Name="datagrid_Shapes"  SelectedItem="{Binding CurrentItem}"
                           SelectionChanged="datagrid_Shapes_SelectionChanged" >
                     <DataGrid.Style>
@@ -325,7 +341,6 @@
                                                     <Style TargetType="Border">
                                                         <Setter Property="Width" Value="35"/>
                                                         <Setter Property="Height" Value="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=Grid}}"/>
-                                                        <Setter Property="Background" Value="Red"/>
                                                         <Setter Property="BorderBrush" Value="Gray"/>
                                                         <Setter Property="BorderThickness" Value="0,0,1,0"/>
                                                         <Setter Property="VerticalAlignment" Value="Stretch"/>
@@ -339,7 +354,7 @@
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
                                                 <Grid Grid.Column="0" Height="35" VerticalAlignment="Top">
-                                                    <ToggleButton Grid.Column="0" Checked="toggle_showhideChildren_Check" Unchecked="toggle_showhideChildren_Check" >
+                                                    <ToggleButton Grid.Column="0" Checked="toggle_showhideChildren_Check" Unchecked="toggle_showhideChildren_Check" IsChecked="{Binding IsFold, Mode=TwoWay}" >
                                                         <ToggleButton.Style>
                                                             <Style TargetType="ToggleButton">
                                                                 <Setter Property="Background" Value="Transparent"/>
@@ -461,8 +476,8 @@
                                                             </Border.Style>
                                                             <Image Grid.Column="0" Source="/MDM.Views;component/Resources/Images/SaveMark.png"  Margin="-1"  />
                                                         </Border>
-                                                        <ContentPresenter Grid.Column="0" Content="{Binding Display_Text}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5">
-                                                            <ContentPresenter.Resources>
+                                                        <TextBlock  Grid.Column="0" Text="{Binding Display_Text}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5">
+                                                            <TextBlock.Style>
                                                                 <Style TargetType="TextBlock">
                                                                     <Setter Property="FontWeight" Value="Normal"/>
                                                                     <Style.Triggers>
@@ -473,8 +488,8 @@
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                 </Style>
-                                                            </ContentPresenter.Resources>
-                                                        </ContentPresenter>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
                                                     </StackPanel>
 
                                                     <StackPanel Grid.Column="1" Orientation="Horizontal">
@@ -543,7 +558,6 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-
             </Grid>
             <Border Grid.Row="2" Style="{StaticResource baseStyle_BottomSubPanel_Border}">
                 <Grid >
@@ -555,14 +569,19 @@
                     </Grid.Resources>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5">
-                        <Button Content="▲" Click="btn_GoToUp_Click"/>
-                        <Button Content="▼" Click="btn_GoToDown_Click"/>
+                 
+                        <Button Content="선택객체 추가하기" Click="btn_AddNEwShape_Click"/>
                     </StackPanel>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
-                        <Button Content="완료 저장하고 다음" Width="130" Click="btn_CompletedSaveNext_Click"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5,10,5">
+                        <Button Content="원본으로 되돌리기" Click="btn_ReLoadOrigin_Click"/>
+                        <Button Content="저장으로 되돌리기" Click="btn_ReLoadDb_Click"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5,10,5">
+                        <Button Content="완료 저장하고 다음 ▶" Width="130" Click="btn_CompletedSaveNext_Click"/>
                     </StackPanel>
                 </Grid>
 

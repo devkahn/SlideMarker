@@ -60,8 +60,6 @@ namespace ManualDataManager.Views.Pages
             try
             {
                 ProgramValues.PowerPointApp.SlideSelectionChanged += this.pgDataLabeling.PowerPointApp_SlideSelectionChanged;
-                
-                
             }
             catch (Exception ee)
             {
@@ -138,20 +136,22 @@ namespace ManualDataManager.Views.Pages
                 List<Slide> slides = PowerpointHelper.GetSlidesFromCurrentFile();
                 foreach (Slide slide in slides)
                 {
-                    mSlide newSlide = new mSlide();
-                    newSlide.SlideId = slide.SlideID;
-                    newSlide.Index = slide.SlideIndex;
-                    newSlide.Name = slide.Name;
-                    newSlide.SlideNumber = slide.SlideNumber;
-
-                    vmSlide sameSlide = newVm.Slides.Where(x => x.Temp.Index == newSlide.Index).FirstOrDefault();
+                    vmSlide sameSlide = newVm.Slides.Where(x => x.Temp.Index == slide.SlideIndex).FirstOrDefault();
                     if (sameSlide != null)
                     {
                         sameSlide.OnModifyStatusChanged(false);
                         continue;
                     }
 
+                    mSlide sl = new mSlide();
+                    #region Slide 데이터 객체
+                    sl.SlideId = slide.SlideID;
+                    sl.Index = slide.SlideIndex;
+                    sl.Name = slide.Name;
+                    sl.SlideNumber = slide.SlideNumber;
+                    #endregion
                     List<Shape> shapes = new List<Shape>();
+                    #region Slide Shape
                     foreach (Shape shape in slide.Shapes)
                     {
                         if (shape.Type == MsoShapeType.msoGroup)
@@ -160,13 +160,9 @@ namespace ManualDataManager.Views.Pages
                             continue;
                         }
 
-                        
-                        
-
                         bool isAny = shapes.Where(x => x != null && x.Id == shape.Id).Any();
                         if(!isAny) shapes.Add(shape);
                     }
-
                     var masterShapes = slide.Master.Shapes; 
                     foreach (Shape shape in masterShapes)
                     {
@@ -175,131 +171,47 @@ namespace ManualDataManager.Views.Pages
                         bool isAny = shapes.Where(x => x.Id == shape.Id).Any();
                         if (!isAny) shapes.Add(shape);
                     }
-
-
-
-                    newSlide.Shapes = new List<mShape>();
+                    #endregion
+                    List<mShape> shapeInstances = new List<mShape>();
                     foreach (Shape shape in shapes)
                     {
                         if (shape.HasTable == MsoTriState.msoTrue)
                         {
-                            Table table = shape.Table;
-
-                            mShape newTable = new mShape(eShapeType.Table);
-                            PowerpointHelper.SetShapeBaseData(newTable, shape);
-                            System.Data.DataTable dt = new System.Data.DataTable(string.IsNullOrEmpty(table.Title) ? shape.Name : shape.Title);
-
-                            for (int col = 1; col <= table.Columns.Count; col++)
-                            {
-                                if (dt.Columns.Count < table.Columns.Count) dt.Columns.Add("Col_" + col);
-                            }
-
-                            foreach (Row row in table.Rows)
-                            {
-                                newTable.Text += "|";
-                                DataRow dataRow = dt.NewRow();
-                                for (int col = 1; col <= table.Columns.Count; col++)
-                                {
-                                    string cellText = row.Cells[col].Shape.TextFrame.TextRange.Text;
-                                    dataRow[col - 1] = cellText;
-                                    newTable.Text += cellText;
-                                    newTable.Text += "|";
-                                }
-                                dt.Rows.Add(dataRow);
-                                newTable.Text += "\n";
-                            }
-                            newTable.Text = newTable.Text.Trim();
-                            newTable.DataTable = JsonHelper.ToJsonString(dt);
-
-                            mItem newItem = new mItem();
-                            newItem.Title = newTable.Title;
-                            newItem.LineText = newTable.Text;
-                            newItem.ItemType = newTable.ShapeType;
-                            newTable.Lines.Add(newItem);
-
-                            newSlide.Shapes.Add(newTable);
+                            mShape newTable = GetTableShape(shape);
+                            shapeInstances.Add(newTable);
                         }
                         else if (shape.Type == MsoShapeType.msoPicture)
                         {
-                            mShape newImage = new mShape(eShapeType.Image);
-                            PowerpointHelper.SetShapeBaseData(newImage, shape);
-                            if (string.IsNullOrEmpty(newImage.Title)) newImage.Title = "NO TITLE";
-
-                            mItem newItem = new mItem();
-                            newItem.Title = newImage.Title;
-                            newItem.LineText =  string.Format("![{0}]({1}{2})", newImage.Title, newItem.Uid, Defines.EXTENSION_IMAGE);
-                            newItem.LineText = newItem.GenerateImageLineText(newImage);// string.Format("![{0}]({1}{2})", newImage.Title, newImage.Text, Defines.EXTENSION_IMAGE);
-                            newItem.ItemType = newImage.ShapeType;
-                            newImage.Lines.Add(newItem);
-
-                            newSlide.Shapes.Add(newImage);
+                            mShape newImage = GetImageShpe(shape);
+                            shapeInstances.Add(newImage);
                         }
                         else if(shape.Type == MsoShapeType.msoAutoShape)
                         {
                             if (shape.HasTextFrame == MsoTriState.msoTrue && shape.TextFrame.HasText == MsoTriState.msoTrue)
                             {
-                                mShape newText = new mShape(eShapeType.Text);
-                                PowerpointHelper.SetShapeBaseData(newText, shape);
-                                newText.Text = shape.TextFrame.TextRange.Text.Trim();
-
-                                string[] lines = TextHelper.SplitText(newText.Text);
-                                foreach (string ln in lines)
-                                {
-                                    mItem newItem = new mItem();
-                                    newItem.Title = newText.Title;
-                                    newItem.LineText = ln.Trim();
-                                    newItem.ItemType = newText.ShapeType;
-                                    newText.Lines.Add(newItem);
-                                }
-
-                                newSlide.Shapes.Add(newText);
+                                mShape newText = GetTextShape(shape);
+                                shapeInstances.Add(newText);
                             }
                             else
                             {
-                                mShape newImage = new mShape(eShapeType.Image);
-                                PowerpointHelper.SetShapeBaseData(newImage, shape);
-                                if (string.IsNullOrEmpty(newImage.Title)) newImage.Title = "NO TITLE";
-
-                                mItem newItem = new mItem();
-                                newItem.Title = newImage.Title; 
-                                newItem.LineText = string.Format("![{0}]({1}{2})", newImage.Title, newImage.Text, Defines.EXTENSION_IMAGE);
-                                newItem.ItemType = newImage.ShapeType;
-                                newImage.Lines.Add(newItem);
-
-                                newSlide.Shapes.Add(newImage);
+                                mShape newImage = GetImageShpe(shape);
+                                shapeInstances.Add(newImage);
                             }
                         }
                         else if (shape.HasTextFrame == MsoTriState.msoTrue && shape.TextFrame.HasText == MsoTriState.msoTrue)
                         {
-                            mShape newText = new mShape(eShapeType.Text);
-                            PowerpointHelper.SetShapeBaseData(newText, shape);
-                            newText.Text = shape.TextFrame.TextRange.Text.Trim();
-
-                            string[] lines = TextHelper.SplitText(newText.Text);
-                            foreach (string ln in lines)
-                            {
-                                mItem newItem = new mItem();
-                                newItem.Title = newText.Title;
-                                newItem.LineText = ln.Trim();
-                                newItem.ItemType = newText.ShapeType;
-                                newText.Lines.Add(newItem);
-                            }
-
-                            newSlide.Shapes.Add(newText);
+                            mShape newText = GetTextShape(shape);
+                            shapeInstances.Add(newText);
                         }
                     }
 
-                 
+                    sl.Shapes = shapeInstances;
+                    sl.Shapes = sl.Shapes.OrderBy(x => x.Top).ThenBy(x => x.DistanceFromOrigin).ToList();
+                    sl.Origin = slide;
 
-
-
-
-
-
-
-                    newSlide.Shapes = newSlide.Shapes.OrderBy(x => x.Top).ThenBy(x => x.DistanceFromOrigin).ToList();
-                    newSlide.Origin = slide;
-                    newVm.AddSlide(new vmSlide(newSlide));
+                    vmSlide newSlide = new vmSlide(sl);
+                    newVm.AddSlide(newSlide);
+                    newSlide.OnModifyStatusChanged(true);
                 }
 
                 newVm.OrderSlides();
@@ -310,6 +222,145 @@ namespace ManualDataManager.Views.Pages
                 ErrorHelper.ShowError(ee);
             }
             
+        }
+
+        private mShape GetTextShape(Shape shape)
+        {
+            mShape newText = new mShape(eShapeType.Text);
+            PowerpointHelper.SetShapeBaseData(newText, shape);
+            newText.Text = shape.TextFrame.TextRange.Text.Trim();
+
+            string[] lines = TextHelper.SplitText(newText.Text);
+            foreach (string ln in lines)
+            {
+                mItem newItem = new mItem();
+                newItem.Title = newText.Title;
+                newItem.LineText = ln.Trim();
+                newItem.ItemType = newText.ShapeType;
+                newText.Lines.Add(newItem);
+            }
+
+            return newText;
+        }
+
+        private mShape GetImageShpe(Shape shape)
+        {
+            mShape newImage = new mShape(eShapeType.Image);
+            PowerpointHelper.SetShapeBaseData(newImage, shape);
+            if (string.IsNullOrEmpty(newImage.Title)) newImage.Title = "NO TITLE";
+
+            mItem newItem = new mItem();
+            newItem.Title = newImage.Title;
+            newItem.LineText = newItem.GenerateImageLineText(newImage);// string.Format("![{0}]({1}{2})", newImage.Title, newImage.Text, Defines.EXTENSION_IMAGE);
+            newItem.ItemType = newImage.ShapeType;
+            newImage.Lines.Add(newItem);
+
+            return newImage;
+        }
+
+        private mShape GetTableShape(Shape shape)
+        {
+            Table table = shape.Table;
+            mShape newTable = new mShape(eShapeType.Table);
+            PowerpointHelper.SetShapeBaseData(newTable, shape);
+            System.Data.DataTable dt = new System.Data.DataTable(string.IsNullOrEmpty(table.Title) ? shape.Name : shape.Title);
+
+            Row row = table.Rows[1];
+            for (int colH = 1; colH <= row.Cells.Count; colH++)
+            {
+                string headerText = row.Cells[colH].Shape.TextFrame.TextRange.Text;
+                string columnHeader = string.Format("Col_{0}_{1}", colH.ToString("000"), headerText);
+                //columnHeader = headerText;
+                dt.Columns.Add(columnHeader);
+            }
+            for (int rowNum = 2; rowNum <= table.Rows.Count; rowNum++)
+            {
+                DataRow addedRow = dt.NewRow();
+                for (int col = 1; col <= table.Columns.Count; col++)
+                {
+                    string cellText = table.Rows[rowNum].Cells[col].Shape.TextFrame.TextRange.Text;
+                    addedRow[col - 1] = cellText;
+                }
+                dt.Rows.Add(addedRow);
+            }
+
+            string tableString = string.Empty;
+            
+            string divText = "|";
+            Dictionary<int, string> headerDic = new Dictionary<int, string>();
+            for (int c = 0; c < dt.Columns.Count; c++)
+            {
+                string value = dt.Columns[c].ColumnName.Substring(8);
+                string[] lines = TextHelper.SplitText(value);
+
+                for (int r = 0; r < lines.Count(); r++)
+                {
+                    if(!headerDic.ContainsKey(r)) headerDic.Add(r, "|");
+                    int barCount = headerDic[r].Count(x => x.Equals('|'));
+                    for (int e = 0; e < (c ) - barCount; e++) headerDic[r] += "\t|";
+
+                    headerDic[r] += lines[r];
+                    headerDic[r] += "|";
+                }
+
+                divText += " --- |";
+            }
+
+            foreach (string item in headerDic.Values)
+            {
+                tableString += item;
+                tableString += "\n";
+            }
+
+            tableString += divText;
+            tableString += "\n";
+            
+
+            string rowText = string.Empty;
+            foreach (DataRow item in dt.Rows)
+            {
+                Dictionary<int, string> rowDic = new Dictionary<int, string>();
+
+                int cNum = 1;
+                foreach (var cell in item.ItemArray)
+                {
+                    string value = cell.ToString();
+                    string[] lines = TextHelper.SplitText(value);
+
+                    for (int r = 0; r < lines.Count(); r++)
+                    {
+                        if (!rowDic.ContainsKey(r)) rowDic.Add(r, "|");
+                        int barCount = rowDic[r].Count(x => x.Equals('|'));
+                        for (int e = 0; e < (cNum) - barCount; e++) rowDic[r] += "\t|";
+
+                        rowDic[r] += lines[r];
+                        rowDic[r] += "|";
+                    }
+
+                    cNum++;
+                }
+
+                foreach (string rowstring in rowDic.Values)
+                {
+                    rowText += rowstring;
+                    if(rowDic.Values.LastOrDefault() != rowstring) rowText += "\n";
+                }
+          
+                rowText += "\n";
+            }
+            tableString += rowText;
+
+
+            newTable.Text = tableString.Trim();
+            newTable.DataTable = JsonHelper.ToJsonString(dt);
+
+            mItem newItem = new mItem();
+            newItem.Title = newTable.Title;
+            newItem.LineText = newTable.Text;
+            newItem.ItemType = newTable.ShapeType;
+            newTable.Lines.Add(newItem);
+
+            return newTable;
         }
     }
 }

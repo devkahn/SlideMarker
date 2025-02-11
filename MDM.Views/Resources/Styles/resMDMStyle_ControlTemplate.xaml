@@ -210,29 +210,15 @@
     </ControlTemplate>
     <ControlTemplate x:Key="template_Image_ControlTempalte" TargetType="ListBoxItem">
         <Border Style="{StaticResource xStyle_Boundary_Border}">
-            <Grid Margin="30,5,5,5" HorizontalAlignment="Left">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <Border Grid.Row="0">
-                    <Border.Style>
-                        <Style TargetType="Border">
-                            <Setter Property="Width" Value="200"/>
-                            <Setter Property="Height" Value="200"/>
-                            <Setter Property="Background" Value="{StaticResource color_Gray3}"/>
-                        </Style>
-                    </Border.Style>
-                    <TextBlock Text="No Image" FontSize="15" Foreground="{StaticResource color_Gray4}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Border>
-                <TextBlock Grid.Row="1" Text="{Binding Display_Text}" FontSize="9" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,5,0,0"/>
+            <Grid Margin="30,5,5,5">
+                <ContentPresenter Content="{Binding Display_PreviewItem_Slide}"/>
             </Grid>
         </Border>
     </ControlTemplate>
     <ControlTemplate x:Key="template_Table_ControlTempalte" TargetType="ListBoxItem">
         <Border Style="{StaticResource xStyle_Boundary_Border}">
             <Grid Margin="30,5,5,5">
-                <TextBlock Text="{Binding Display_Text}" />
+                <ContentPresenter Content="{Binding Display_PreviewItem_Slide}"/>
             </Grid>
         </Border>
     </ControlTemplate>

@@ -27,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Registry_Modules", "Registr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkChecker_Visual_Module", "MarkChecker_Visual_Module\MarkChecker_Visual_Module.csproj", "{E5D4B661-9010-40EB-B9E3-15934C9E508A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkChecker", "MarkChecker\MarkChecker.csproj", "{5931121A-16A2-4A66-9741-8B5D30F66F72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{E5D4B661-9010-40EB-B9E3-15934C9E508A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5D4B661-9010-40EB-B9E3-15934C9E508A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5D4B661-9010-40EB-B9E3-15934C9E508A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5931121A-16A2-4A66-9741-8B5D30F66F72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5931121A-16A2-4A66-9741-8B5D30F66F72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5931121A-16A2-4A66-9741-8B5D30F66F72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5931121A-16A2-4A66-9741-8B5D30F66F72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

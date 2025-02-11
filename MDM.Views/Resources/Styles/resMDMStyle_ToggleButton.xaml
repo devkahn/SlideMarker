@@ -21,9 +21,8 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{StaticResource color_Gray2}"/>
-                <Setter Property="Foreground" Value="{StaticResource color_Black}"/>
-                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Background" Value="{StaticResource color_Gray1}"/>
+                <Setter Property="FontWeight" Value="UltraBold"/>
             </Trigger>
         </Style.Triggers>
     </Style>
