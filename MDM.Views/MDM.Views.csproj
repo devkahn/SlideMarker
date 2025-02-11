@@ -44,6 +44,9 @@
     <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.3.0.1\lib\netstandard2.0\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Microsoft.Office.Interop.PowerPoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
@@ -127,10 +130,16 @@
     <Compile Include="DataLabeling\Windows\wndSlidePreview.xaml.cs">
       <DependentUpon>wndSlidePreview.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MarkChecker\ucMarkCheckerMain.xaml.cs">
+    <Compile Include="ExcelToDatabase\Pages\ucExcelToDatabaseMain.xaml.cs">
+      <DependentUpon>ucExcelToDatabaseMain.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\ucMarkCheckerContensByHeading.xaml.cs">
+      <DependentUpon>ucMarkCheckerContensByHeading.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\ucMarkCheckerMain.xaml.cs">
       <DependentUpon>ucMarkCheckerMain.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MarkChecker\ucMarkCheckerOriginExcel.xaml.cs">
+    <Compile Include="MarkChecker\Pages\ucMarkCheckerOriginExcel.xaml.cs">
       <DependentUpon>ucMarkCheckerOriginExcel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -216,11 +225,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MarkChecker\ucMarkCheckerMain.xaml">
+    <Page Include="ExcelToDatabase\Pages\ucExcelToDatabaseMain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MarkChecker\ucMarkCheckerOriginExcel.xaml">
+    <Page Include="MarkChecker\Pages\ucMarkCheckerContensByHeading.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\ucMarkCheckerMain.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\ucMarkCheckerOriginExcel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

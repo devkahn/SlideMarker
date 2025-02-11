@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="MDM.Views.MarkChecker.Pages.ucMarkCheckerOriginExcel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MDM.Views.MarkChecker.Pages"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Resources/Styles/resMDMColors.xaml"/>
+                <ResourceDictionary Source="../../Resources/Styles/resMDMStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <DataGrid x:Name="dg_Contents">
+            <DataGrid.Style>
+                <Style TargetType="DataGrid" BasedOn="{StaticResource baseStyle_Common_Datagrid}">
+                    <Setter Property="HeadersVisibility" Value="Column"/>
+                    <Setter Property="IsReadOnly" Value="True"/>
+                </Style>
+            </DataGrid.Style>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="S_Num" Binding="{Binding Display_SlideNum}"/>
+                <DataGridTextColumn Header="제목_Lv1" Binding="{Binding Heading1.Display_Name}"/>
+                <DataGridTextColumn Header="제목_Lv2" Binding="{Binding Heading2.Display_Name}"/>
+                <DataGridTextColumn Header="제목_Lv3" Binding="{Binding Heading3.Display_Name}"/>
+                <DataGridTextColumn Header="제목_Lv4" Binding="{Binding Heading4.Display_Name}"/>
+                <DataGridTextColumn Header="제목_Lv5" Binding="{Binding Heading5.Display_Name}"/>
+                <DataGridTextColumn Header="제목_Lv6" Binding="{Binding Heading6.Display_Name}"/>
+                <DataGridTextColumn Header="제목_Lv7" Binding="{Binding Heading7.Display_Name}"/>
+                <DataGridTextColumn Header="제목_Lv8" Binding="{Binding Heading8.Display_Name}"/>
+                <DataGridTextColumn Header="제목_Lv9" Binding="{Binding Heading9.Display_Name}"/>
+                <DataGridTextColumn Header="제목_Lv10" Binding="{Binding Heading10.Display_Name}"/>
+                <DataGridTextColumn Header="본문 유형" Binding="{Binding Display_ContentType}"/>
+                <DataGridTextColumn Header="본문" Binding="{Binding Display_Content}"/>
+                <DataGridTextColumn Header="비고" Binding="{Binding Display_Description}"/>
+                <DataGridTextColumn Header="노트" Binding="{Binding Display_Message}"/>
+
+            </DataGrid.Columns>
+    
+        </DataGrid>
+    </Grid>
+</UserControl>

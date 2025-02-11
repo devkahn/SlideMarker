@@ -117,7 +117,8 @@ namespace MDM.Models.ViewModels
             get
             {
                 if (this.ItemType != eItemType.Image) return false;
-                if(string.IsNullOrEmpty(this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath)) return false;
+                if (this.ParentShape == null) return false;
+                if (string.IsNullOrEmpty(this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath)) return false;
 
                 mShape iShape = this.ParentShape.Temp;
                 if(iShape == null) return false;
@@ -158,7 +159,14 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(this.RowVisibility));
             }
         }
-        public int RowIndex => this.ParentShape.ParentSlide.Items.IndexOf(this);
+        public int RowIndex
+        {
+            get
+            {
+                return  this.ParentShape == null? -1 : this.ParentShape.ParentSlide.Items.IndexOf(this);
+            }
+        }
+        
 
         public FileStream ImageFileStream { get; set; }
       

@@ -58,6 +58,7 @@
     <Compile Include="Attributes\TableNameAttribute.cs" />
     <Compile Include="Attributes\UpdateUseAttribute.cs" />
     <Compile Include="DataModels\mContent.cs" />
+    <Compile Include="DataModels\mHeading.cs" />
     <Compile Include="DataModels\mModelBase.cs" />
     <Compile Include="DataModels\mMaterial.cs" />
     <Compile Include="DataModels\mShape.cs" />
@@ -65,6 +66,8 @@
     <Compile Include="DataModels\mItem.cs" />
     <Compile Include="Intefaces\IViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\vmContent.cs" />
+    <Compile Include="ViewModels\vmHeading.cs" />
     <Compile Include="ViewModels\vmMaterial.cs" />
     <Compile Include="ViewModels\vmShape.cs" />
     <Compile Include="ViewModels\vmSlide.cs" />

@@ -11,11 +11,10 @@ namespace MDM.Models.ViewModels
     {
         private mMaterial _Origin = null;
         private vmSlide _CurrentSlide = null;
+        private vmContent _CurrentContent = null;
 
         private object _Display_Name = null;
         private object _Display_Update = null;
-
-
     }
     public partial class vmMaterial : vmViewModelbase
     {
@@ -43,10 +42,9 @@ namespace MDM.Models.ViewModels
         public string DirectoryPath { get; set; } = string.Empty;
         public Presentation OriginPresentation { get; private set; } = null;
 
-        
 
-        public ReadOnlyObservableCollection<vmSlide> Slides => new ReadOnlyObservableCollection<vmSlide>(this.OriginSlides);
         private ObservableCollection<vmSlide> OriginSlides { get; set; }
+        public ReadOnlyObservableCollection<vmSlide> Slides => new ReadOnlyObservableCollection<vmSlide>(this.OriginSlides);
         public vmSlide CurrentSlide
         {
             get => _CurrentSlide;
@@ -56,6 +54,22 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(CurrentSlide));
             }
         }
+
+        private ObservableCollection<vmContent> OriginContents { get; set; }
+        public ReadOnlyObservableCollection<vmContent> Contents => new ReadOnlyObservableCollection<vmContent>(this.OriginContents);
+        public vmContent CurrentContent
+        {
+            get => _CurrentContent;
+            set
+            {
+                _CurrentContent = value;
+                OnPropertyChanged(nameof(CurrentContent));
+            }
+        }
+        
+
+        private ObservableCollection<vmHeading> OriginHeadings { get; set; }
+        public ReadOnlyObservableCollection<vmHeading> Headings => new ReadOnlyObservableCollection<vmHeading>(this.OriginHeadings);
 
 
         public object Display_Name
@@ -86,6 +100,16 @@ namespace MDM.Models.ViewModels
             slide.SetParentMaterial(this);
             this.OriginSlides.Add(slide);
         }
+        public void AddContent(vmContent content)
+        {
+            content.SetParentMaterial(this);
+            this.OriginContents.Add(content);
+        }
+        public void AddHeading(vmHeading heading)
+        {
+            heading.SetParentMaterial(this);
+            this.OriginHeadings.Add(heading);
+        }
         public void ClearSlides() => this.OriginSlides.Clear();
         public override void InitializeDisplay()
         {
@@ -107,6 +131,10 @@ namespace MDM.Models.ViewModels
         {
             this.OriginSlides = new ObservableCollection<vmSlide>();
             this.OriginSlides.CollectionChanged += OriginSlides_CollectionChanged;
+
+            this.OriginContents = new ObservableCollection<vmContent>();
+
+            this.OriginHeadings = new ObservableCollection<vmHeading>();
         }
         public void SetPresentation(Presentation ppt) => this.OriginPresentation = ppt; 
 

@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MarkChecker"
-        xmlns:pages="clr-namespace:MDM.Views.Pages.MarkChecker;assembly=MDM.Views"
+        xmlns:pages="clr-namespace:MDM.Views.MarkChecker.Pages;assembly=MDM.Views"
         mc:Ignorable="d"
         Title="Mark Checker" Height="450" Width="800">
     <Grid>
