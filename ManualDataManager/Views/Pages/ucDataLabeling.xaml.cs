@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity.Infrastructure;
 using System.IO;
@@ -19,7 +20,6 @@ using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ManualDataManager.Commons;
-using ManualDataManager.Helpers;
 using ManualDataManager.Views.Windows;
 using MDM.Commons;
 using MDM.Commons.Enum;
@@ -44,41 +44,44 @@ namespace ManualDataManager.Views.Pages
 
         public ucDataLabeling(frm_DataLabelingBase parent)
         {
-            this.ParentWindow = parent;
-            InitializeComponent();
-            this.pgDataLabeling.OpenButton.IsEnabled = false;
-            this.pgDataLabeling.LoadButton.Click += LoadButton_Click;
+            try
+            {
+                this.ParentWindow = parent;
+                InitializeComponent();
+                SetInitialize();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
 
+
+
+        private RegistryKey GetVersionRegistryKey()
+        {
             string[] SubKeys = { "SOFTWARE", "Microsoft", "Office", "Powerpoint", "Addins", "ManualDataManager" };
             RegistryKey reg = Registry.CurrentUser;
             foreach (string key in SubKeys) reg = reg.GetSubKeyNames().Contains(key) ? reg.OpenSubKey(key, true) : reg.CreateSubKey(key, true);
-            if(reg != null && reg.GetValueNames().Contains("Version")) this.pgDataLabeling.Version.Text = reg.GetValue("Version").ToString();
+
+            return reg;
+        }
+        private void SetInitialize()
+        {
+            this.pgDataLabeling.OpenButton.IsEnabled = false;
+            this.pgDataLabeling.LoadButton.Click += btn_LoadButton_Click;
+            SetVersion();
+        }
+        private void SetVersion()
+        {
+            RegistryKey regKey = GetVersionRegistryKey();
+            if (regKey == null) return;
+            if (regKey != null && regKey.GetValueNames().Contains("Version")) this.pgDataLabeling.Version.Text = regKey.GetValue("Version").ToString();
         }
 
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ProgramValues.PowerPointApp.SlideSelectionChanged += this.pgDataLabeling.PowerPointApp_SlideSelectionChanged;
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ProgramValues.PowerPointApp.SlideSelectionChanged -= this.pgDataLabeling.PowerPointApp_SlideSelectionChanged;
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
 
-        private void LoadButton_Click(object sender, RoutedEventArgs e)
+
+        private void btn_LoadButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -133,7 +136,12 @@ namespace ManualDataManager.Views.Pages
                 newVm.SetPresentation(ProgramValues.PowerPointApp.ActivePresentation);
                 newVm.DirectoryPath = subDirPath;
 
-                List<Slide> slides = PowerpointHelper.GetSlidesFromCurrentFile();
+
+                List<Slide> slides = new List<Slide>();
+                foreach (Slide slide in ProgramValues.PowerPointApp.ActivePresentation.Slides)
+                {
+                    slides.Add(slide);
+                }
                 foreach (Slide slide in slides)
                 {
                     vmSlide sameSlide = newVm.Slides.Where(x => x.Temp.Index == slide.SlideIndex).FirstOrDefault();
@@ -142,6 +150,8 @@ namespace ManualDataManager.Views.Pages
                         sameSlide.OnModifyStatusChanged(false);
                         continue;
                     }
+
+                   
 
                     mSlide sl = new mSlide();
                     #region Slide 데이터 객체
@@ -161,9 +171,9 @@ namespace ManualDataManager.Views.Pages
                         }
 
                         bool isAny = shapes.Where(x => x != null && x.Id == shape.Id).Any();
-                        if(!isAny) shapes.Add(shape);
+                        if (!isAny) shapes.Add(shape);
                     }
-                    var masterShapes = slide.Master.Shapes; 
+                    var masterShapes = slide.Master.Shapes;
                     foreach (Shape shape in masterShapes)
                     {
                         if (shape.Type == MsoShapeType.msoGroup) shape.Ungroup();
@@ -177,36 +187,36 @@ namespace ManualDataManager.Views.Pages
                     {
                         if (shape.HasTable == MsoTriState.msoTrue)
                         {
-                            mShape newTable = GetTableShape(shape);
+                            mShape newTable = PowerpointHelper.GetTableShape(shape);
                             shapeInstances.Add(newTable);
                         }
                         else if (shape.Type == MsoShapeType.msoPicture)
                         {
-                            mShape newImage = GetImageShpe(shape);
+                            mShape newImage = PowerpointHelper.GetImageShpe(shape);
                             shapeInstances.Add(newImage);
                         }
-                        else if(shape.Type == MsoShapeType.msoAutoShape)
+                        else if (shape.Type == MsoShapeType.msoAutoShape)
                         {
                             if (shape.HasTextFrame == MsoTriState.msoTrue && shape.TextFrame.HasText == MsoTriState.msoTrue)
                             {
-                                mShape newText = GetTextShape(shape);
+                                mShape newText = PowerpointHelper.GetTextShape(shape);
                                 shapeInstances.Add(newText);
                             }
                             else
                             {
-                                mShape newImage = GetImageShpe(shape);
+                                mShape newImage = PowerpointHelper.GetImageShpe(shape);
                                 shapeInstances.Add(newImage);
                             }
                         }
                         else if (shape.HasTextFrame == MsoTriState.msoTrue && shape.TextFrame.HasText == MsoTriState.msoTrue)
                         {
-                            mShape newText = GetTextShape(shape);
+                            mShape newText = PowerpointHelper.GetTextShape(shape);
                             shapeInstances.Add(newText);
                         }
                     }
 
                     sl.Shapes = shapeInstances;
-                    sl.Shapes = sl.Shapes.OrderBy(x => x.Top).ThenBy(x => x.DistanceFromOrigin).ToList();
+                    sl.Shapes = sl.Shapes.OrderByOriginPoint();   
                     sl.Origin = slide;
 
                     vmSlide newSlide = new vmSlide(sl);
@@ -217,150 +227,38 @@ namespace ManualDataManager.Views.Pages
                 newVm.OrderSlides();
                 this.pgDataLabeling.SetMaterial(newVm);
             }
-            catch (Exception  ee)
+            catch (Exception ee)
             {
                 ErrorHelper.ShowError(ee);
             }
-            
+
         }
 
-        private mShape GetTextShape(Shape shape)
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            mShape newText = new mShape(eShapeType.Text);
-            PowerpointHelper.SetShapeBaseData(newText, shape);
-            newText.Text = shape.TextFrame.TextRange.Text.Trim();
-
-            string[] lines = TextHelper.SplitText(newText.Text);
-            foreach (string ln in lines)
+            try
             {
-                mItem newItem = new mItem();
-                newItem.Title = newText.Title;
-                newItem.LineText = ln.Trim();
-                newItem.ItemType = newText.ShapeType;
-                newText.Lines.Add(newItem);
+                ProgramValues.PowerPointApp.SlideSelectionChanged += this.pgDataLabeling.PowerPointApp_SlideSelectionChanged;
+               // ProgramValues.PowerPointApp.WindowSelectionChange += this.pgDataLabeling.PowerPointApp_WindowSelectionChange;
+                
             }
-
-            return newText;
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
-
-        private mShape GetImageShpe(Shape shape)
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            mShape newImage = new mShape(eShapeType.Image);
-            PowerpointHelper.SetShapeBaseData(newImage, shape);
-            if (string.IsNullOrEmpty(newImage.Title)) newImage.Title = "NO TITLE";
-
-            mItem newItem = new mItem();
-            newItem.Title = newImage.Title;
-            newItem.LineText = newItem.GenerateImageLineText(newImage);// string.Format("![{0}]({1}{2})", newImage.Title, newImage.Text, Defines.EXTENSION_IMAGE);
-            newItem.ItemType = newImage.ShapeType;
-            newImage.Lines.Add(newItem);
-
-            return newImage;
-        }
-
-        private mShape GetTableShape(Shape shape)
-        {
-            Table table = shape.Table;
-            mShape newTable = new mShape(eShapeType.Table);
-            PowerpointHelper.SetShapeBaseData(newTable, shape);
-            System.Data.DataTable dt = new System.Data.DataTable(string.IsNullOrEmpty(table.Title) ? shape.Name : shape.Title);
-
-            Row row = table.Rows[1];
-            for (int colH = 1; colH <= row.Cells.Count; colH++)
+            try
             {
-                string headerText = row.Cells[colH].Shape.TextFrame.TextRange.Text;
-                string columnHeader = string.Format("Col_{0}_{1}", colH.ToString("000"), headerText);
-                //columnHeader = headerText;
-                dt.Columns.Add(columnHeader);
+                ProgramValues.PowerPointApp.SlideSelectionChanged -= this.pgDataLabeling.PowerPointApp_SlideSelectionChanged;
+               // ProgramValues.PowerPointApp.WindowSelectionChange -= this.pgDataLabeling.PowerPointApp_WindowSelectionChange;
             }
-            for (int rowNum = 2; rowNum <= table.Rows.Count; rowNum++)
+            catch (Exception ee)
             {
-                DataRow addedRow = dt.NewRow();
-                for (int col = 1; col <= table.Columns.Count; col++)
-                {
-                    string cellText = table.Rows[rowNum].Cells[col].Shape.TextFrame.TextRange.Text;
-                    addedRow[col - 1] = cellText;
-                }
-                dt.Rows.Add(addedRow);
+                ErrorHelper.ShowError(ee);
             }
-
-            string tableString = string.Empty;
-            
-            string divText = "|";
-            Dictionary<int, string> headerDic = new Dictionary<int, string>();
-            for (int c = 0; c < dt.Columns.Count; c++)
-            {
-                string value = dt.Columns[c].ColumnName.Substring(8);
-                string[] lines = TextHelper.SplitText(value);
-
-                for (int r = 0; r < lines.Count(); r++)
-                {
-                    if(!headerDic.ContainsKey(r)) headerDic.Add(r, "|");
-                    int barCount = headerDic[r].Count(x => x.Equals('|'));
-                    for (int e = 0; e < (c ) - barCount; e++) headerDic[r] += "\t|";
-
-                    headerDic[r] += lines[r];
-                    headerDic[r] += "|";
-                }
-
-                divText += " --- |";
-            }
-
-            foreach (string item in headerDic.Values)
-            {
-                tableString += item;
-                tableString += "\n";
-            }
-
-            tableString += divText;
-            tableString += "\n";
-            
-
-            string rowText = string.Empty;
-            foreach (DataRow item in dt.Rows)
-            {
-                Dictionary<int, string> rowDic = new Dictionary<int, string>();
-
-                int cNum = 1;
-                foreach (var cell in item.ItemArray)
-                {
-                    string value = cell.ToString();
-                    string[] lines = TextHelper.SplitText(value);
-
-                    for (int r = 0; r < lines.Count(); r++)
-                    {
-                        if (!rowDic.ContainsKey(r)) rowDic.Add(r, "|");
-                        int barCount = rowDic[r].Count(x => x.Equals('|'));
-                        for (int e = 0; e < (cNum) - barCount; e++) rowDic[r] += "\t|";
-
-                        rowDic[r] += lines[r];
-                        rowDic[r] += "|";
-                    }
-
-                    cNum++;
-                }
-
-                foreach (string rowstring in rowDic.Values)
-                {
-                    rowText += rowstring;
-                    if(rowDic.Values.LastOrDefault() != rowstring) rowText += "\n";
-                }
-          
-                rowText += "\n";
-            }
-            tableString += rowText;
-
-
-            newTable.Text = tableString.Trim();
-            newTable.DataTable = JsonHelper.ToJsonString(dt);
-
-            mItem newItem = new mItem();
-            newItem.Title = newTable.Title;
-            newItem.LineText = newTable.Text;
-            newItem.ItemType = newTable.ShapeType;
-            newTable.Lines.Add(newItem);
-
-            return newTable;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
@@ -41,6 +42,7 @@ namespace MDM.Models.ViewModels
         public mMaterial Temp { get; private set; }= null;
         public string DirectoryPath { get; set; } = string.Empty;
         public Presentation OriginPresentation { get; private set; } = null;
+        public List<Shape> SelectedShapes { get; set; } = new List<Shape>();
 
 
         private ObservableCollection<vmSlide> OriginSlides { get; set; }
@@ -93,7 +95,11 @@ namespace MDM.Models.ViewModels
     }
     public partial class vmMaterial
     {
-      
+      public void SelectShape(Shape shape)
+        {
+            if (this.SelectedShapes.Contains(shape)) return;
+            this.SelectedShapes.Add(shape);
+        }
 
         public void AddSlide(vmSlide slide)
         {
@@ -129,6 +135,8 @@ namespace MDM.Models.ViewModels
         public void RemoveSlide(vmSlide slide) => this.OriginSlides.Remove(slide);
         public override void SetInitialData()
         {
+            //this.SelectedShapes = { };
+
             this.OriginSlides = new ObservableCollection<vmSlide>();
             this.OriginSlides.CollectionChanged += OriginSlides_CollectionChanged;
 

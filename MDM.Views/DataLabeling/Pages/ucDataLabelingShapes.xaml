@@ -17,12 +17,16 @@
 
     <Border Grid.Column="0" Style="{StaticResource baseStyle_WholePanel_Border}">
         <Grid DataContext="{Binding CurrentSlide}" DataContextChanged="Grid_DataContextChanged">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="443*"/>
+                <ColumnDefinition Width="345*"/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"/>
                 <RowDefinition/>
                 <RowDefinition Height="35"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="0"  Style="{StaticResource baseStyle_TopSubPanel_Border}">
+            <Border Grid.Row="0"  Style="{StaticResource baseStyle_TopSubPanel_Border}" Grid.ColumnSpan="2">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -85,7 +89,7 @@
                     </StackPanel>
                 </Grid>
             </Border>
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="1" Grid.ColumnSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="35"/>
                     <RowDefinition/>
@@ -136,15 +140,15 @@
                                 <Button x:Name="btn_ClearLines" Content="빈 칸 정리" Click="btn_ClearLines_Click"/>
                             </StackPanel>
                         </StackPanel>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="3,0,3,0">
-                            <Button Content="▲" Click="btn_GoToUp_Click"/>
-                            <Button Content="▼" Click="btn_GoToDown_Click"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="3,5,3,5">
+                            <Button Content="▲" Width="30" Click="btn_GoToUp_Click"/>
+                            <Button Content="▼" Width="30" Click="btn_GoToDown_Click"/>
                         </StackPanel>
                     </Grid>
-                    
+
                 </Border>
-                
-                
+
+
                 <DataGrid Grid.Row="1" x:Name="datagrid_Shapes"  SelectedItem="{Binding CurrentItem}"
                           SelectionChanged="datagrid_Shapes_SelectionChanged" >
                     <DataGrid.Style>
@@ -157,7 +161,7 @@
                     <DataGrid.Resources>
                         <Style TargetType="DataGridCell" BasedOn="{StaticResource baseStyle_Common_DatagridCell}"/>
                         <Style TargetType="DataGridRow">
-                            
+
                             <Setter Property="Visibility" Value="{Binding RowVisibility}"/>
                         </Style>
                     </DataGrid.Resources>
@@ -185,7 +189,7 @@
                         <DataGridTemplateColumn Header="IsHeading" Width="95">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Grid Margin="0,5,0,5" Height="21" HorizontalAlignment="Right" VerticalAlignment="Top" > 
+                                    <Grid Margin="0,5,0,5" Height="21" HorizontalAlignment="Right" VerticalAlignment="Top" >
                                         <Grid.Resources>
                                             <Style TargetType="Button">
                                                 <Setter Property="Background" Value="White"/>
@@ -510,8 +514,8 @@
                                                             </Style>
                                                         </StackPanel.Resources>
                                                         <Button Content="다운로드" Click="btn_ImageDownload_Click" Visibility="{Binding IsImageFileExist, Converter={StaticResource converter_BoolToVisibleReverse}}"/>
-                                                        <Button Content="불러오기" Click="btn_ImageLoad_Click"/>
-                                                        <Button Content="붙혀넣기" Click="btn_ImagePaste_Click"/>
+                                                        <!--<Button Content="불러오기" Click="btn_ImageLoad_Click"/>-->
+                                                        <!--<Button Content="붙혀넣기" Click="btn_ImagePaste_Click"/>-->
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Grid>
@@ -550,7 +554,7 @@
                                                 </Button>
                                             </StackPanel>
                                         </Grid>
-                                       
+
                                     </Grid>
 
                                 </DataTemplate>
@@ -559,7 +563,7 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
-            <Border Grid.Row="2" Style="{StaticResource baseStyle_BottomSubPanel_Border}">
+            <Border Grid.Row="2" Style="{StaticResource baseStyle_BottomSubPanel_Border}" Grid.ColumnSpan="2">
                 <Grid >
                     <Grid.Resources>
                         <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
@@ -573,8 +577,8 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5">
-                 
-                        <Button Content="선택객체 추가하기" Click="btn_AddNEwShape_Click"/>
+
+                        <Button Content="선택객체 추가하기" Click="btn_AddNEwShape_Click" Visibility="Collapsed"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5,10,5">
                         <Button Content="원본으로 되돌리기" Click="btn_ReLoadOrigin_Click"/>
@@ -586,13 +590,13 @@
                 </Grid>
 
             </Border>
-            <Border Grid.Row="1" Visibility="{Binding Items.Count, ElementName=datagrid_Shapes, Converter={StaticResource converter_IntToVisibilityReverse}}">
+            <Border Grid.Row="1" Visibility="{Binding Items.Count, ElementName=datagrid_Shapes, Converter={StaticResource converter_IntToVisibilityReverse}}" Grid.ColumnSpan="2">
                 <TextBlock Style="{StaticResource baseStyle_NoItem_Textblock}">
                     슬라이드에 아이템이 없습니다.
                 </TextBlock>
             </Border>
 
-            <Border Grid.Row="1" Grid.RowSpan="10" Visibility="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=Grid}, Converter={StaticResource converter_NullToVisibility}}">
+            <Border Grid.Row="1" Grid.RowSpan="2" Visibility="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=Grid}, Converter={StaticResource converter_NullToVisibility}}" Grid.ColumnSpan="2">
                 <Grid>
                     <Border CornerRadius="0,0,5,5" Background="{StaticResource color_Gray5}" Opacity="0.7"/>
                     <TextBlock Style="{StaticResource baseStyle_NoItem_Textblock}" >
@@ -603,5 +607,5 @@
             </Border>
         </Grid>
     </Border>
-        
+
 </UserControl>

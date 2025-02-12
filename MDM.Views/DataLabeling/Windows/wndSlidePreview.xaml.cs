@@ -23,6 +23,7 @@ namespace MDM.Views.DataLabeling.Windows
         {
             InitializeComponent();
             this.PreviewSlidePage.DataContext = this.DataContext;
+            this.PreviewSlidePage.BottomPanel.Visibility = Visibility.Collapsed;
         }
     }
 }

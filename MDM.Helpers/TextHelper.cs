@@ -95,10 +95,70 @@ namespace MDM.Helpers
         {
             return string.IsNullOrEmpty(input) || string.IsNullOrWhiteSpace(input);
         }
-        public static bool IsImageMarkdown(string input)
+        public static Match IsImageMarkdown(string input)
         {
-            string pattern = @"^!\[([^\]]+)\]\([^\)]+\.png\)$";
-            return Regex.IsMatch(input, pattern);
+            string pattern = @"^!\[([^\]]+)\]\(([\w-]+)\.png\)";
+            return Regex.Match(input, pattern);
+        }
+
+        public static string Preprocessing(this string originText)
+        {
+            string[] textSplits = SplitText(originText);
+
+            string output = string.Empty;
+            foreach (string line in textSplits)
+            {
+                if (string.IsNullOrEmpty(line) || string.IsNullOrWhiteSpace(line)) continue;
+
+                string newLine = line;
+                if (newLine.StartsWith("\t\t\t\t")) newLine = newLine.Replace("\t\t\t\t", "        "+"- ");
+                else if (newLine.StartsWith("\t\t\t")) newLine = newLine.Replace("\t\t\t", "      "+"- ");
+                else if (newLine.StartsWith("\t\t")) newLine = newLine.Replace("\t\t", "    "+"- ");
+                else if (newLine.StartsWith("\t")) newLine = newLine.Replace("\t", "  "+"- ");
+                else if (textSplits.Length > 1)
+                {
+                    if (newLine.First() == '▣') newLine = newLine.Replace("▣", "        "+"- ");
+                    else if (newLine.First() == '▷') newLine = newLine.Replace("▷", "      "+"- ");
+                    else if (newLine.First() == '*') newLine = newLine.Replace("*", "    "+"- ");
+                    else if (newLine.First() == '>') newLine = newLine.Replace(">", "  "+"- ");
+                    else if (newLine.First() != '-') newLine = newLine.Insert(0, "- ");
+                    //else newLine = newLine.Insert(0, "- ");
+                }
+
+                output += newLine;
+                if (line != textSplits.Last()) output += "\n";
+            }
+
+            return output;
+        }
+        public static string Numbering(this string originText)
+        {
+            string[] textSplits = SplitText(originText);
+
+            string output = string.Empty;
+            foreach (string line in textSplits)
+            {
+                if (string.IsNullOrEmpty(line) || string.IsNullOrWhiteSpace(line)) continue;
+
+                string newLine = line;
+                if (newLine.StartsWith("\t\t\t\t")) newLine = newLine.Replace("\t\t\t\t", "\t\t\t\t▣ ");
+                else if (newLine.StartsWith("\t\t\t")) newLine = newLine.Replace("\t\t\t", "\t\t\t▷ ");
+                else if (newLine.StartsWith("\t\t")) newLine = newLine.Replace("\t\t", "\t\t* ");
+                else if (newLine.StartsWith("\t")) newLine = newLine.Replace("\t", "\t> ");
+                else if (textSplits.Length > 1)
+                {
+                    if (newLine.First() == '▣') newLine = newLine.Replace("▣", "\t\t\t\t▣ ");
+                    else if (newLine.First() == '▷') newLine = newLine.Replace("▷", "\t\t\t▷ ");
+                    else if (newLine.First() == '*') newLine = newLine.Replace("*", "\t\t* ");
+                    else if (newLine.First() == '>') newLine = newLine.Replace(">", "\t> ");
+                    else newLine = newLine.Insert(0, "- ");
+                }
+
+                output += newLine;
+                if (line != textSplits.Last()) output += "\n";
+            }
+
+            return output;
         }
     }
 }

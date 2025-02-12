@@ -103,6 +103,15 @@
     <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewItem.xaml.cs">
       <DependentUpon>ucDataLabelingPreviewItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewItemImage.xaml.cs">
+      <DependentUpon>ucDataLabelingPreviewItemImage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewItemTable.xaml.cs">
+      <DependentUpon>ucDataLabelingPreviewItemTable.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewItemText.xaml.cs">
+      <DependentUpon>ucDataLabelingPreviewItemText.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewSlide.xaml.cs">
       <DependentUpon>ucDataLabelingPreviewSlide.xaml</DependentUpon>
     </Compile>
@@ -186,6 +195,18 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="DataLabeling\Pages\ucDataLabelingPreviewItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewItemImage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewItemTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewItemText.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

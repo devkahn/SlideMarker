@@ -9,7 +9,9 @@ using System.Windows.Input;
 using MDM.Helpers;
 using MDM.Models.DataModels;
 using MDM.Models.ViewModels;
+using Microsoft.Office.Core;
 using Microsoft.Office.Interop.PowerPoint;
+using Shape = Microsoft.Office.Interop.PowerPoint.Shape;
 
 
 namespace MDM.Views.DataLabeling.Pages
@@ -52,6 +54,13 @@ namespace MDM.Views.DataLabeling.Pages
             }
         }
 
+
+        public void SetMaterial(vmMaterial material)
+        {
+            this.Material = material;
+        }
+
+
         private void btn_FileOpen_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -90,27 +99,21 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
-
-
-        public void SetMaterial(vmMaterial material)
-        {
-            this.Material = material;
-        }
-
-        public void PowerPointApp_SlideSelectionChanged(SlideRange SldRange)
+        private void bnt_MaterialSave_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                int slideIndex = SldRange.SlideIndex;
-                this.ucDataLabelingSlides.MovePage(slideIndex);
+                this.Cursor = Cursors.Wait;
+                this.Material.Save();
+                this.Cursor = Cursors.Arrow;
             }
             catch (Exception ee)
             {
+                this.Cursor = Cursors.Arrow;
                 ErrorHelper.ShowError(ee);
             }
         }
-
-        private void LoadButton_Click(object sender, RoutedEventArgs e)
+        private void btn_LoadButton_Click(object sender, RoutedEventArgs e)
         {
             string assDirPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             //string dbOriginPath = Path.Combine(assDirPath, Defines.PATH_FILE_BASE_DB);
@@ -138,19 +141,53 @@ namespace MDM.Views.DataLabeling.Pages
 
         }
 
-        private void bnt_MaterialSave_Click(object sender, RoutedEventArgs e)
+
+        public void PowerPointApp_SlideSelectionChanged(SlideRange SldRange)
         {
             try
             {
-                this.Cursor = Cursors.Wait;
-                this.Material.Save();
-                this.Cursor = Cursors.Arrow;
+                int slideIndex = SldRange.SlideIndex;
+                this.ucDataLabelingSlides.MovePage(slideIndex);
             }
             catch (Exception ee)
             {
-                this.Cursor = Cursors.Arrow;
                 ErrorHelper.ShowError(ee);
             }
+        }
+
+        public void PowerPointApp_WindowSelectionChange(Selection selections)
+        {
+            try
+            {
+                if (this.Material == null) return;
+
+                // 선택된 항목이 있을 경우
+                if (selections.Type == PpSelectionType.ppSelectionShapes)
+                {
+                    List<Shape> shapes = new List<Shape>();
+                    // 선택된 개체들의 타입 출력
+                    foreach (Shape shape in selections.ShapeRange)
+                    {
+                        MessageBox.Show(shape.Name, "selected");
+                        this.Material.SelectShape(shape);
+                      
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_BackUp_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btn_ImagesImport_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

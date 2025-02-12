@@ -211,7 +211,6 @@
   -->
   <ItemGroup>
     <Compile Include="Commons\ProgramValues.cs" />
-    <Compile Include="Helpers\PowerpointHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -275,6 +274,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Helpers\" />
     <Folder Include="Utils\" />
   </ItemGroup>
   <ItemGroup>

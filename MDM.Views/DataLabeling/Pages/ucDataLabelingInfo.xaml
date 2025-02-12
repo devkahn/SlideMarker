@@ -16,18 +16,34 @@
     </UserControl.Resources>
 
     <Border  Style="{StaticResource baseStyle_WholePanel_Border}">
-        <Grid Margin="10,5,10,5">
+        <Grid Margin="10,5,10,5" >
+            <Grid.Resources>
+                <Style x:Key="subStyle_Title_Textblock" TargetType="TextBlock">
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+                <Style x:Key="subStyle_Value_Textblock" TargetType="TextBlock">
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="FontWeight" Value="Normal"/>
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+            </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="현재 PPT 파일 명 : "/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="열려있는 데이터 명 : "/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="데이터 경로 : " Style="{StaticResource subStyle_Title_Textblock}"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Display_Name}" Style="{StaticResource subStyle_Value_Textblock}"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="PPT 파일 명 : " Style="{StaticResource subStyle_Title_Textblock}"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Display_Name}" Style="{StaticResource subStyle_Value_Textblock}"/>
         </Grid>
     </Border>
 </UserControl>

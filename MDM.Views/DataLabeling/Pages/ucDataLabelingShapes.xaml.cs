@@ -19,6 +19,9 @@ using Microsoft.Office.Interop.PowerPoint;
 using System.Threading;
 using System.Windows.Markup;
 using System.Windows.Media.Imaging;
+using Microsoft.Office.Core;
+using Shape = Microsoft.Office.Interop.PowerPoint.Shape;
+using System.Text.RegularExpressions;
 
 namespace MDM.Views.DataLabeling.Pages
 {
@@ -82,6 +85,8 @@ namespace MDM.Views.DataLabeling.Pages
             this.datagrid_Shapes.ItemsSource = items;
             this.datagrid_Shapes.SelectedIndex = 0;
         }
+
+
         private void btn_DownLevel_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -373,6 +378,333 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
+        private void btn_SelectItemType_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                vmItem data = btn.DataContext as vmItem;
+                if (data == null) return;
+
+                switch (data.ItemType)
+                {
+                    case eItemType.Image:
+                        data.ParentShape.UndoText();
+                        data.UndoText();
+                        data.SetItemType(eItemType.Table);
+                        break;
+                    case eItemType.Text:
+                    case eItemType.None:
+                        data.ParentShape.SetTitle(data.ParentShape.Temp.Text);
+                        data.ParentShape.SetText(Guid.NewGuid().ToString());
+                        data.SetText(data.Temp.GenerateImageLineText(data.ParentShape.Temp));
+                        data.SetItemType(eItemType.Image);
+                        break;
+                    case eItemType.Table:
+                    default:
+                        data.ParentShape.UndoText();
+                        data.UndoText();
+                        data.SetItemType(eItemType.Text);
+                        break;
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_DeleteRow_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                vmItem data = btn.DataContext as vmItem;
+                if (data == null) return;
+
+                data.Delete();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_EditCompleted_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                TextBox tb = btn.Tag as TextBox;
+                if (tb == null) return;
+
+                vmItem item = btn.DataContext as vmItem;
+                if (item == null) return;
+
+
+                string value = tb.Text;
+                switch (item.ItemType)
+                {
+                    case eItemType.Image:
+                        Match match = TextHelper.IsImageMarkdown(value);
+                        if (match.Success)
+                        {
+                            string title = match.Groups[1].Value;
+                            string id = match.Groups[2].Value;
+
+                            bool isIdValid = Guid.TryParse(id, out Guid result);
+                            if (isIdValid)
+                            {
+                                item.SetTitle(title);
+                                item.Temp.Uid = id;
+                                item.SetImageText();
+                                this.datagrid_Shapes.CommitEdit();
+                                return;
+                            }
+                        }
+                        string eMsg = "텍스트 형식이 맞지 않습니다.";
+                        MessageHelper.ShowErrorMessage( "이미지 텍스트 변경", eMsg);
+                        e.Handled = false;
+                        return;
+                    case eItemType.Table:
+                    default:
+                        item.SetText(tb.Text);
+                        this.datagrid_Shapes.CommitEdit();
+                        return;
+                }
+                
+
+                
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_GoToUp_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                vmItem selectedItem = this.datagrid_Shapes.SelectedItem as vmItem;
+                if (selectedItem == null) return;
+
+                var list = this.datagrid_Shapes.ItemsSource as ObservableCollection<vmItem>;
+                if (list == null) return;
+
+                int index = list.IndexOf(selectedItem);
+                if (index <= 0) return;
+
+                vmItem upperItem = list[index - 1] as vmItem;
+                if (upperItem == null) return;
+
+                list.Move(index, index - 1);
+                selectedItem.SetRowIndex();
+                upperItem.SetRowIndex();
+
+                if (upperItem.IsHeader) selectedItem.SetParentItem(upperItem.ParentItem);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_GoToDown_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                vmItem selectedItem = this.datagrid_Shapes.SelectedItem as vmItem;
+                if (selectedItem == null) return;
+
+                var list = this.datagrid_Shapes.ItemsSource as ObservableCollection<vmItem>;
+                if (list == null) return;
+
+                int index = list.IndexOf(selectedItem);
+                if (index + 1 == list.Count) return;
+
+                vmItem downItem = list[index + 1] as vmItem;
+                if (downItem == null) return;
+
+                list.Move(index, index + 1);
+                selectedItem.SetRowIndex();
+                downItem.SetRowIndex();
+
+                if (downItem.IsHeader) selectedItem.SetParentItem(downItem);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_MergeShapes_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                vmItem selectedItem = this.datagrid_Shapes.SelectedItem as vmItem;
+                if (selectedItem == null) return;
+
+                vmShape parent = selectedItem.ParentShape;
+
+                var list = parent.Items.ToList();
+                int total = list.Count();
+                vmItem firstItem = list[0];
+                for (int i = 1; i < total; i++)
+                {
+                    vmItem cItem = list[i];
+                    firstItem.Merge(cItem);
+                    cItem.Delete();
+                }
+                firstItem.InitializeDisplay();
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_ImageDownload_Click(object sender, RoutedEventArgs e)
+        {
+            Bitmap originImage = null;
+            Bitmap croppedImage = null;
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                vmItem data = btn.DataContext as vmItem;
+                if (data == null) return;
+
+                mShape iShape = data.ParentShape.Temp;
+
+                Slide currentSlide = (Slide)this.Material.OriginPresentation.Application.ActiveWindow.View.Slide;
+
+                string tempDirPath = Path.Combine(this.Material.DirectoryPath, "Temp");
+                if (!Directory.Exists(tempDirPath)) Directory.CreateDirectory(tempDirPath);
+                string fullpath = Path.Combine(tempDirPath, string.Format("slide{0}", currentSlide.SlideIndex));
+                if (!File.Exists(fullpath))
+                {
+                    currentSlide.Export(fullpath, "png");
+                    if (File.Exists(fullpath))
+                    {
+                        string originPath = fullpath;
+                        fullpath = Path.Combine(tempDirPath, string.Format("slide{0}.png", currentSlide.SlideIndex));
+                        if (File.Exists(fullpath))
+                        {
+                            File.Delete(fullpath);
+                        }
+                        File.Move(originPath, fullpath);
+                    }
+                }
+                originImage = new Bitmap(fullpath);
+
+                #region 해상도 업
+
+                //float scaleFactor = 2.0f;
+
+                //int newWidth = (int)(originImage.Width * scaleFactor);
+                //int newHeight = (int)(originImage.Height * scaleFactor);
+
+                //Bitmap resizedImage = new Bitmap(originImage, newWidth, newHeight);
+                //using (Graphics g = Graphics.FromImage(resizedImage))
+                //{
+                //    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                //    g.DrawImage(originImage, 0, 0, newWidth, newHeight);
+                //}
+                //resizedImage.Save(fullpath+"2", ImageFormat.Png);
+
+                #endregion
+
+                // 슬라이드 크기 가져오기
+                float slideWidth = this.Material.OriginPresentation.PageSetup.SlideWidth;
+                float slideHeight = this.Material.OriginPresentation.PageSetup.SlideHeight;
+
+                // 크롭 속성 가져오기
+                float cropLeft = (iShape.Left * originImage.Width) / slideWidth;
+                float cropTop = (iShape.Top * originImage.Height) / slideHeight;
+                // 크롭된 이미지의 크기 계산
+                float croppedWidth = (iShape.Width * originImage.Width) / slideWidth;
+                float croppedHeight = (iShape.Height * originImage.Height) / slideHeight;
+
+                Rectangle cropArea = new Rectangle((int)cropLeft - 5, (int)cropTop - 5, (int)croppedWidth + 5, (int)croppedHeight + 5);
+                croppedImage = originImage.Clone(cropArea, originImage.PixelFormat);
+                string imagePath = Path.Combine(this.Material.DirectoryPath, data.Temp.Uid + Defines.EXTENSION_IMAGE);
+                if (File.Exists(imagePath))
+                {
+                    data.SetPreviewItem(true);
+                    File.Delete(imagePath);
+                }
+                croppedImage.Save(imagePath, ImageFormat.Png);
+                croppedImage.Dispose();
+                originImage.Dispose();
+                //File.Delete(fullpath);
+
+                data.OnImageFileExistChanged();
+                data.SetPreviewItem();
+            }
+            catch (Exception ee)
+            {
+                if (originImage != null) originImage.Dispose();
+                if (croppedImage != null) croppedImage.Dispose();
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        
+        private void btn_CompletedSaveNext_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                vmSlide current = this.Material.CurrentSlide;
+                if (current == null) return;
+
+                current.SetStatus(ePageStatus.Completed);
+                current.Save();
+                (this.Tag as ucDataLabeling).DataLabelingSlides.MoveNext();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+      
+        private void btn_AllFold_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var headers = this.Material.CurrentSlide.Items.Where(x => x.IsHeader);
+                foreach (var item in headers)
+                {
+                    vmItem header = item as vmItem;
+                    if (header == null) return;
+
+                    header.IsFolded = true;
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_AllUnFold_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var headers = this.Material.CurrentSlide.Items.Where(x => x.IsHeader);
+                foreach (var item in headers)
+                {
+                    vmItem header = item as vmItem;
+                    if (header == null) return;
+
+                    header.IsFolded = false;
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
 
         private void datagrid_Shapes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -406,6 +738,39 @@ namespace MDM.Views.DataLabeling.Pages
             }
         }
 
+
+        private void Grid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            try
+            {
+                this.rBtn_AllItemn_Filter.IsChecked = true;
+                BindItems();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+
+        private void rBtn_LineFilter_Check(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                RadioButton rBtn = sender as RadioButton;
+                if (rBtn == null) return;
+
+                bool isCodeValid = int.TryParse(rBtn.Uid, out int code);
+                if (!isCodeValid) code = 0;
+
+                this.ItemFilterCode = (eItemType)code;
+                BindItems();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
 
         private void TextBox_KeyUp(object sender, KeyEventArgs e)
         {
@@ -449,7 +814,6 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
-
         private void toggle_IsHeading_Checked(object sender, RoutedEventArgs e)
         {
             try
@@ -497,7 +861,6 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
-
         private void toggle_showhideChildren_Check(object sender, RoutedEventArgs e)
         {
             try
@@ -515,82 +878,6 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
-
-        private void btn_SelectItemType_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Button btn = sender as Button;
-                if (btn == null) return;
-
-                vmItem data = btn.DataContext as vmItem;
-                if (data == null) return;
-
-                switch (data.ItemType)
-                {
-                    case eItemType.Image:
-                        data.ParentShape.UndoText();
-                        data.UndoText();
-                        data.SetItemType(eItemType.Table); 
-                        break;
-                    case eItemType.Text:
-                    case eItemType.None:
-                        data.ParentShape.SetTitle(data.ParentShape.Temp.Text);
-                        data.ParentShape.SetText(Guid.NewGuid().ToString());
-                        data.SetText(data.Temp.GenerateImageLineText(data.ParentShape.Temp));
-                        data.SetItemType(eItemType.Image); 
-                        break;
-                    case eItemType.Table:
-                    default:
-                        data.ParentShape.UndoText();
-                        data.UndoText();
-                        data.SetItemType(eItemType.Text);
-                        break;
-                }
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_DeleteRow_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Button btn = sender as Button;
-                if (btn == null) return;
-
-                vmItem data = btn.DataContext as vmItem;
-                if (data == null) return;
-
-                data.Delete();
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void rBtn_LineFilter_Check(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                RadioButton rBtn = sender as RadioButton;
-                if (rBtn == null) return;
-
-                bool isCodeValid = int.TryParse(rBtn.Uid, out int code);
-                if (!isCodeValid) code = 0;
-
-                this.ItemFilterCode = (eItemType)code;
-                BindItems();
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
         private void toggle_AllSelect_Checked(object sender, RoutedEventArgs e)
         {
             try
@@ -608,325 +895,18 @@ namespace MDM.Views.DataLabeling.Pages
             }
         }
 
-        private void btn_EditCompleted_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Button btn = sender as Button;
-                if (btn == null) return;
-
-                TextBox tb = btn.Tag as TextBox;
-                if (tb == null) return;
-
-                vmItem item = btn.DataContext as vmItem;
-                if (item == null) return;
-
-                item.SetText(tb.Text);
-
-                this.datagrid_Shapes.CommitEdit();
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_GoToUp_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                vmItem selectedItem = this.datagrid_Shapes.SelectedItem as vmItem;
-                if(selectedItem == null) return;    
-
-                var list = this.datagrid_Shapes.ItemsSource as ObservableCollection<vmItem>;
-                if (list == null) return;
-
-                int index = list.IndexOf(selectedItem);
-                if (index <= 0) return;
-
-                vmItem upperItem = list[index-1] as vmItem;
-                if (upperItem == null) return;
-
-                list.Move(index, index - 1);
-                selectedItem.SetRowIndex();
-                upperItem.SetRowIndex();
-
-                if (upperItem.IsHeader) selectedItem.SetParentItem(upperItem.ParentItem);
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_GoToDown_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                vmItem selectedItem = this.datagrid_Shapes.SelectedItem as vmItem;
-                if (selectedItem == null) return;
-
-                var list = this.datagrid_Shapes.ItemsSource as ObservableCollection<vmItem>;
-                if (list == null) return;
-
-                int index = list.IndexOf(selectedItem);
-                if (index +1 == list.Count) return;
-
-                vmItem downItem = list[index + 1] as vmItem;
-                if (downItem == null) return;
-
-                list.Move(index, index + 1);
-                selectedItem.SetRowIndex();
-                downItem.SetRowIndex();
-
-                if (downItem.IsHeader) selectedItem.SetParentItem(downItem);
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void Grid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            try
-            {
-                this.rBtn_AllItemn_Filter.IsChecked = true;
-                BindItems();
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_MergeShapes_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                vmItem selectedItem = this.datagrid_Shapes.SelectedItem as vmItem;
-                if(selectedItem == null) return;
-
-                vmShape parent = selectedItem.ParentShape;
-
-                var list = parent.Items.ToList();
-                int total =list.Count();
-                vmItem firstItem = list[0];
-                for (int i = 1; i < total; i++)
-                {
-                    vmItem cItem = list[i];
-                    firstItem.Merge(cItem);
-                    cItem.Delete();
-                }
-                firstItem.InitializeDisplay();
-
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_ImageDownload_Click(object sender, RoutedEventArgs e)
-        {
-            Bitmap originImage = null;
-            Bitmap croppedImage = null;
-            try
-            {
-                Button btn = sender as Button;
-                if (btn == null) return;
-
-                vmItem data = btn.DataContext as vmItem;
-                if (data == null) return;
-
-                mShape iShape = data.ParentShape.Temp;
-
-                Slide currentSlide = (Slide)this.Material.OriginPresentation.Application.ActiveWindow.View.Slide;
-
-                string tempDirPath = Path.Combine(this.Material.DirectoryPath, "Temp");
-                if(!Directory.Exists(tempDirPath)) Directory.CreateDirectory(tempDirPath);
-                string fullpath = Path.Combine(tempDirPath, string.Format("slide{0}", currentSlide.SlideIndex));
-                if (!File.Exists(fullpath))
-                {
-                    currentSlide.Export(fullpath, "png");
-                    if (File.Exists(fullpath))
-                    {
-                        string originPath = fullpath;
-                        fullpath = Path.Combine(tempDirPath, string.Format("slide{0}.png", currentSlide.SlideIndex));
-                        if (File.Exists(fullpath))
-                        {
-                            File.Delete(fullpath);
-                        }
-                        File.Move(originPath, fullpath);
-                    }
-                }
-                originImage = new Bitmap(fullpath);
-
-                #region 해상도 업
-
-                //float scaleFactor = 2.0f;
-
-                //int newWidth = (int)(originImage.Width * scaleFactor);
-                //int newHeight = (int)(originImage.Height * scaleFactor);
-
-                //Bitmap resizedImage = new Bitmap(originImage, newWidth, newHeight);
-                //using (Graphics g = Graphics.FromImage(resizedImage))
-                //{
-                //    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                //    g.DrawImage(originImage, 0, 0, newWidth, newHeight);
-                //}
-                //resizedImage.Save(fullpath+"2", ImageFormat.Png);
-
-                #endregion
-
-                // 슬라이드 크기 가져오기
-                float slideWidth = this.Material.OriginPresentation.PageSetup.SlideWidth;
-                float slideHeight = this.Material.OriginPresentation.PageSetup.SlideHeight;
-
-                // 크롭 속성 가져오기
-                float cropLeft = (iShape.Left * originImage.Width) / slideWidth;
-                float cropTop = (iShape.Top * originImage.Height) / slideHeight;
-                // 크롭된 이미지의 크기 계산
-                float croppedWidth = (iShape.Width * originImage.Width) / slideWidth;
-                float croppedHeight = (iShape.Height * originImage.Height) / slideHeight;
-
-                Rectangle cropArea = new Rectangle((int)cropLeft-5, (int)cropTop-5, (int)croppedWidth+5, (int)croppedHeight+5);
-                croppedImage = originImage.Clone(cropArea, originImage.PixelFormat);
-                string imagePath = Path.Combine(this.Material.DirectoryPath, data.Temp.Uid + Defines.EXTENSION_IMAGE);
-                if (File.Exists(imagePath))
-                {
-                    data.SetPreviewItem(true);
-                    File.Delete(imagePath);
-                }
-                croppedImage.Save(imagePath, ImageFormat.Png);
-                croppedImage.Dispose();
-                originImage.Dispose();
-                //File.Delete(fullpath);
-
-                data.OnImageFileExistChanged();
-                data.SetPreviewItem();
-            }
-            catch (Exception ee)
-            {
-                if (originImage != null) originImage.Dispose();
-                if (croppedImage != null) croppedImage.Dispose();
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_ImageLoad_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Button btn = sender as Button;
-                if (btn == null) return;
-
-                vmItem data = btn.DataContext as vmItem;    
-                if(data == null) return;
-
-                FileInfo fInfo = FileHelper.GetOpenFileInfo();
-                if (fInfo == null) return;
-
-                mShape iShape = data.ParentShape.Temp;
-                if(iShape == null) return;
-
-                string targetPath = Path.Combine(this.Material.DirectoryPath, iShape.Text + Defines.EXTENSION_IMAGE);
-                if (File.Exists(targetPath))
-                {
-                    try
-                    {
-                        data.SetPreviewItem(true);
-                        File.Delete(targetPath);
-                    }
-                    catch (Exception ee)
-                    {
-                        iShape.Text = Guid.NewGuid().ToString();
-                        targetPath = Path.Combine(this.Material.DirectoryPath, iShape.Text + Defines.EXTENSION_IMAGE);
-                        data.InitializeDisplay();
-                    }
-                    
-                }
-                File.Copy(fInfo.FullName, targetPath);
-                
-
-                data.OnImageFileExistChanged();
-                data.SetPreviewItem();
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_CompletedSaveNext_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                vmSlide current = this.Material.CurrentSlide;
-                if (current == null) return;
-
-                current.SetStatus(ePageStatus.Completed);
-                current.Save();
-                (this.Tag as ucDataLabeling).DataLabelingSlides.MoveNext();
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_ImagePaste_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                BitmapSource imgSource = Clipboard.GetImage();
-                if(imgSource == null) return;
-
-                Bitmap bitmap = ImageHelper.BitmapSourceToBitmap(imgSource);
-                if(bitmap == null) return;
-
-                Button btn = sender as Button;
-                if (btn == null) return;
-
-                vmItem data = btn.DataContext as vmItem;
-                if (data == null) return;
-
-                mShape iShape = data.ParentShape.Temp;
-                if (iShape == null) return;
-
-                string targetPath = Path.Combine(this.Material.DirectoryPath, iShape.Text + Defines.EXTENSION_IMAGE);
-                if (File.Exists(targetPath))
-                {
-                    try
-                    {
-                        data.SetPreviewItem(true);
-                        File.Delete(targetPath);
-                    }
-                    catch (Exception ee)
-                    {
-                        iShape.Text = Guid.NewGuid().ToString();
-                        targetPath = Path.Combine(this.Material.DirectoryPath, iShape.Text + Defines.EXTENSION_IMAGE);
-                        data.InitializeDisplay();
-                    }
-
-                }
-                bitmap.Save(targetPath, ImageFormat.Png);
 
 
-                data.OnImageFileExistChanged();
-                data.SetPreviewItem();
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-  
-        }
-
+        
+     
         private void btn_ReLoadOrigin_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                foreach (var item in this.Material.CurrentSlide.Shapes)
+                {
+
+                } 
 
             }
             catch (Exception ee)
@@ -934,7 +914,6 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
-
         private void btn_ReLoadDb_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -948,47 +927,84 @@ namespace MDM.Views.DataLabeling.Pages
             }
         }
 
-        private void btn_AllFold_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var headers = this.Material.CurrentSlide.Items.Where(x => x.IsHeader);
-                foreach (var item in headers)
-                {
-                    vmItem header = item as vmItem;
-                    if (header == null) return;
-
-                    header.IsFolded = true;
-                }
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_AllUnFold_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var headers = this.Material.CurrentSlide.Items.Where(x => x.IsHeader);
-                foreach (var item in headers)
-                {
-                    vmItem header = item as vmItem;
-                    if (header == null) return;
-
-                    header.IsFolded = false;
-                }
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
         private void btn_AddNEwShape_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                //#region 이전 코드
+                //List<Shape> shapes = new List<Shape>();
+                ////#region Slide Shape
+                ////foreach (Shape shape in this.Material.SelectedShapes.ToList())
+                ////{
+                ////    if (shape.Type == MsoShapeType.msoGroup)
+                ////    {
+                ////        shape.Ungroup();
+                ////        continue;
+                ////    }
 
+                ////    bool isAny = shapes.Where(x => x != null && x.Id == shape.Id).Any();
+                ////    if (!isAny) shapes.Add(shape);
+                ////}
+
+                //#endregion
+                //MessageBox.Show(shapes.Count.ToString(), "Add New Shape");
+
+                //List<mShape> shapeInstances = new List<mShape>();
+                //foreach (Shape shape in shapes)
+                //{
+                //    if (shape.HasTable == MsoTriState.msoTrue)
+                //    {
+                //        mShape newTable = PowerpointHelper.GetTableShape(shape);
+                //        shapeInstances.Add(newTable);
+                //    }
+                //    else if (shape.Type == MsoShapeType.msoPicture)
+                //    {
+                //        mShape newImage = PowerpointHelper.GetImageShpe(shape);
+                //        shapeInstances.Add(newImage);
+                //    }
+                //    else if (shape.Type == MsoShapeType.msoAutoShape)
+                //    {
+                //        if (shape.HasTextFrame == MsoTriState.msoTrue && shape.TextFrame.HasText == MsoTriState.msoTrue)
+                //        {
+                //            mShape newText = PowerpointHelper.GetTextShape(shape);
+                //            shapeInstances.Add(newText);
+                //        }
+                //        else
+                //        {
+                //            mShape newImage = PowerpointHelper.GetImageShpe(shape);
+                //            shapeInstances.Add(newImage);
+                //        }
+                //    }
+                //    else if (shape.HasTextFrame == MsoTriState.msoTrue && shape.TextFrame.HasText == MsoTriState.msoTrue)
+                //    {
+                //        mShape newText = PowerpointHelper.GetTextShape(shape);
+                //        shapeInstances.Add(newText);
+                //    }
+                //}
+                //shapeInstances = shapeInstances.OrderByOriginPoint();
+                //MessageBox.Show(shapeInstances.Count.ToString(), "Add New Shape");
+
+                //foreach (mShape shape in shapeInstances)
+                //{
+                //    vmShape newShape = new vmShape(shape);
+                //    newShape.ParentSlide = this.Material.CurrentSlide;
+                //    foreach (vmItem ln in newShape.Items) this.Material.CurrentSlide.Items.Add(ln);
+                //    this.Material.CurrentSlide.Shapes.Add(newShape);
+                //}
+                //#endregion
+
+
+
+                //Slide slide = this.Material.OriginPresentation.Slides.FindBySlideID(this.Material.CurrentSlide.Temp.Index);
+                //foreach (Shape item in slide.Shapes)
+                //{
+
+                //}
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
     }
 }

@@ -261,16 +261,6 @@ namespace MDM.Models.ViewModels
             this.OriginChildren.Add(child);
             OnPropertyChanged(nameof(this.Children));
         }
-        //public void Delete()
-        //{
-        //    this.ParentShape.Items.Remove(this);
-        //    this.ParentShape.Temp.Lines.Remove(this.Temp);
-        //    this.ParentShape.ParentSlide.Items.Remove(this);
-        //    this.ParentShape = null;
-
-        //    foreach (vmItem child in this.Children.ToList()) child.SetParentItem(this.ParentItem);
-        //    this.ParentItem = null;
-        //}
         public vmItem Duplicate()
         {
             mItem newItem = this.Origin.Copy<mItem>();
@@ -294,6 +284,14 @@ namespace MDM.Models.ViewModels
             TextBlock output = new TextBlock();
             output.Margin = new Thickness(5);
             output.Text = item.Temp.LineText;
+            output.FontSize = 10;
+            return output;
+        }
+        private UIElement GenerateTextCell(string tempValue)
+        {
+            TextBlock output = new TextBlock();
+            output.Margin = new Thickness(5);
+            output.Text = tempValue;
             output.FontSize = 10;
             return output;
         }
@@ -418,13 +416,134 @@ namespace MDM.Models.ViewModels
             //output.Children.Add(title);
             return output;
         }
+        private UIElement GenerateTableCell(string  tempValue)
+        {
+            StackPanel output = new StackPanel();
+            output.Margin = new Thickness(5);
+            output.HorizontalAlignment = HorizontalAlignment.Left;
+
+            string[] rows = Regex.Split(tempValue, @"[\v\r\n]");
+
+            Border boundary = new Border();
+            boundary.Background = Brushes.White;
+            boundary.BorderBrush = Brushes.LightGray;
+            boundary.BorderThickness = new Thickness(1, 1, 0, 0);
+
+            Grid table = new Grid();
+            boundary.Child = table;
+            for (int i = 0; i < rows.Count(); i++) table.RowDefinitions.Add(new RowDefinition());
+            for (int i = 0; i < rows[0].Split('|').Count(); i++) table.ColumnDefinitions.Add(new ColumnDefinition());
+
+            bool isHeader = true;
+            int rowHeaderCnt = 0;
+            for (int r = 0; r < rows.Count(); r++)
+            {
+
+                string value = rows[r].Trim();
+                if (value.Contains('+')) value = value.Replace("+", "|");
+
+                List<string> cells = value.Split('|').ToList();
+                if (cells.FirstOrDefault() == string.Empty) cells.RemoveAt(0);
+                if (cells.LastOrDefault() == string.Empty) cells.RemoveAt(cells.Count - 1);
+
+                #region Column HeaderRow Count
+                var distictList = cells.Distinct();
+                if (distictList.Count() == 1)
+                {
+                    string bar = distictList.First();
+                    bar = bar.Trim();
+
+                    int cnt = bar.Count(x => !x.Equals(' ') && !x.Equals('-'));
+                    if (cnt == 0)
+                    {
+                        value = rows[r].Trim();
+                        #region RowHeaderCount Column Count
+                        if (value.Contains('+'))
+                        {
+                            foreach (char c in value)
+                            {
+                                if (c.Equals('|')) rowHeaderCnt++;
+                                if (c.Equals('+'))
+                                {
+                                    value = value.Replace("+", "|");
+                                    break;
+                                }
+                            }
+                        }
+                        #endregion
+                        isHeader = false;
+                        continue;
+                    }
+                }
+                #endregion
+
+                for (int c = 0; c < cells.Count(); c++)
+                {
+                    Border border = new Border();
+                    border.Background = isHeader ? Brushes.Navy : c < rowHeaderCnt ? Brushes.LightGray : Brushes.White;
+                    border.BorderBrush = Brushes.LightGray;
+                    border.BorderThickness = new Thickness(0, 0, 1, 1);
+                    table.Children.Add(border);
+                    Grid.SetColumn(border, c);
+                    Grid.SetRow(border, r);
+
+                    string cellString = cells[c];
+
+                    Match match = IsImageMarkdown(cellString);
+                    if (match.Success)
+                    {
+                        string imagename = match.Groups[1].Value;
+                        string filename = match.Groups[2].Value;
+
+                        Image cellValue = new Image();
+                        if (this.ParentShape != null)
+                        {
+                            string dir = this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath;
+                            string filePath = Path.Combine(dir, filename + Defines.EXTENSION_IMAGE);
+                            if (File.Exists(filePath))
+                            {
+                                BitmapImage bitmap = new BitmapImage();
+                                bitmap.BeginInit();
+                                Uri url = new Uri(filePath, UriKind.Absolute);
+                                bitmap.UriSource = url; // 이미지 파일 경로
+                                bitmap.EndInit();
+                                cellValue.Source = bitmap;
+                            }
+                        }
+                        border.Child = cellValue;
+                    }
+                    else
+                    {
+                        TextBlock cellValue = new TextBlock();
+                        cellValue.Text = cellString;
+                        cellValue.Foreground = isHeader ? Brushes.White : Brushes.Black;
+                        cellValue.FontWeight = isHeader ? FontWeights.Bold : c < rowHeaderCnt ? FontWeights.Bold : FontWeights.Normal;
+                        cellValue.HorizontalAlignment = HorizontalAlignment.Center;
+                        cellValue.VerticalAlignment = VerticalAlignment.Center;
+                        cellValue.Margin = string.IsNullOrEmpty(cellValue.Text) ? new Thickness(0) : new Thickness(10);
+                        border.Child = cellValue;
+                    }
+                }
+            }
+
+            TextBlock title = new TextBlock();
+            title.Text = string.Format("<{0}>", this.Temp.Title);
+            title.FontWeight = FontWeights.Bold;
+            title.FontSize = 12;
+            title.HorizontalAlignment = HorizontalAlignment.Center;
+            title.Margin = new Thickness(0, 5, 0, 0);
+
+            output.Children.Add(title);
+            output.Children.Add(boundary);
+            return output;
+        }
         private UIElement GenerateImageCell(vmItem item)
         {
             StackPanel output = new StackPanel();
             output.Margin = new Thickness(5);
             output.HorizontalAlignment = HorizontalAlignment.Left;
 
-            string titleString = item.Temp.LineText;
+            string titleString = item.Temp.Title;
 
             Border image = new Border();
             if(this.ParentShape != null)
@@ -444,7 +563,83 @@ namespace MDM.Models.ViewModels
                     Image img = new Image();
                     img.Source = bitmap;
                     image.Child = img;
-                    titleString = iShape.Title;
+                }
+                else
+                {
+                    image.Width = image.Height = 200;
+                    image.Background = Brushes.LightGray;
+
+                    TextBlock noImage = new TextBlock();
+                    noImage.Text = "No Image";
+                    noImage.FontSize = 15;
+                    noImage.Foreground = Brushes.DimGray;
+                    noImage.HorizontalAlignment = HorizontalAlignment.Center;
+                    noImage.VerticalAlignment = VerticalAlignment.Center;
+                    image.Child = noImage;
+                }
+            }
+            else
+            {
+                image.Width = image.Height = 200;
+                image.Background = Brushes.LightGray;
+
+                TextBlock noImage = new TextBlock();
+                noImage.Text = "No Image";
+                noImage.FontSize = 15;
+                noImage.Foreground = Brushes.DimGray;
+                noImage.HorizontalAlignment = HorizontalAlignment.Center;
+                noImage.VerticalAlignment = VerticalAlignment.Center;
+                image.Child = noImage;
+            }
+
+            TextBlock title = new TextBlock();
+            title.Text = string.Format("<{0}>", titleString);
+            title.FontWeight = FontWeights.Bold;
+            title.FontSize = 12;
+            title.HorizontalAlignment = HorizontalAlignment.Center;
+            title.Margin = new Thickness(0, 5, 0, 0);
+
+
+            output.Children.Add(image);
+            output.Children.Add(title);
+            return output;
+        }
+        private UIElement GenerateImageCell(string tempValue)
+        {
+            StackPanel output = new StackPanel();
+            output.Margin = new Thickness(5);
+            output.HorizontalAlignment = HorizontalAlignment.Left;
+
+            string titleString = string.Empty;
+            string id = string.Empty;
+
+            string pattern = @"^!\[([^\]]+)\]\(([\w-]+)\.png\)";
+            Match mat =  Regex.Match(tempValue, pattern);
+            if (!mat.Success) return null;
+            
+            
+
+            titleString = mat.Groups[1].Value;
+            id = mat.Groups[2].Value;
+
+            Border image = new Border();
+            if (this.ParentShape != null)
+            {
+                mShape iShape = this.ParentShape.Temp;
+                if (this.IsImageFileExist && iShape != null)
+                {
+                    string dir = this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath;
+                    string filePath = Path.Combine(dir, this.Temp.Uid + Defines.EXTENSION_IMAGE);
+
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    Uri url = new Uri(filePath, UriKind.Absolute);
+                    bitmap.UriSource = url; // 이미지 파일 경로
+                    bitmap.EndInit();
+
+                    Image img = new Image();
+                    img.Source = bitmap;
+                    image.Child = img;
                 }
                 else
                 {
@@ -505,6 +700,39 @@ namespace MDM.Models.ViewModels
 
             return output;
         }
+        private UIElement GenerateHeaderCell(string tempValue)
+        {
+            StackPanel output = new StackPanel();
+            output.Margin = new Thickness(5);
+            output.Orientation = Orientation.Horizontal;
+
+            TextBlock mark = new TextBlock();
+            TextBlock header = new TextBlock();
+            mark.FontWeight = header.FontWeight = FontWeights.Bold;
+            mark.FontSize = header.FontSize = 30 - (3 * (this.Temp.Level - 1));
+
+            header.Margin = new Thickness(10, 0, 0, 0);
+            header.Text = tempValue;
+
+            output.Children.Add(mark);
+            output.Children.Add(header);
+
+            return output;
+        }
+        public string GetImageDirPath()
+        {
+            string output = string.Empty;
+            try
+            {
+                output = this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath;
+                if (Directory.Exists(output) == false) return string.Empty;
+            }
+            catch (Exception)
+            {
+                
+            }
+            return output;
+        }
         public void Hide()
         {
             this.RowVisibility = Visibility.Collapsed;
@@ -522,6 +750,7 @@ namespace MDM.Models.ViewModels
         {
             this.Display_Level = this.Temp.Level;
             this.Display_Text = this.Temp.LineText;
+            this.Display_Title = this.Temp.Title;
             this.Display_UpdateDate = this.Temp.UpdateDate.HasValue ? this.Temp.UpdateDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : null;
 
             this.ItemType = (eItemType)this.Temp.ItemType;
@@ -589,6 +818,12 @@ namespace MDM.Models.ViewModels
         public void SetTitle(string title)
         {
             this.Display_Title = this.Temp.Title = title;
+            SetImageText(this.Temp.Title, this.Temp.Uid);
+            SetPreviewItem();
+        }
+        public void SetImageText()
+        {
+            this.Display_Text = this.Temp.LineText = string.Format("![{0}]({1}{2})", this.Temp.Title, this.Temp.Uid, Defines.EXTENSION_IMAGE);
             SetPreviewItem();
         }
         public void SetImageText(string title, string text)
@@ -668,6 +903,32 @@ namespace MDM.Models.ViewModels
             }
             OnPropertyChanged(nameof(this.Display_PreviewItem_Slide));
         }
+        public void SetPreviewItem(string tempValue, bool isReset = false )
+        {
+            if (isReset)
+            {
+                this.Display_PreviewItem = null;
+                return;
+            }
+
+            switch (this.ItemType)
+            {
+                case eItemType.Header:
+                    this.Display_PreviewItem = GenerateHeaderCell(tempValue);
+                    break;
+                case eItemType.Image:
+                    this.Display_PreviewItem = GenerateImageCell(tempValue);
+
+                    break;
+                case eItemType.Table:
+                    this.Display_PreviewItem = GenerateTableCell(tempValue);
+                    break;
+                default:
+                    this.Display_PreviewItem = GenerateTextCell(tempValue);
+                    break;
+            }
+            OnPropertyChanged(nameof(this.Display_PreviewItem_Slide));
+        }
         public void Show()
         {
             this.RowVisibility = Visibility.Visible;
@@ -677,6 +938,7 @@ namespace MDM.Models.ViewModels
         {
             if (this.ParentShape != null) this.Origin.ParentShapeIdx = this.Temp.ParentShapeIdx = this.ParentShape.Temp.Idx;
             if (this.ParentItem != null) this.Origin.ParentItemUid = this.Temp.ParentItemUid = this.ParentItem.Temp.Uid;
+            this.Origin.Uid = this.Temp.Uid;
             this.Origin.Order = this.Temp.Order;
             this.Origin.ItemType = this.Temp.ItemType;
             this.Origin.Level = this.Temp.Level;

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MDM.Views.DataLabeling.Pages"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" Background="White">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -58,6 +58,7 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto" MinHeight="200" MaxHeight="300"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
@@ -232,161 +233,10 @@
                     </StackPanel>
                 </Border>
             </Border>
-
-            <Border Grid.Row="3" Uid="원본" Grid.Column="0" Style="{StaticResource subStyle_TitleCell_Border}" Margin="5,5,5,5">
+            <Border Grid.Row="3" Uid="상위 제목" Grid.Column="0" Style="{StaticResource subStyle_TitleCell_Border}">
                 <TextBlock Text="{Binding Uid, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Border}}" Style="{StaticResource subStyle_TitleCell_Textblock}"/>
             </Border>
             <Border Grid.Row="3" Grid.Column="1" Style="{StaticResource subStyle_ValueCell_Border}">
-                <Grid Margin="5">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition MinHeight="35" MaxHeight="100"/>
-                    </Grid.RowDefinitions>
-                    <Border Grid.Row="0" Background="{StaticResource color_Gray2}" BorderBrush="{StaticResource color_Gray3}" BorderThickness="1">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="Visibility" Value="Visible"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ItemTypeCode}" Value="222">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <Grid>
-                            <Grid.Resources>
-                                <Style TargetType="StackPanel">
-                                    <Setter Property="Orientation" Value="Horizontal"/>
-                                    <Setter Property="Margin" Value="3"/>
-                                </Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
-                                    <Setter Property="MinWidth" Value="{Binding Actualheight, RelativeSource={RelativeSource Mode=Self}}"/>
-                                    <Setter Property="Tag" Value="{Binding Tag, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=StackPanel}}"/>
-                                </Style>
-                            </Grid.Resources>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="auto"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Tag="{Binding ElementName=txtbox_OriginText}">
-                                <Button Content="한줄로" Click="btn_ConnectLine_Click"/>
-                                <Button Content="정렬" Click="btn_Align_Click"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Tag="{Binding ElementName=txtbox_OriginText}">
-                                <Button Content="클립보드" Click="btn_Clipboard_Click"/>
-                            </StackPanel>
-                        </Grid>
-                     
-                    </Border>
-                    <Border Grid.Row="1" BorderBrush="{StaticResource color_Gray3}" BorderThickness="1,0,1,1">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="Visibility" Value="Visible"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ItemTypeCode}" Value="222">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <TextBox Grid.Row="1" x:Name="txtbox_OriginText" Text="{Binding Display_Text}" VerticalContentAlignment="Center"  Margin="5,5,5,0"
-                                 TextChanged="txtbox_OriginText_TextChanged" LostFocus="txtbox_OriginText_LostFocus">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox">
-                                    <Setter Property="BorderBrush" Value="Transparent"/>
-                                    <Setter Property="BorderThickness" Value="0"/>
-                                    <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
-                                    <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
-                                    <Setter Property="AcceptsReturn" Value="True"/>
-                                    <Setter Property="AcceptsTab" Value="True"/>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
-                    </Border>
-                    <Border Grid.Row="1">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ItemTypeCode}" Value="222">
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <Grid Grid.Row="1">
-                            <Grid.Resources>
-                                <Style x:Key="subStyle_Title_Textblock" TargetType="TextBlock" >
-                                    <Setter Property="Foreground" Value="{StaticResource color_Black}"/>
-                                    <Setter Property="Margin" Value="5,5,10,5"/>
-                                    <Setter Property="HorizontalAlignment" Value="Left"/>
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="FontWeight" Value="Bold"/>
-                                </Style>
-                                <Style x:Key="subStyle_Value_Textblock" TargetType="TextBlock">
-                                    <Setter Property="HorizontalAlignment" Value="Left"/>
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                </Style>
-                            </Grid.Resources>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="35"/>
-                                <RowDefinition Height="35"/>
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="이미지 제목" Style="{StaticResource subStyle_Title_Textblock}"/>
-                            <Border Grid.Row="0" Grid.Column="1" Margin="5,3,5,3">
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Setter Property="BorderBrush" Value="{StaticResource color_Gray2}"/>
-                                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsMouseOver, ElementName= txtbox_ImageTitle}" Value="True">
-                                                <Setter Property="BorderBrush" Value="{StaticResource color_Gray4}"/>
-                                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsFocused, ElementName= txtbox_ImageTitle}" Value="True">
-                                                <Setter Property="BorderBrush" Value="{StaticResource color_DarkBlue}"/>
-                                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBox Grid.Row="0" Grid.Column="0" x:Name="txtbox_ImageTitle" Text="{Binding Display_Title, Mode=OneWay}" 
-                                             TextChanged="txtbox_ImageTitle_TextChanged" LostFocus="txtbox_ImageTitle_LostFocus">
-                                        <TextBox.Style>
-                                            <Style TargetType="TextBox">
-                                                <Setter Property="Background" Value="White"/>
-                                                <Setter Property="Margin" Value="5,5,5,3"/>
-                                                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                                <Setter Property="BorderBrush" Value="Transparent"/>
-                                                <Setter Property="BorderThickness" Value="0"/>
-                                            </Style>
-                                        </TextBox.Style>
-                                    </TextBox>
-                                    <!--<Button Grid.Column="1" Content="수정" Style="{StaticResource baseStyle_Common_Button}" Margin="3,4,3,4" Width="30" FontSize="9" Click="btn_ImageTitleEdit_Click"/>-->
-                                </Grid>
-                            </Border>
-                            
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="파일명" Style="{StaticResource subStyle_Title_Textblock}"/>
-                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ParentShape.Display_Text}" Style="{StaticResource subStyle_Value_Textblock}" Margin="10,0,5,0"/>
-                        </Grid>
-                    </Border>
-                </Grid>
-            </Border>
-            
-            <Border Grid.Row="4" Uid="상위 제목" Grid.Column="0" Style="{StaticResource subStyle_TitleCell_Border}">
-                <TextBlock Text="{Binding Uid, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Border}}" Style="{StaticResource subStyle_TitleCell_Textblock}"/>
-            </Border>
-            <Border Grid.Row="4" Grid.Column="1" Style="{StaticResource subStyle_ValueCell_Border}">
                 <StackPanel x:Name="stackpanel_Headers" Margin="5">
                     <StackPanel.Resources>
                         <Style TargetType="TextBlock" BasedOn="{StaticResource subStyle_ValueCell_Textblock}">
@@ -397,12 +247,64 @@
                 </StackPanel>
             </Border>
 
-            <Border Grid.Row="5" Uid="미리보기" Grid.Column="0" Style="{StaticResource subStyle_TitleCell_Border}" VerticalAlignment="Center">
+            
+            <Border Grid.Row="4" Uid="원본" Grid.Column="0" Style="{StaticResource subStyle_TitleCell_Border}" VerticalAlignment="Center">
                 <TextBlock Text="{Binding Uid, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Border}}" Style="{StaticResource subStyle_TitleCell_Textblock}"/>
             </Border>
-            <Border Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="20" Style="{StaticResource subStyle_ValueCell_Border}" MinHeight="35" VerticalAlignment="Stretch" BorderThickness="1" Margin="15,-5,15,10">
+            <Border Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="10" Style="{StaticResource subStyle_ValueCell_Border}" Margin="15,-5,15,10">
+                <Grid>
+                    <Border>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ItemTypeCode}" Value="222">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <local:ucDataLabelingPreviewItemText/>
+                    </Border>
+                    <Border >
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ItemTypeCode}" Value="222">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <local:ucDataLabelingPreviewItemImage/>
+                    </Border>
+                    <Border >
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ItemTypeCode}" Value="223">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <local:ucDataLabelingPreviewItemTable/>
+                    </Border>
+                </Grid>
+        
+ 
+            </Border>
+
+            <Border Grid.Row="6" Uid="미리보기" Grid.Column="0" Style="{StaticResource subStyle_TitleCell_Border}" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Uid, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Border}}" Style="{StaticResource subStyle_TitleCell_Textblock}"/>
+            </Border>
+            <Border Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="20" Style="{StaticResource subStyle_ValueCell_Border}" MinHeight="35" VerticalAlignment="Stretch" BorderThickness="1" Margin="15,-5,15,10">
                 <ScrollViewer Style="{StaticResource baseStyle_Common_ScrollViewer}">
-                    <ContentPresenter Content="{Binding Display_PreviewItem}" VerticalAlignment="Center" Margin="10"/>
+                    <ContentPresenter Content="{Binding Display_PreviewItem}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10"/>
                 </ScrollViewer>
             </Border>
         </Grid>

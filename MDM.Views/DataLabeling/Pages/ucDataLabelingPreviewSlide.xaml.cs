@@ -25,6 +25,7 @@ namespace MDM.Views.DataLabeling.Pages
     /// </summary>
     public partial class ucDataLabelingPreviewSlide : UserControl
     {
+        public Border BottomPanel => this.border_BottomPanel;
 
 
         public ucDataLabelingPreviewSlide()

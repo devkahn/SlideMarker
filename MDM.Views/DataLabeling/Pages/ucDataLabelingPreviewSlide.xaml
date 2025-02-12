@@ -70,7 +70,7 @@
         </ListBox>
 
         
-        <Border Grid.Row="1" Style="{StaticResource baseStyle_BottomSubPanel_Border}">
+        <Border Grid.Row="1" x:Name="border_BottomPanel" Style="{StaticResource baseStyle_BottomSubPanel_Border}">
             <Grid >
                 <Grid.Resources>
                     <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}"/>
