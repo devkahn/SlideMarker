@@ -39,7 +39,7 @@
                     <Button Content="SAVE" IsEnabled="False"  />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
-                    <Button Content="EXPORT" IsEnabled="False"/>
+                    <Button Content="EXPORT to XML" IsEnabled="True" Click="btn_ExportXml_Click"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,10,15,5">

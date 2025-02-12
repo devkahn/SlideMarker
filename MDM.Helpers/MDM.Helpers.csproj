@@ -98,6 +98,7 @@
     <Compile Include="DBHelper.cs" />
     <Compile Include="EnumHelpers.cs" />
     <Compile Include="ErrorHelper.cs" />
+    <Compile Include="XMLHelper.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="ImageHelper.cs" />
     <Compile Include="JsonHelper.cs" />
