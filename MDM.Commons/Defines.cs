@@ -9,7 +9,7 @@ namespace MDM.Commons
     public static class Defines
     {
 
-        public static string NAME_DIRECTORY_PROGRAM = "ManualDataManager";
+        public static string NAME_DIRECTORY_PROGRAM = "SlideMarker";
         public static string PATH_DIRECOTRY_DLENC = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DLENC");
         public static string PATH_DIRECOTRY_PROGRMA = Path.Combine(PATH_DIRECOTRY_DLENC, NAME_DIRECTORY_PROGRAM);
         public static string PATH_DIRECOTRY_ERROR_LOG = Path.Combine(PATH_DIRECOTRY_PROGRMA, "ERROR LOG");

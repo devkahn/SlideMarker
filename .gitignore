@@ -23,3 +23,5 @@
 /MarkChecker_Visual_Module/obj/Debug
 /SheetConverter/bin/Debug
 /SheetConverter/obj/Debug
+/Release/buildFilesSlideMarker
+*.zip

@@ -2,8 +2,8 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_COMPANY_NAME "DLENC"
-!define PRODUCT_NAME "ManualDataManager"
-!define PRODUCT_VERSION "0.9.0"
+!define PRODUCT_NAME "SlideMarker"
+!define PRODUCT_VERSION "0.9.6"
 !define PRODUCT_PUBLISHER "DL E&C"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_COMPANY_NAME}_${PRODUCT_NAME}"
 !define PRODUCT_UNINST_CranePlanner_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_COMPANY_NAME}_${PRODUCT_NAME}"
@@ -77,6 +77,21 @@ Section "MainSection" SEC01
 
  
 SectionEnd ; -AdditionalIcons
+
+
+Section "Copy Resources to Documents"
+
+
+  StrCpy $0 $INSTDIR\Resources
+  
+
+  StrCpy $1 $DOCUMENTS\DLENC\SlideMarker\Resources
+
+
+  CreateDirectory $1
+  CopyFiles /SILENT $0\* $1
+
+SectionEnd
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

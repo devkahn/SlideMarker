@@ -945,6 +945,7 @@ namespace MDM.Models.ViewModels
             this.Origin.LineText = this.Temp.LineText;
             this.Origin.UpdateDate = this.Temp.UpdateDate;
             this.Origin.UpdateDate = this.Temp.UpdateDate = this.Origin.UpdateDate.HasValue ? DateTime.Now : this.Origin.CreateDate;
+            this.Origin.Order = this.Temp.Order = this.RowIndex;
 
             return this.Origin;
         }

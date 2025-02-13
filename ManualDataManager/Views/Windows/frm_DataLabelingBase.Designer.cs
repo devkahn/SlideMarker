@@ -55,7 +55,7 @@
             this.MinimumSize = new System.Drawing.Size(1200, 800);
             this.Name = "frm_DataLabelingBase";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Data Labeling_v250206";
+            this.Text = "Data Labeling";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frm_DataLabeling_Closing);
             this.ResumeLayout(false);

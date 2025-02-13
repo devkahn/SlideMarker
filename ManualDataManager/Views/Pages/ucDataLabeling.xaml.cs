@@ -60,7 +60,7 @@ namespace ManualDataManager.Views.Pages
 
         private RegistryKey GetVersionRegistryKey()
         {
-            string[] SubKeys = { "SOFTWARE", "Microsoft", "Office", "Powerpoint", "Addins", "ManualDataManager" };
+            string[] SubKeys = { "SOFTWARE", "Microsoft", "Office", "Powerpoint", "Addins", "SlideMarker" };
             RegistryKey reg = Registry.CurrentUser;
             foreach (string key in SubKeys) reg = reg.GetSubKeyNames().Contains(key) ? reg.OpenSubKey(key, true) : reg.CreateSubKey(key, true);
 

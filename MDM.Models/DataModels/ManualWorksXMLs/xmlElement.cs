@@ -72,7 +72,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
 
 
         [xmlElementType(eXMLElementType.Image)]
-        [xmlElementType(eXMLElementType.Table)]
+        //[xmlElementType(eXMLElementType.Table)]
         [JsonProperty("omit_caption")]
         [Description("제목 생략")]
         public bool OmitCaption { get; set; } = false;

@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 using MDM.Commons.Enum;
 using MDM.Helpers;
 using MDM.Models.DataModels;
-using MDM.Models.DataModels.ManualWorksXMLs;
+//using MDM.Models.DataModels.ManualWorksXMLs;
 using MDM.Models.ViewModels;
 using OfficeOpenXml;
 
@@ -302,15 +302,15 @@ namespace MDM.Views.MarkChecker.Pages
         {
             try
             {
-                xmlBook book = new xmlBook();
-                book.Id = XMLHelper.GenerateUUId(8);
-                book.Title = this.Material.Temp.Name;
-                book.CreateDate = DateTime.Now;
-                book.Type = eXMLBookType.BOOK;
-                book.Locale = eXMLLocale.ko;
-                book.Edition = "수행지침";
-                book.Tags.Append("수행지침");
-                book.Tags.Append(this.Material.Temp.Name);
+                //xmlBook book = new xmlBook();
+                //book.Id = XMLHelper.GenerateUUId(8);
+                //book.Title = this.Material.Temp.Name;
+                //book.CreateDate = DateTime.Now;
+                //book.Type = eXMLBookType.BOOK;
+                //book.Locale = eXMLLocale.ko;
+                //book.Edition = "수행지침";
+                //book.Tags.Append("수행지침");
+                //book.Tags.Append(this.Material.Temp.Name);
 
                 
             }

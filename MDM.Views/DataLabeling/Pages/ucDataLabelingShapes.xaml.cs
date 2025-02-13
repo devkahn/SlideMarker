@@ -59,7 +59,7 @@ namespace MDM.Views.DataLabeling.Pages
             if (this.Material.CurrentSlide == null) return;
             if (this.datagrid_Shapes == null) return;
 
-            var items = this.Material.CurrentSlide.Items;
+            var items = this.Material.CurrentSlide.Items;//.OrderBy(x => x.Temp.Order).ToList(
 
             switch (this.ItemFilterCode)
             {

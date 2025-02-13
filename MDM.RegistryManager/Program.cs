@@ -14,7 +14,7 @@ namespace MDM.RegistryManager
         const string Manifest = "Manifest";
         const string Comapany = "DL E&C";
         const string Developer = "devKahn";
-        const string name = "ManualDataManager";
+        const string name = "SlideMarker";
         static string[] SubKeys = { "Software", "Microsoft", "Office", "Powerpoint", "Addins" };
 
         static void Main(string[] args)
