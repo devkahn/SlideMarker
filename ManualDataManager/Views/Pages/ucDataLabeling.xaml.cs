@@ -220,7 +220,7 @@ namespace ManualDataManager.Views.Pages
                     sl.Origin = slide;
 
                     vmSlide newSlide = new vmSlide(sl);
-                    newVm.AddSlide(newSlide);
+                    newSlide.SetParentMaterial(newVm);
                     newSlide.OnModifyStatusChanged(true);
                 }
 

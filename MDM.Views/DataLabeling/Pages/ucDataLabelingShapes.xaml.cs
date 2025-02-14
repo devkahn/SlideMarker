@@ -61,28 +61,25 @@ namespace MDM.Views.DataLabeling.Pages
 
             var items = this.Material.CurrentSlide.Items;//.OrderBy(x => x.Temp.Order).ToList(
 
-            switch (this.ItemFilterCode)
+            ObservableCollection<vmItem> output = new ObservableCollection<vmItem>();
+            foreach (vmItem item in items)
             {
-                case eItemType.Content:
-                    items = new ObservableCollection<vmItem>(items.Where(x => x.ItemTypeCode % 220 < 10));
-                    break;
-                case eItemType.Text:
-                    items = new ObservableCollection<vmItem>(items.Where(x => x.ItemType == this.ItemFilterCode || x.ItemType == eItemType.None));
-                    break;
-                case eItemType.Header:
-                case eItemType.Image:
-                case eItemType.Table:
-                    items = new ObservableCollection<vmItem>(items.Where(x => x.ItemType == this.ItemFilterCode));
-                    break;
-                case eItemType.None:
-                case eItemType.All:
-                default:
-                    break;
+                switch (this.ItemFilterCode)
+                {
+                    case eItemType.Content: if (item.ItemTypeCode % 220 < 10) output.Add(item); continue;
+                    case eItemType.Text: if (item.ItemType == this.ItemFilterCode || item.ItemType == eItemType.None) output.Add(item); continue;
+                    case eItemType.Header:
+                    case eItemType.Image:
+                    case eItemType.Table:
+                        if (item.ItemType == this.ItemFilterCode) output.Add(item); continue;
+                    case eItemType.None:
+                    case eItemType.All:
+                    default: break;
+                }
             }
 
-
             this.datagrid_Shapes.ItemsSource = null;
-            this.datagrid_Shapes.ItemsSource = items;
+            this.datagrid_Shapes.ItemsSource = output;
             this.datagrid_Shapes.SelectedIndex = 0;
         }
 
@@ -98,17 +95,17 @@ namespace MDM.Views.DataLabeling.Pages
                 if (data == null) return;
 
                 if (data.Temp.Level == 1) return;
-                if (data.ParentItem == null) return;
+                if (data.Parent == null) return;
 
 
-                vmItem parent = data.ParentItem;
+                vmItem parent = data.Parent;
                 if (parent != null)
                 {
-                    parent = parent.ParentItem;
+                    parent = parent.Parent;
                 }
 
                 data.SetLevel(false);
-                data.SetParentItem(parent);
+                data.SetParent(parent);
             }
             catch (Exception ee)
             {
@@ -127,7 +124,7 @@ namespace MDM.Views.DataLabeling.Pages
 
                 if (data.Temp.Level == 10) return;
 
-                vmItem parent = data.ParentItem;
+                vmItem parent = data.Parent;
                 if (parent != null)
                 {
                     var sameLevels = parent.Children.Where(x => x != data && x.IsHeader && x.Temp.Level == data.Temp.Level);
@@ -139,7 +136,7 @@ namespace MDM.Views.DataLabeling.Pages
                 }
 
                 data.SetLevel(true);
-                data.SetParentItem(parent);
+                data.SetParent(parent);
             }
             catch (Exception ee)
             {
@@ -200,7 +197,7 @@ namespace MDM.Views.DataLabeling.Pages
                             vmItem imageItem = images.First();
 
                             imageItem.SetTitle(textItem.Temp.LineText);
-                            imageItem.SetImageText(imageItem.Temp.Title, imageItem.ParentShape.Temp.Text);
+                            imageItem.SetImageText(imageItem.Temp.Title, imageItem.Shape.Temp.Text);
                             textItem.Delete();
                         }
                     }
@@ -271,14 +268,15 @@ namespace MDM.Views.DataLabeling.Pages
                 int index = 0;
                 if (lastItem != null) index = this.Material.CurrentSlide.Items.IndexOf(lastItem) + 1;
 
-                mItem newItem = new mItem();
-                vmItem newVM = new vmItem(newItem);
-                newVM.SetParentItem(lastItem.IsHeader ? lastItem : lastItem.ParentItem, false);
-                this.Material.CurrentSlide.Items.Insert(index, newVM);
+                mItem item = new mItem();
+                vmItem newItem = new vmItem(item);
+                newItem.SetParent(lastItem.IsHeader ? lastItem : lastItem.Parent, false);
+                newItem.SetParentSlide(this.Material.CurrentSlide, index);
+                
 
-                if (lastItem != null && selectedItems.Count() > 0) newVM.SetParent(lastItem.ParentShape);
+                if (lastItem != null && selectedItems.Count() > 0) newItem.SetParentShape(lastItem.Shape);
 
-                this.datagrid_Shapes.SelectedItem = newVM;
+                this.datagrid_Shapes.SelectedItem = newItem;
                 this.datagrid_Shapes.ScrollIntoView(this.datagrid_Shapes.SelectedItem);
                 var scrollViewer = ControlHelper.FindVisualChild<ScrollViewer>(this.datagrid_Shapes);
             }
@@ -326,7 +324,7 @@ namespace MDM.Views.DataLabeling.Pages
                         {
                             vmItem newItem = current.Duplicate();
                             newItem.SetText(lines[i]);
-                            newItem.SetParentItem(current.ParentItem);
+                            newItem.SetParent(current.Parent);
 
                             current = i + 1 == cnt ? null : newItem;
                         }
@@ -368,7 +366,7 @@ namespace MDM.Views.DataLabeling.Pages
                     currentItem.SetText(preText);
                     vmItem nextItem = currentItem.Duplicate();
                     nextItem.SetText(nextText);
-                    nextItem.SetParentItem(currentItem.ParentItem);
+                    nextItem.SetParent(currentItem.Parent);
                 }
 
                 this.datagrid_Shapes.CommitEdit();
@@ -391,20 +389,20 @@ namespace MDM.Views.DataLabeling.Pages
                 switch (data.ItemType)
                 {
                     case eItemType.Image:
-                        data.ParentShape.UndoText();
+                        data.Shape.UndoText();
                         data.UndoText();
                         data.SetItemType(eItemType.Table);
                         break;
                     case eItemType.Text:
                     case eItemType.None:
-                        data.ParentShape.SetTitle(data.ParentShape.Temp.Text);
-                        data.ParentShape.SetText(Guid.NewGuid().ToString());
-                        data.SetText(data.Temp.GenerateImageLineText(data.ParentShape.Temp));
+                        data.Shape.SetTitle(data.Shape.Temp.Text);
+                        data.Shape.SetText(Guid.NewGuid().ToString());
+                        data.SetText(data.Temp.GenerateImageLineText(data.Shape.Temp));
                         data.SetItemType(eItemType.Image);
                         break;
                     case eItemType.Table:
                     default:
-                        data.ParentShape.UndoText();
+                        data.Shape.UndoText();
                         data.UndoText();
                         data.SetItemType(eItemType.Text);
                         break;
@@ -505,7 +503,7 @@ namespace MDM.Views.DataLabeling.Pages
                 selectedItem.SetRowIndex();
                 upperItem.SetRowIndex();
 
-                if (upperItem.IsHeader) selectedItem.SetParentItem(upperItem.ParentItem);
+                if (upperItem.IsHeader) selectedItem.SetParent(upperItem.Parent);
             }
             catch (Exception ee)
             {
@@ -532,7 +530,7 @@ namespace MDM.Views.DataLabeling.Pages
                 selectedItem.SetRowIndex();
                 downItem.SetRowIndex();
 
-                if (downItem.IsHeader) selectedItem.SetParentItem(downItem);
+                if (downItem.IsHeader) selectedItem.SetParent(downItem);
             }
             catch (Exception ee)
             {
@@ -546,7 +544,7 @@ namespace MDM.Views.DataLabeling.Pages
                 vmItem selectedItem = this.datagrid_Shapes.SelectedItem as vmItem;
                 if (selectedItem == null) return;
 
-                vmShape parent = selectedItem.ParentShape;
+                vmShape parent = selectedItem.Shape;
 
                 var list = parent.Items.ToList();
                 int total = list.Count();
@@ -577,7 +575,7 @@ namespace MDM.Views.DataLabeling.Pages
                 vmItem data = btn.DataContext as vmItem;
                 if (data == null) return;
 
-                mShape iShape = data.ParentShape.Temp;
+              //  mShape iShape = data.ParentShape.Temp;
 
                 Slide currentSlide = (Slide)this.Material.OriginPresentation.Application.ActiveWindow.View.Slide;
 
@@ -621,12 +619,13 @@ namespace MDM.Views.DataLabeling.Pages
                 float slideWidth = this.Material.OriginPresentation.PageSetup.SlideWidth;
                 float slideHeight = this.Material.OriginPresentation.PageSetup.SlideHeight;
 
+                mShape imageShape = data.Shape.Temp;
                 // 크롭 속성 가져오기
-                float cropLeft = (iShape.Left * originImage.Width) / slideWidth;
-                float cropTop = (iShape.Top * originImage.Height) / slideHeight;
+                float cropLeft = (imageShape.Left * originImage.Width) / slideWidth;
+                float cropTop = (imageShape.Top * originImage.Height) / slideHeight;
                 // 크롭된 이미지의 크기 계산
-                float croppedWidth = (iShape.Width * originImage.Width) / slideWidth;
-                float croppedHeight = (iShape.Height * originImage.Height) / slideHeight;
+                float croppedWidth = (imageShape.Width * originImage.Width) / slideWidth;
+                float croppedHeight = (imageShape.Height * originImage.Height) / slideHeight;
 
                 Rectangle cropArea = new Rectangle((int)cropLeft - 5, (int)cropTop - 5, (int)croppedWidth + 5, (int)croppedHeight + 5);
                 croppedImage = originImage.Clone(cropArea, originImage.PixelFormat);
@@ -720,13 +719,13 @@ namespace MDM.Views.DataLabeling.Pages
                     if (item == null) continue;
                     item.IsSelected = true;
 
-                    if (item.ParentShape == null) return;
+                    if (item.Shape == null) return;
                     if (this.Material.OriginPresentation != null)
                     {
                         Slide currentSlide = (Slide)this.Material.OriginPresentation.Application.ActiveWindow.View.Slide;
                         foreach (Shape sh in currentSlide.Shapes)
                         {
-                            if (sh.Id == item.ParentShape.Temp.ShapeId) sh.Select();
+                            if (sh.Id == item.Shape.Temp.ShapeId) sh.Select();
                         }
                     }
                     
@@ -833,7 +832,7 @@ namespace MDM.Views.DataLabeling.Pages
                 
                 var overItems = items.Where(x => items.IndexOf(x) < index && x.ItemType == eItemType.Header);
                 vmItem lastHeader = overItems.Where(x => x.Temp.Level + 1 == data.Temp.Level).LastOrDefault();
-                data.SetParentItem(lastHeader);
+                data.SetParent(lastHeader);
                 
 
                 var underItems = items.Where(x => index < items.IndexOf(x));
@@ -843,7 +842,7 @@ namespace MDM.Views.DataLabeling.Pages
                     {
                         if(underItem.ItemType != eItemType.Header)
                         {
-                            underItem.SetParentItem(data);
+                            underItem.SetParent(data);
                         }
                         else
                         {
@@ -853,7 +852,7 @@ namespace MDM.Views.DataLabeling.Pages
                 }
                 else
                 {
-                    foreach (vmItem underItem in underItems) underItem.SetParentItem(data.ParentItem);
+                    foreach (vmItem underItem in underItems) underItem.SetParent(data.Parent);
                 }
             }
             catch (Exception ee)
@@ -918,7 +917,7 @@ namespace MDM.Views.DataLabeling.Pages
         {
             try
             {
-                this.Material.CurrentSlide.Shapes.Clear();
+                this.Material.CurrentSlide.ClearShapes();
                 this.Material.CurrentSlide.LoadChildren();
             }
             catch (Exception ee)

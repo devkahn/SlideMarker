@@ -16,6 +16,8 @@ namespace MDM.Models.ViewModels
 
         private object _Display_Name = null;
         private object _Display_Update = null;
+
+
     }
     public partial class vmMaterial : vmViewModelbase
     {
@@ -43,10 +45,17 @@ namespace MDM.Models.ViewModels
         public string DirectoryPath { get; set; } = string.Empty;
         public Presentation OriginPresentation { get; private set; } = null;
         public List<Shape> SelectedShapes { get; set; } = new List<Shape>();
-
-
         private ObservableCollection<vmSlide> OriginSlides { get; set; }
+        private ObservableCollection<vmContent> OriginContents { get; set; }
+        private ObservableCollection<vmHeading> OriginHeadings { get; set; }
+        
+        
+        
+
         public ReadOnlyObservableCollection<vmSlide> Slides => new ReadOnlyObservableCollection<vmSlide>(this.OriginSlides);
+        public ReadOnlyObservableCollection<vmHeading> Headings => new ReadOnlyObservableCollection<vmHeading>(this.OriginHeadings);
+        public ReadOnlyObservableCollection<vmContent> Contents => new ReadOnlyObservableCollection<vmContent>(this.OriginContents);
+
         public vmSlide CurrentSlide
         {
             get => _CurrentSlide;
@@ -56,9 +65,6 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(CurrentSlide));
             }
         }
-
-        private ObservableCollection<vmContent> OriginContents { get; set; }
-        public ReadOnlyObservableCollection<vmContent> Contents => new ReadOnlyObservableCollection<vmContent>(this.OriginContents);
         public vmContent CurrentContent
         {
             get => _CurrentContent;
@@ -68,11 +74,6 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(CurrentContent));
             }
         }
-        
-
-        private ObservableCollection<vmHeading> OriginHeadings { get; set; }
-        public ReadOnlyObservableCollection<vmHeading> Headings => new ReadOnlyObservableCollection<vmHeading>(this.OriginHeadings);
-
 
         public object Display_Name
         {
@@ -95,25 +96,19 @@ namespace MDM.Models.ViewModels
     }
     public partial class vmMaterial
     {
-      public void SelectShape(Shape shape)
+        internal void AddSlide(vmSlide slide)
         {
-            if (this.SelectedShapes.Contains(shape)) return;
-            this.SelectedShapes.Add(shape);
-        }
-
-        public void AddSlide(vmSlide slide)
-        {
-            slide.SetParentMaterial(this);
+            if (this.OriginSlides.Contains(slide)) return;
             this.OriginSlides.Add(slide);
         }
-        public void AddContent(vmContent content)
+        internal void AddContent(vmContent content)
         {
-            content.SetParentMaterial(this);
+            if(this.OriginContents.Contains(content)) return;
             this.OriginContents.Add(content);
         }
-        public void AddHeading(vmHeading heading)
+        internal void AddHeading(vmHeading heading)
         {
-            heading.SetParentMaterial(this);
+            if(this.OriginHeadings.Contains(heading)) return;   
             this.OriginHeadings.Add(heading);
         }
         public void ClearSlides() => this.OriginSlides.Clear();
@@ -132,7 +127,22 @@ namespace MDM.Models.ViewModels
         {
             OnPropertyChanged(nameof(Slides));
         }
-        public void RemoveSlide(vmSlide slide) => this.OriginSlides.Remove(slide);
+        internal void RemoveSlide(vmSlide slide)
+        {
+            if (!this.OriginSlides.Contains(slide)) return;
+            this.OriginSlides.Remove(slide);
+        }
+        internal void RemoveContent(vmContent content)
+        {
+            if (!this.OriginContents.Contains(content)) return;
+            this.OriginContents.Remove(content);
+        }
+        internal void RemoveHeading(vmHeading heading)
+        {
+            if (!this.OriginHeadings.Contains(heading)) return;
+            this.OriginHeadings.Remove(heading);
+        }
+        
         public override void SetInitialData()
         {
             //this.SelectedShapes = { };
@@ -144,8 +154,15 @@ namespace MDM.Models.ViewModels
 
             this.OriginHeadings = new ObservableCollection<vmHeading>();
         }
-        public void SetPresentation(Presentation ppt) => this.OriginPresentation = ppt; 
-
+        public void SetPresentation(Presentation ppt)
+        {
+            this.OriginPresentation = ppt;
+        }
+        public void SelectShape(Shape shape)
+        {
+            if (this.SelectedShapes.Contains(shape)) return;
+            this.SelectedShapes.Add(shape);
+        }
         public override object UpdateOriginData()
         {
             this.Origin.ParentUid = this.Temp.ParentUid;
@@ -154,6 +171,5 @@ namespace MDM.Models.ViewModels
 
             return this.Origin;
         }
-      
     }
 }

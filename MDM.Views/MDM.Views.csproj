@@ -142,8 +142,11 @@
     <Compile Include="ExcelToDatabase\Pages\ucExcelToDatabaseMain.xaml.cs">
       <DependentUpon>ucExcelToDatabaseMain.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MarkChecker\Pages\ucMarkCheckerContensByHeading.xaml.cs">
-      <DependentUpon>ucMarkCheckerContensByHeading.xaml</DependentUpon>
+    <Compile Include="MarkChecker\Pages\ucMarkCheckerHeader.xaml.cs">
+      <DependentUpon>ucMarkCheckerHeader.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\ucMarkCheckerHeaderModifyAll.xaml.cs">
+      <DependentUpon>ucMarkCheckerHeaderModifyAll.xaml</DependentUpon>
     </Compile>
     <Compile Include="MarkChecker\Pages\ucMarkCheckerMain.xaml.cs">
       <DependentUpon>ucMarkCheckerMain.xaml</DependentUpon>
@@ -250,7 +253,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MarkChecker\Pages\ucMarkCheckerContensByHeading.xaml">
+    <Page Include="MarkChecker\Pages\ucMarkCheckerHeader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\ucMarkCheckerHeaderModifyAll.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

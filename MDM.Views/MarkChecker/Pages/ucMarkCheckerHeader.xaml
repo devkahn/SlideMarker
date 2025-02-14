@@ -1,0 +1,196 @@
+﻿<UserControl x:Class="MDM.Views.MarkChecker.Pages.ucMarkCheckerContensByHeading"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MDM.Views.MarkChecker.Pages"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" Background="white">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Resources/Styles/resMDMColors.xaml"/>
+                <ResourceDictionary Source="../../Resources/Styles/resMDMStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Background="{StaticResource color_Gray1}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="300" Width="auto" MaxWidth="1000"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*" MinWidth="200"/>
+            <ColumnDefinition MinWidth="40" Width="auto" MaxWidth="500"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition/>
+                <RowDefinition MinHeight="30" Height="auto"/>
+            </Grid.RowDefinitions>
+
+
+            <Border Grid.Row="0" Background="{StaticResource color_Primary}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Context"  Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="10,0,5,0"/>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="1" Background="{StaticResource color_White}">
+                <TreeView Grid.Row="1" Grid.Column="0" x:Name="treeview_Header"  SelectedItemChanged="treeview_Header_SelectedItemChanged">
+                    <TreeView.Style>
+                        <Style TargetType="TreeView">
+                            <Setter Property="Background" Value="White"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Margin" Value="5"/>
+                        </Style>
+                    </TreeView.Style>
+                    <TreeView.Resources>
+                        <Style TargetType="TreeViewItem">
+                            <Setter Property="IsExpanded" Value="True"/>
+                        </Style>
+                    </TreeView.Resources>
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children}" >
+                            <Border MinHeight="25">
+                                <Grid>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Display_Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <StackPanel.Style>
+                                                <Style TargetType="StackPanel">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Children.Count}" Value="0">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </StackPanel.Style>
+                                            <StackPanel.Resources>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="FontSize" Value="12"/>
+                                                </Style>
+                                            </StackPanel.Resources>
+                                            <TextBlock Text="("/>
+                                            <TextBlock Text="{Binding Children.Count}"/>
+                                            <TextBlock Text=")"/>
+                                        </StackPanel>
+                                        <Border Background="White" BorderBrush="DarkGreen" BorderThickness="1" VerticalAlignment="Center" Margin="3" Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Content}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="컨" FontSize="10" Margin="1" Foreground="DarkGreen" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+
+                                    </StackPanel>
+
+                                </Grid>
+                            </Border>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </Border>
+            
+            <Border Grid.Row="2" Background="{StaticResource color_Gray3}">
+                <Grid>
+                    <Grid.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                            <Setter Property="MinWidth" Value="50"/>
+                            <Setter Property="Margin" Value="3,5,1,5"/>
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Button Content="추가" Click="btn_AddChildHeader_Click"/>
+                        <Button Content="삭제" Click="btn_RemoveHeader_Click"/>
+                        <Button Content="이동" Click="btn_MoveHeader_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+          
+        </Grid>
+
+        <GridSplitter Grid.Column="1" ResizeDirection="Columns"  Width="3" HorizontalAlignment="Center" Background="{StaticResource color_Gray2}" Margin="0"/>
+
+        <Grid Grid.Column="2" >
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+
+            <TabControl Grid.Row="1">
+                <TabItem Header="일괄 수정">
+                    <local:ucMarkCheckerHeaderModifyAll DataContext="{Binding SelectedItem, ElementName=treeview_Header}"/>
+                </TabItem>
+            </TabControl>
+            
+
+        </Grid>
+        
+        
+
+        <Border Grid.Column="3" BorderBrush="{StaticResource color_Gray1}" BorderThickness="1"  Margin="10,0,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="30"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Background="{StaticResource color_Primary}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <TextBlock Text="Contents"  Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="10,0,5,0"/>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <StackPanel.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{StaticResource color_White}"/>
+                                        <Setter Property="FontSize" Value="10"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <TextBlock Text="("/>
+                                <TextBlock Text="(" Margin="3,0,3,0"/>
+                                <TextBlock Text=")"/>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        
+                    </Grid>
+                </Border>
+
+
+                <ContentPresenter Grid.Row="1" Grid.Column="2" x:Name="contentsPresenter" />
+            </Grid>
+            
+
+
+        </Border>
+
+
+
+
+
+    </Grid>
+</UserControl>
