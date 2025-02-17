@@ -44,8 +44,8 @@ namespace MDM.Models.ViewModels
 
 
         public ObservableCollection<vmHeading> Children { get; private set; } = null;
-        public ObservableCollection<vmContent> Contents { get; private set; } = null;
-        public vmMaterial Material { get; private set; } = null;
+        public vmContent Content { get; private set; } = null;
+        public vmMaterial ParentMaterial { get; private set; } = null;
         public vmHeading Parent { get; private set; } = null;
 
         public object Display_Name
@@ -60,7 +60,7 @@ namespace MDM.Models.ViewModels
     }
     public partial class vmHeading 
     {
-        internal void AddChild(vmHeading child)
+        public void AddChild(vmHeading child)
         {
             this.Children.Add(child);
             child.SetParent(this);
@@ -69,26 +69,23 @@ namespace MDM.Models.ViewModels
         {
             this.Display_Name = this.Temp.Name;
         }
+
         public override void SetInitialData()
         {
             this.Children = new ObservableCollection<vmHeading>();
-
-            this.Contents = new ObservableCollection<vmContent>();  
         }
-        public void SetMaterial(vmMaterial parent)
+        internal void SetParentMaterial(vmMaterial parent)
         {
-            this.Material = parent;
+            this.ParentMaterial = parent;
             this.Origin.MaterialIdx = this.Temp.MaterialIdx = parent.Temp.Idx;
-            parent.AddHeading(this);
         }
-        public void SetParent(vmHeading parent)
+        internal void SetParent(vmHeading parent)
         {
             this.Parent = parent;
         }
-        internal void AddContent(vmContent item)
+        internal void SetContent(vmContent item)
         {
-            if (this.Contents.Contains(item)) return;
-            this.Contents.Add(item);
+            this.Content = item;
         }
         public override object UpdateOriginData()
         {

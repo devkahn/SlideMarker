@@ -85,7 +85,7 @@ namespace MDM.Helpers
                 newItem.Title = newText.Title;
                 newItem.LineText = ln.Trim();
                 newItem.ItemType = newText.ShapeType;
-                newText.Items.Add(newItem);
+                newText.Lines.Add(newItem);
             }
 
             return newText;
@@ -100,7 +100,7 @@ namespace MDM.Helpers
             newItem.Title = newImage.Title;
             newItem.LineText = newItem.GenerateImageLineText(newImage);// string.Format("![{0}]({1}{2})", newImage.Title, newImage.Text, Defines.EXTENSION_IMAGE);
             newItem.ItemType = newImage.ShapeType;
-            newImage.Items.Add(newItem);
+            newImage.Lines.Add(newItem);
 
             return newImage;
         }
@@ -204,7 +204,7 @@ namespace MDM.Helpers
             newItem.Title = newTable.Title;
             newItem.LineText = newTable.Text;
             newItem.ItemType = newTable.ShapeType;
-            newTable.Items.Add(newItem);
+            newTable.Lines.Add(newItem);
 
             return newTable;
         }

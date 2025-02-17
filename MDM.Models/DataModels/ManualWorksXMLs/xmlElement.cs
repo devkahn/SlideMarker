@@ -122,41 +122,41 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Description("여백 높이")]
         public int SpaceHeight { get; set; } = 0;
 
-        [xmlElementType(eXMLElementType.Layout_page)]
+        [xmlElementType(eXMLElementType.layout_page)]
         [JsonProperty("layout_page")]
         [Description("레이아웃 페이지 유형")]
         public eXMLElementLayoytType LayoutType { get; set; } = eXMLElementLayoytType.half_title_page;
 
-        [xmlElementType(eXMLElementType.Include)]
-        //[xmlElementType(eXMLElementType.Single_design_page)]
+        [xmlElementType(eXMLElementType.include)]
+        [xmlElementType(eXMLElementType.single_design_page)]
         [JsonProperty("description")]
         [Description("설명")]
         public string Description { get; set; } = string.Empty;
 
-        [xmlElementType(eXMLElementType.Include)]
+        [xmlElementType(eXMLElementType.include)]
         [JsonProperty("heading_adjustment")]
         [Description("제목 수준 조정")]
         public eXMLElementHeadingAdjustment HeadingAdjustment { get; set; } = eXMLElementHeadingAdjustment.Not;
 
-        [xmlElementType(eXMLElementType.Heading1)]
+        [xmlElementType(eXMLElementType.heading1)]
         [JsonProperty("section_view")]
         [Description("절 모습을 설정합니다.")]
         public eXMLElementSectionView SectionView { get; set; } = eXMLElementSectionView.NONE;
 
-        [xmlElementType(eXMLElementType.Code)]
+        [xmlElementType(eXMLElementType.code)]
         [JsonProperty("code_language")]
         [Description("소스 코드 언어를 설정합니다.")]
         public eXMLElementCodeLanguage CodeLanguage { get; set; } = eXMLElementCodeLanguage.NONE;
 
-        [xmlElementType(eXMLElementType.Code)]
+        [xmlElementType(eXMLElementType.code)]
         [JsonProperty("code_numbering")]
         [Description("소스 코드 번호 매기기")]
         public bool CanCodeNumbering { get; set; } = false;
 
         [xmlElementType(eXMLElementType.Normal)]
-        //[xmlElementType(eXMLElementType.note)]
-        //[xmlElementType(eXMLElementType.Tip)]
-        //[xmlElementType(eXMLElementType.Caution)]
+        [xmlElementType(eXMLElementType.note)]
+        [xmlElementType(eXMLElementType.Tip)]
+        [xmlElementType(eXMLElementType.Caution)]
         [JsonProperty("ignore_step_indent")]
         [Description("단계 단락 이후 들여쓰기를 하지 않습니다.")]
         public bool IgnoreStepIndent { get; set; } = false;
@@ -239,9 +239,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Description("디자인 페이지")]
         Single_design_page,
         [Description("다른 단락 포함하기")]
-        Include,
-        [Description("여백")]
-        Space
+        Include
     }
     public enum eXMLElementTableLayout
     {

@@ -161,6 +161,7 @@ namespace ManualDataManager.Views.Pages
                     sl.SlideNumber = slide.SlideNumber;
                     #endregion
                     List<Shape> shapes = new List<Shape>();
+
                     #region Slide Shape
                     foreach (Shape shape in slide.Shapes)
                     {
@@ -182,6 +183,54 @@ namespace ManualDataManager.Views.Pages
                         if (!isAny) shapes.Add(shape);
                     }
                     #endregion
+                    //#region Slide Shape
+
+                    //bool hasGroupItem = true;
+                    //while (hasGroupItem)
+                    //{
+                    //    foreach (Shape shape in slide.Shapes)
+                    //    {
+                    //        if (shape.Type == MsoShapeType.msoGroup)
+                    //        {
+                    //            shape.Ungroup();
+                    //            hasGroupItem = true;
+                    //            break;
+                    //        }
+                    //        hasGroupItem = false;
+                    //        //bool isAny = shapes.Where(x => x != null && x.Id == shape.Id).Any();
+                    //        //if (!isAny) shapes.Add(shape);
+                    //    }
+                    //}
+
+                    //foreach (Shape shape in slide.Shapes)
+                    //{
+                    //    bool isAny = shapes.Where(x => x != null && x.Id == shape.Id).Any();
+                    //    if (!isAny) shapes.Add(shape);
+                    //}
+
+                    
+                    //hasGroupItem = true;
+                    //while (hasGroupItem)
+                    //{
+                    //    foreach (Shape shape in slide.Master.Shapes)
+                    //    {
+                    //        if (shape.Type == MsoShapeType.msoGroup)
+                    //        {
+                    //            shape.Ungroup();
+                    //            hasGroupItem = true;
+                    //            break;
+                    //        }
+                    //        hasGroupItem = false;
+                    //    }
+                    //}
+                    //var masterShapes = slide.Master.Shapes;
+                    //foreach (Shape shape in masterShapes)
+                    //{
+                    //    bool isAny = shapes.Where(x => x.Id == shape.Id).Any();
+                    //    if (!isAny) shapes.Add(shape);
+                    //}
+
+                    //#endregion
                     List<mShape> shapeInstances = new List<mShape>();
                     foreach (Shape shape in shapes)
                     {
@@ -220,7 +269,7 @@ namespace ManualDataManager.Views.Pages
                     sl.Origin = slide;
 
                     vmSlide newSlide = new vmSlide(sl);
-                    newSlide.SetParentMaterial(newVm);
+                    newVm.AddSlide(newSlide);
                     newSlide.OnModifyStatusChanged(true);
                 }
 

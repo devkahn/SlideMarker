@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using MDM.Commons.Enum;
 using MDM.Models.DataModels;
 
@@ -65,7 +64,7 @@ namespace MDM.Models.ViewModels
             }
         }
         public mContent Temp { get; private set; } = null;
-        public vmMaterial Material { get; private set; } = null;
+        public vmMaterial ParentMaterial { get; private set; } = null;
         public vmHeading ParentHeading { get; private set; } = null;
 
 
@@ -246,23 +245,37 @@ namespace MDM.Models.ViewModels
 
         public void SetHeading()
         {
-           
+            if (this.ParentMaterial == null) return;
+            
+
+            this.Heading1 = GetHeading(1);
+            this.Heading2 = GetHeading(2);
+            this.Heading3 = GetHeading(3);
+            this.Heading4 = GetHeading(4);
+            this.Heading5 = GetHeading(5);
+            this.Heading6 = GetHeading(6);
+            this.Heading7 = GetHeading(7);
+            this.Heading8 = GetHeading(8);
+            this.Heading9 = GetHeading(9);
+            this.Heading10 = GetHeading(10);
+
+            if (this.Heading1 != null) SetParentHeading();
         }
         private vmHeading GetHeading(int headingLevel)
         {
             vmHeading output = null;
             switch (headingLevel)
             {
-                //case 1: output = this.ParentMaterial.Headings.Where(x=> x.Temp.Name == this.Origin.Heading1String.Trim()).FirstOrDefault(); break;
-                //case 2: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading2String.Trim()).FirstOrDefault(); break;
-                //case 3: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading3String.Trim()).FirstOrDefault(); break;
-                //case 4: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading4String.Trim()).FirstOrDefault(); break;
-                //case 6: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading6String.Trim()).FirstOrDefault(); break;
-                //case 7: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading7String.Trim()).FirstOrDefault(); break;
-                //case 8: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading8String.Trim()).FirstOrDefault(); break;
-                //case 5: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading5String.Trim()).FirstOrDefault(); break;
-                //case 9: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading9String.Trim()).FirstOrDefault(); break;
-                //case 10: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading10String.Trim()).FirstOrDefault(); break;
+                case 1: output = this.ParentMaterial.Headings.Where(x=> x.Temp.Name == this.Origin.Heading1String.Trim()).FirstOrDefault(); break;
+                case 2: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading2String.Trim()).FirstOrDefault(); break;
+                case 3: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading3String.Trim()).FirstOrDefault(); break;
+                case 4: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading4String.Trim()).FirstOrDefault(); break;
+                case 6: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading6String.Trim()).FirstOrDefault(); break;
+                case 7: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading7String.Trim()).FirstOrDefault(); break;
+                case 8: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading8String.Trim()).FirstOrDefault(); break;
+                case 5: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading5String.Trim()).FirstOrDefault(); break;
+                case 9: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading9String.Trim()).FirstOrDefault(); break;
+                case 10: output = this.ParentMaterial.Headings.Where(x => x.Temp.Name == this.Origin.Heading10String.Trim()).FirstOrDefault(); break;
                 default:break;
             }
 
@@ -274,19 +287,26 @@ namespace MDM.Models.ViewModels
             
         }
 
-        public void SetMaterial(vmMaterial parent)
+        internal void SetParentMaterial(vmMaterial parent)
         {
-            if (this.Material != null && this.Material.Contents.Contains(this)) this.Material.RemoveContent(this);
-            this.Material = parent;
-            this.Origin.MaterialIdx = this.Temp.MaterialIdx = -1;
-            if (this.Material != null && !this.Material.Contents.Contains(this))
-            {
-                this.Material.AddContent(this); 
-                this.Origin.MaterialIdx = this.Temp.MaterialIdx = parent.Temp.Idx;
-            }
+            this.ParentMaterial = parent;
+            this.Origin.MaterialIdx = this.Temp.MaterialIdx = parent.Temp.Idx;
         }
-        public void SetParentHeading(vmHeading parentHeading)
+        internal void SetParentHeading()
         {
+            vmHeading[]  headings = new vmHeading[10] { this.Heading1, this.Heading2, this.Heading3, this.Heading4, this.Heading5, this.Heading6, this.Heading7, this.Heading8, this.Heading9, this.Heading10 };
+
+            foreach (vmHeading item in headings)
+            {
+                if(item == null)
+                {
+                    this.Origin.ParentUid = this.Temp.ParentUid = this.ParentHeading.Temp.Uid;
+                    if (this.ParentHeading != null) this.ParentHeading.SetContent(this);
+                    return;
+                }
+                this.ParentHeading = item;
+            }
+
         }
 
         public override object UpdateOriginData()

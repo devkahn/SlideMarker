@@ -43,6 +43,8 @@ namespace MDM.Views.DataLabeling.Pages
                 vmItem data = tb.DataContext as vmItem;
                 if (data == null) return;
 
+                if (tb.Text == data.Temp.Title) return;
+
                 data.SetTitle(tb.Text);
                         
             }

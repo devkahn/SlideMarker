@@ -61,25 +61,28 @@ namespace MDM.Views.DataLabeling.Pages
 
             var items = this.Material.CurrentSlide.Items;//.OrderBy(x => x.Temp.Order).ToList(
 
-            ObservableCollection<vmItem> output = new ObservableCollection<vmItem>();
-            foreach (vmItem item in items)
+            switch (this.ItemFilterCode)
             {
-                switch (this.ItemFilterCode)
-                {
-                    case eItemType.Content: if (item.ItemTypeCode % 220 < 10) output.Add(item); continue;
-                    case eItemType.Text: if (item.ItemType == this.ItemFilterCode || item.ItemType == eItemType.None) output.Add(item); continue;
-                    case eItemType.Header:
-                    case eItemType.Image:
-                    case eItemType.Table:
-                        if (item.ItemType == this.ItemFilterCode) output.Add(item); continue;
-                    case eItemType.None:
-                    case eItemType.All:
-                    default: break;
-                }
+                case eItemType.Content:
+                    items = new ObservableCollection<vmItem>(items.Where(x => x.ItemTypeCode % 220 < 10));
+                    break;
+                case eItemType.Text:
+                    items = new ObservableCollection<vmItem>(items.Where(x => x.ItemType == this.ItemFilterCode || x.ItemType == eItemType.None));
+                    break;
+                case eItemType.Header:
+                case eItemType.Image:
+                case eItemType.Table:
+                    items = new ObservableCollection<vmItem>(items.Where(x => x.ItemType == this.ItemFilterCode));
+                    break;
+                case eItemType.None:
+                case eItemType.All:
+                default:
+                    break;
             }
 
+
             this.datagrid_Shapes.ItemsSource = null;
-            this.datagrid_Shapes.ItemsSource = output;
+            this.datagrid_Shapes.ItemsSource = items;
             this.datagrid_Shapes.SelectedIndex = 0;
         }
 
@@ -95,17 +98,17 @@ namespace MDM.Views.DataLabeling.Pages
                 if (data == null) return;
 
                 if (data.Temp.Level == 1) return;
-                if (data.Parent == null) return;
+                if (data.ParentItem == null) return;
 
 
-                vmItem parent = data.Parent;
+                vmItem parent = data.ParentItem;
                 if (parent != null)
                 {
-                    parent = parent.Parent;
+                    parent = parent.ParentItem;
                 }
 
                 data.SetLevel(false);
-                data.SetParent(parent);
+                data.SetParentItem(parent);
             }
             catch (Exception ee)
             {
@@ -124,19 +127,19 @@ namespace MDM.Views.DataLabeling.Pages
 
                 if (data.Temp.Level == 10) return;
 
-                vmItem parent = data.Parent;
+                vmItem parent = data.ParentItem;
                 if (parent != null)
                 {
                     var sameLevels = parent.Children.Where(x => x != data && x.IsHeader && x.Temp.Level == data.Temp.Level);
                     if (!sameLevels.Any()) return;
-                    
+
                     int index = this.Material.CurrentSlide.Items.IndexOf(data);
                     parent = sameLevels.Where(x => this.Material.CurrentSlide.Items.IndexOf(x) < index).LastOrDefault();
                     if (parent == null) parent = sameLevels.FirstOrDefault();
                 }
 
                 data.SetLevel(true);
-                data.SetParent(parent);
+                data.SetParentItem(parent);
             }
             catch (Exception ee)
             {
@@ -197,7 +200,7 @@ namespace MDM.Views.DataLabeling.Pages
                             vmItem imageItem = images.First();
 
                             imageItem.SetTitle(textItem.Temp.LineText);
-                            imageItem.SetImageText(imageItem.Temp.Title, imageItem.Shape.Temp.Text);
+                            imageItem.SetImageText(imageItem.Temp.Title, imageItem.ParentShape.Temp.Text);
                             textItem.Delete();
                         }
                     }
@@ -245,8 +248,10 @@ namespace MDM.Views.DataLabeling.Pages
                 System.Windows.Forms.DialogResult result = MessageHelper.ShowYewNoMessage(caption, msg);
                 if (result != System.Windows.Forms.DialogResult.Yes) return;
 
+                if (selectedItems == null) return;
                 foreach (vmItem item in selectedItems.ToList())
                 {
+                    if (item == null) continue;
                     item.Delete();
                 }
             }
@@ -268,15 +273,14 @@ namespace MDM.Views.DataLabeling.Pages
                 int index = 0;
                 if (lastItem != null) index = this.Material.CurrentSlide.Items.IndexOf(lastItem) + 1;
 
-                mItem item = new mItem();
-                vmItem newItem = new vmItem(item);
-                newItem.SetParent(lastItem.IsHeader ? lastItem : lastItem.Parent, false);
-                newItem.SetParentSlide(this.Material.CurrentSlide, index);
-                
+                mItem newItem = new mItem();
+                vmItem newVM = new vmItem(newItem);
+                newVM.SetParentItem(lastItem.IsHeader ? lastItem : lastItem.ParentItem, false);
+                this.Material.CurrentSlide.Items.Insert(index, newVM);
 
-                if (lastItem != null && selectedItems.Count() > 0) newItem.SetParentShape(lastItem.Shape);
+                if (lastItem != null && selectedItems.Count() > 0) newVM.SetParent(lastItem.ParentShape);
 
-                this.datagrid_Shapes.SelectedItem = newItem;
+                this.datagrid_Shapes.SelectedItem = newVM;
                 this.datagrid_Shapes.ScrollIntoView(this.datagrid_Shapes.SelectedItem);
                 var scrollViewer = ControlHelper.FindVisualChild<ScrollViewer>(this.datagrid_Shapes);
             }
@@ -324,7 +328,7 @@ namespace MDM.Views.DataLabeling.Pages
                         {
                             vmItem newItem = current.Duplicate();
                             newItem.SetText(lines[i]);
-                            newItem.SetParent(current.Parent);
+                            newItem.SetParentItem(current.ParentItem);
 
                             current = i + 1 == cnt ? null : newItem;
                         }
@@ -366,7 +370,7 @@ namespace MDM.Views.DataLabeling.Pages
                     currentItem.SetText(preText);
                     vmItem nextItem = currentItem.Duplicate();
                     nextItem.SetText(nextText);
-                    nextItem.SetParent(currentItem.Parent);
+                    nextItem.SetParentItem(currentItem.ParentItem);
                 }
 
                 this.datagrid_Shapes.CommitEdit();
@@ -389,20 +393,20 @@ namespace MDM.Views.DataLabeling.Pages
                 switch (data.ItemType)
                 {
                     case eItemType.Image:
-                        data.Shape.UndoText();
+                       if(data.ParentShape != null) data.ParentShape.UndoText();
                         data.UndoText();
                         data.SetItemType(eItemType.Table);
                         break;
                     case eItemType.Text:
                     case eItemType.None:
-                        data.Shape.SetTitle(data.Shape.Temp.Text);
-                        data.Shape.SetText(Guid.NewGuid().ToString());
-                        data.SetText(data.Temp.GenerateImageLineText(data.Shape.Temp));
+                        // data.ParentShape.SetTitle(data.ParentShape.Temp.Text);
+                        // data.ParentShape.SetText(Guid.NewGuid().ToString());
+                        data.SetImageText();// .SetText(data.Temp.GenerateImageLineText(data.ParentShape.Temp));
                         data.SetItemType(eItemType.Image);
                         break;
                     case eItemType.Table:
                     default:
-                        data.Shape.UndoText();
+                        if (data.ParentShape != null) data.ParentShape.UndoText();
                         data.UndoText();
                         data.SetItemType(eItemType.Text);
                         break;
@@ -503,7 +507,7 @@ namespace MDM.Views.DataLabeling.Pages
                 selectedItem.SetRowIndex();
                 upperItem.SetRowIndex();
 
-                if (upperItem.IsHeader) selectedItem.SetParent(upperItem.Parent);
+                if (upperItem.IsHeader) selectedItem.SetParentItem(upperItem.ParentItem);
             }
             catch (Exception ee)
             {
@@ -530,7 +534,7 @@ namespace MDM.Views.DataLabeling.Pages
                 selectedItem.SetRowIndex();
                 downItem.SetRowIndex();
 
-                if (downItem.IsHeader) selectedItem.SetParent(downItem);
+                if (downItem.IsHeader) selectedItem.SetParentItem(downItem);
             }
             catch (Exception ee)
             {
@@ -544,7 +548,7 @@ namespace MDM.Views.DataLabeling.Pages
                 vmItem selectedItem = this.datagrid_Shapes.SelectedItem as vmItem;
                 if (selectedItem == null) return;
 
-                vmShape parent = selectedItem.Shape;
+                vmShape parent = selectedItem.ParentShape;
 
                 var list = parent.Items.ToList();
                 int total = list.Count();
@@ -575,59 +579,38 @@ namespace MDM.Views.DataLabeling.Pages
                 vmItem data = btn.DataContext as vmItem;
                 if (data == null) return;
 
-              //  mShape iShape = data.ParentShape.Temp;
+                mShape iShape = data.ParentShape.Temp;
 
                 Slide currentSlide = (Slide)this.Material.OriginPresentation.Application.ActiveWindow.View.Slide;
 
+                Slide firstSlide = this.Material.OriginPresentation.Slides[1];
+                int slideIndex = firstSlide.SlideNumber == 0 ? currentSlide.SlideNumber + 1 : currentSlide.SlideNumber;
+
                 string tempDirPath = Path.Combine(this.Material.DirectoryPath, "Temp");
                 if (!Directory.Exists(tempDirPath)) Directory.CreateDirectory(tempDirPath);
-                string fullpath = Path.Combine(tempDirPath, string.Format("slide{0}", currentSlide.SlideIndex));
-                if (!File.Exists(fullpath))
+                string pngFullPath = Path.Combine(tempDirPath, string.Format("page_{0}", slideIndex)+".png");
+                if (!File.Exists(pngFullPath))
                 {
-                    currentSlide.Export(fullpath, "png");
-                    if (File.Exists(fullpath))
-                    {
-                        string originPath = fullpath;
-                        fullpath = Path.Combine(tempDirPath, string.Format("slide{0}.png", currentSlide.SlideIndex));
-                        if (File.Exists(fullpath))
-                        {
-                            File.Delete(fullpath);
-                        }
-                        File.Move(originPath, fullpath);
-                    }
+                    string eMsg = "슬라이드 원본 이미지를 추가하세요.";
+                    string caption = "이미지 다운로드";
+                    MessageHelper.ShowErrorMessage(caption, eMsg);
+                    return;
                 }
-                originImage = new Bitmap(fullpath);
+                originImage = new Bitmap(pngFullPath);
 
-                #region 해상도 업
-
-                //float scaleFactor = 2.0f;
-
-                //int newWidth = (int)(originImage.Width * scaleFactor);
-                //int newHeight = (int)(originImage.Height * scaleFactor);
-
-                //Bitmap resizedImage = new Bitmap(originImage, newWidth, newHeight);
-                //using (Graphics g = Graphics.FromImage(resizedImage))
-                //{
-                //    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                //    g.DrawImage(originImage, 0, 0, newWidth, newHeight);
-                //}
-                //resizedImage.Save(fullpath+"2", ImageFormat.Png);
-
-                #endregion
-
+           
                 // 슬라이드 크기 가져오기
                 float slideWidth = this.Material.OriginPresentation.PageSetup.SlideWidth;
                 float slideHeight = this.Material.OriginPresentation.PageSetup.SlideHeight;
 
-                mShape imageShape = data.Shape.Temp;
                 // 크롭 속성 가져오기
-                float cropLeft = (imageShape.Left * originImage.Width) / slideWidth;
-                float cropTop = (imageShape.Top * originImage.Height) / slideHeight;
+                float cropLeft = (iShape.Left * originImage.Width) / slideWidth;
+                float cropTop = (iShape.Top * originImage.Height) / slideHeight;
                 // 크롭된 이미지의 크기 계산
-                float croppedWidth = (imageShape.Width * originImage.Width) / slideWidth;
-                float croppedHeight = (imageShape.Height * originImage.Height) / slideHeight;
+                float croppedWidth = (iShape.Width * originImage.Width) / slideWidth;
+                float croppedHeight = (iShape.Height * originImage.Height) / slideHeight;
 
-                Rectangle cropArea = new Rectangle((int)cropLeft - 5, (int)cropTop - 5, (int)croppedWidth + 5, (int)croppedHeight + 5);
+                Rectangle cropArea = new Rectangle((int)cropLeft - 3, (int)cropTop - 3, (int)croppedWidth + 5, (int)croppedHeight + 5);
                 croppedImage = originImage.Clone(cropArea, originImage.PixelFormat);
                 string imagePath = Path.Combine(this.Material.DirectoryPath, data.Temp.Uid + Defines.EXTENSION_IMAGE);
                 if (File.Exists(imagePath))
@@ -719,13 +702,15 @@ namespace MDM.Views.DataLabeling.Pages
                     if (item == null) continue;
                     item.IsSelected = true;
 
-                    if (item.Shape == null) return;
+                    if (item.ParentShape == null) return;
                     if (this.Material.OriginPresentation != null)
                     {
                         Slide currentSlide = (Slide)this.Material.OriginPresentation.Application.ActiveWindow.View.Slide;
+                        if (currentSlide == null) continue;
+
                         foreach (Shape sh in currentSlide.Shapes)
                         {
-                            if (sh.Id == item.Shape.Temp.ShapeId) sh.Select();
+                            if (sh.Id == item.ParentShape.Temp.ShapeId) sh.Select();
                         }
                     }
                     
@@ -832,7 +817,7 @@ namespace MDM.Views.DataLabeling.Pages
                 
                 var overItems = items.Where(x => items.IndexOf(x) < index && x.ItemType == eItemType.Header);
                 vmItem lastHeader = overItems.Where(x => x.Temp.Level + 1 == data.Temp.Level).LastOrDefault();
-                data.SetParent(lastHeader);
+                data.SetParentItem(lastHeader);
                 
 
                 var underItems = items.Where(x => index < items.IndexOf(x));
@@ -842,7 +827,7 @@ namespace MDM.Views.DataLabeling.Pages
                     {
                         if(underItem.ItemType != eItemType.Header)
                         {
-                            underItem.SetParent(data);
+                            underItem.SetParentItem(data);
                         }
                         else
                         {
@@ -852,7 +837,7 @@ namespace MDM.Views.DataLabeling.Pages
                 }
                 else
                 {
-                    foreach (vmItem underItem in underItems) underItem.SetParent(data.Parent);
+                    foreach (vmItem underItem in underItems) underItem.SetParentItem(data.ParentItem);
                 }
             }
             catch (Exception ee)
@@ -917,7 +902,7 @@ namespace MDM.Views.DataLabeling.Pages
         {
             try
             {
-                this.Material.CurrentSlide.ClearShapes();
+                this.Material.CurrentSlide.Shapes.Clear();
                 this.Material.CurrentSlide.LoadChildren();
             }
             catch (Exception ee)

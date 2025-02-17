@@ -187,7 +187,23 @@ namespace MDM.Views.DataLabeling.Pages
 
         private void btn_ImagesImport_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                DirectoryInfo dInfo = FileHelper.GetOpenDirectoryInfo();
 
+                string tempDirPath = Path.Combine(this.Material.DirectoryPath, "Temp");
+                if (!Directory.Exists(tempDirPath)) Directory.CreateDirectory(tempDirPath);
+
+                foreach (FileInfo file in dInfo.GetFiles())
+                {
+                    string targetFilePath = Path.Combine(tempDirPath, file.Name);
+                    file.CopyTo(targetFilePath, true);
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
     }
 }

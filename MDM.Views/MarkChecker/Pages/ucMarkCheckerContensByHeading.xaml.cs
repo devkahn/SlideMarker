@@ -31,8 +31,6 @@ namespace MDM.Views.MarkChecker.Pages
             {
                 _Material = value;
 
-                if (value.Headings == null) return;
-
                 int minLevel = value.Headings.Min(x => x.Temp.Level);
                 this.treeview_Header.ItemsSource = value.Headings.Where(x => x.Temp.Level == minLevel);
             }
@@ -56,14 +54,13 @@ namespace MDM.Views.MarkChecker.Pages
                 this.IsTreeChanged = true;
 
                 vmHeading selectedItem = e.NewValue as vmHeading;
-                if (selectedItem == null)
+                if (selectedItem == null || selectedItem.Content == null)
                 {
                     this.IsTreeChanged = false;
                     return;
                 }
 
-
-                //this.contentsPresenter.Content = selectedItem.Content.Display_Content;
+                this.contentsPresenter.Content = selectedItem.Content.Display_Content;
 
                 this.IsTreeChanged = false;
 
@@ -88,67 +85,11 @@ namespace MDM.Views.MarkChecker.Pages
                 {
                     vmHeading selectedItem = item as vmHeading;
                     if (selectedItem == null) return;
-                    //if (selectedItem.Content == null) return;
+                    if (selectedItem.Content == null) return;
 
-                    //this.contentsPresenter.Content = selectedItem.Content.Display_Content;
+                    this.contentsPresenter.Content = selectedItem.Content.Display_Content;
                 }
                 
-
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_AddChildHeader_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_RemoveHeader_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                //vmHeading  selectedHeading = this.treeview_Header.SelectedItem as vmHeading;
-                //if (selectedHeading == null) return;
-
-                //if( selectedHeading.Parent == null)
-                //{
-                //    vmMaterial material = selectedHeading.ParentMaterial;
-                //    foreach (vmHeading child in selectedHeading.Children)
-                //    {
-                //        material.Headings.
-                //    }
-                //    parentHeading.Children.Remove(selectedHeading);
-                //}
-                //else
-                //{
-                //    vmHeading parentHeading = selectedHeading.Parent;
-                //    foreach (vmHeading child in selectedHeading.Children)
-                //    {
-                //        parentHeading.AddChild(child);
-                //    }
-                //    parentHeading.Children.Remove(selectedHeading);
-                //}
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_MoveHeader_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
 
             }
             catch (Exception ee)

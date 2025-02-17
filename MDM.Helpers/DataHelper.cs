@@ -15,6 +15,8 @@ namespace MDM.Helpers
     {
         public static void Save(this vmMaterial obj)
         {
+            if (obj == null) return;
+
             mMaterial data = obj.UpdateOriginData() as mMaterial;
             if (data == null) return;
 
@@ -129,7 +131,9 @@ namespace MDM.Helpers
         }
         public static void Delete(this vmShape obj)
         {
-            obj.SetParentSlide(null);
+            obj.ParentSlide.Shapes.Remove(obj);
+            obj.ParentSlide.Temp.Shapes.Remove(obj.Temp);
+            obj.SetParent(null);
 
             mShape data = obj.UpdateOriginData() as mShape;
             if (data == null) return;
@@ -141,12 +145,13 @@ namespace MDM.Helpers
         }
         public static void Delete(this vmItem obj)
         {
-            obj.Shape.Temp.Items.Remove(obj.Temp);
-
-            foreach (vmItem child in obj.Children.ToList()) child.SetParent(obj.Parent);
-            obj.SetParentSlide(null);
-            obj.SetParentShape(null);
+            obj.ParentShape.Items.Remove(obj);
+            obj.ParentShape.Temp.Lines.Remove(obj.Temp);
+            obj.ParentShape.ParentSlide.Items.Remove(obj);
             obj.SetParent(null);
+
+            foreach (vmItem child in obj.Children.ToList()) child.SetParentItem(obj.ParentItem);
+            obj.SetParentItem(null);
 
             mItem data = obj.UpdateOriginData() as mItem;
             if (data == null) return;
@@ -164,7 +169,7 @@ namespace MDM.Helpers
             foreach (mSlide slide in children)
             {
                 vmSlide newSlide = new vmSlide(slide);
-                newSlide.SetParentMaterial(obj);
+                newSlide.SetParent(obj);
                 newSlide.LoadChildren();
             }
         }
@@ -177,7 +182,7 @@ namespace MDM.Helpers
             foreach (mShape shape in children)
             {
                 vmShape newShape = new vmShape(shape);
-                newShape.SetParentSlide(obj);
+                newShape.SetParent(obj);
                 newShape.LoadChildren();
             }
 
@@ -185,7 +190,7 @@ namespace MDM.Helpers
             {
                 if (string.IsNullOrEmpty(item.Temp.ParentItemUid)) continue;
                 vmItem parentItem = obj.Items.Where(x => x.Temp.Uid == item.Temp.ParentItemUid).FirstOrDefault();
-                if(parentItem != null) item.SetParent(parentItem, true);
+                if(parentItem != null) item.SetParentItem(parentItem, true);
             }
         }
         public static void LoadChildren(this vmShape obj)
@@ -194,10 +199,10 @@ namespace MDM.Helpers
             List<mItem> children = DBHelper.Read(parent);
             if (children == null) return;
 
-            foreach (mItem item in children.OrderBy(x=> x.Order))
+            foreach (mItem item in children)
             {
                 vmItem newItem = new vmItem(item);
-                newItem.SetParentShape(obj);
+                newItem.SetParent(obj);
             }
         }
 

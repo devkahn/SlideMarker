@@ -47,11 +47,8 @@ namespace MDM.Models.ViewModels
             }
         }
         public mShape Temp { get; private set; } = null;
-        public vmSlide Slide { get; set; } = null;
-        private ObservableCollection<vmItem> OriginItems { get;  set; }
+        public vmSlide ParentSlide { get; set; } = null;
 
-
-        public ReadOnlyObservableCollection<vmItem> Items => new ReadOnlyObservableCollection<vmItem>(this.OriginItems);
         public Visibility SameShape
         {
             get => _SameShape;
@@ -61,6 +58,10 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(this.SameShape));
             }
         }
+
+
+        public ObservableCollection<vmItem> Items { get; private set; }
+
         public object Display_Title
         {
             get => _Display_Title;
@@ -92,44 +93,27 @@ namespace MDM.Models.ViewModels
 
     public partial class vmShape
     {
-        internal void AddItem(vmItem item)
-        {
-            if (this.OriginItems.Contains(item)) return;
-            this.OriginItems.Add(item);
-        }
-        internal void AddItem(vmItem item, int index)
-        {
-            if (this.OriginItems.Contains(item)) return;
-            this.OriginItems.Insert(index, item);
-        }
         public override void InitializeDisplay()
         {
             this.Display_Title = this.Temp.Title;
             this.Display_Text = this.Temp.Text;
             this.Display_UpdateDate = this.Temp.UpdateDate.HasValue ? this.Temp.UpdateDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : null;
 
-            this.OriginItems.Clear();
-            foreach (mItem line in this.Temp.Items)
+            this.Items.Clear();
+            foreach (mItem line in this.Temp.Lines)
             {
                 vmItem newLine = new vmItem(line);
-                newLine.SetParentShape(this);
-                newLine.SetParentSlide(this.Slide);
+                newLine.SetParent(this);
+                //this.Items.Add(newLine);
             }
             
 
             OnModifyStatusChanged();
         }
-        internal void RemoveItem(vmItem item)
-        {
-            if (!this.OriginItems.Contains(item)) return;
-            this.OriginItems.Remove(item);
 
-            mItem sameItem = this.Temp.Items.Where(x=> x.Uid == item.Temp.Uid).FirstOrDefault();
-            if(sameItem != null)  this.Temp.Items.Remove(sameItem);
-        }
         public override void SetInitialData()
         {
-            this.OriginItems = new ObservableCollection<vmItem>();    
+            this.Items = new ObservableCollection<vmItem>();    
         }
         public void SetSameShapeVisibility(bool isVisible)
         {
@@ -143,35 +127,28 @@ namespace MDM.Models.ViewModels
         {
             this.Display_Text = this.Temp.Text = text;
         }
-        public void SetParentSlide(vmSlide parentSlide)
-        {
-            if (this.Slide != null ) this.Slide.RemoveShape(this);
-
-            this.Slide = parentSlide;
-            this.Temp.ParentSlideIdx = -1;
-            this.Temp.ParentUid = string.Empty;
-
-            if (this.Slide != null )
-            {
-                this.Slide.AddShape(this);
-                this.Temp.ParentSlideIdx = parentSlide.Temp.Idx;
-                this.Temp.ParentUid = parentSlide.Temp.Uid;
-            }
-        }
         public override object UpdateOriginData()
         {
-            this.Origin.ParentSlideIdx = this.Temp.ParentSlideIdx;
-            this.Origin.ParentUid = this.Temp.ParentUid;
-
+            this.Origin.ParentSlideIdx = this.Temp.ParentSlideIdx = this.ParentSlide.Temp.Idx;
             this.Origin.ShapeType = this.Temp.ShapeType;
             this.Origin.UpdateDate = this.Temp.UpdateDate = this.Origin.UpdateDate.HasValue ? DateTime.Now : this.Origin.CreateDate;
 
             return this.Origin;
+        }
+
+        public void SetParent(vmSlide parent)
+        {
+            if (this.ParentSlide != null && this.ParentSlide.Shapes.Contains(this)) this.ParentSlide.Shapes.Remove(this);
+            this.ParentSlide = parent;
+            this.Origin.ParentSlideIdx = this.Temp.ParentSlideIdx = parent.Temp.Idx;
+            this.Origin.ParentUid = this.Temp.ParentUid = parent.Temp.Uid;
+            if (this.ParentSlide != null && !this.ParentSlide.Shapes.Contains(this)) this.ParentSlide.Shapes.Add(this);
         }
         public void UndoText()
         {
             SetTitle(this.Origin.Title);
             SetText(this.Origin.Text);
         }
+
     }
 }

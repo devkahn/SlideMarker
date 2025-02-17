@@ -44,7 +44,7 @@
                     <Button x:Name="btn_FileLoad" Content="LOAD" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
-                    <Button Content="SAVE" IsEnabled="True" Click="bnt_MaterialSave_Click"/>
+                    <Button Content="SAVE" IsEnabled="True" Click="bnt_MaterialSave_Click" />
                     <Button Content="BACK UP" IsEnabled="True" Click="btn_BackUp_Click"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
