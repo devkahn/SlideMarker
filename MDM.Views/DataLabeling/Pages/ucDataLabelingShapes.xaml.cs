@@ -278,7 +278,7 @@ namespace MDM.Views.DataLabeling.Pages
                 newVM.SetParentItem(lastItem.IsHeader ? lastItem : lastItem.ParentItem, false);
                 this.Material.CurrentSlide.Items.Insert(index, newVM);
 
-                if (lastItem != null && selectedItems.Count() > 0) newVM.SetParent(lastItem.ParentShape);
+                if (lastItem != null || selectedItems.Count() > 0) newVM.SetParent(lastItem.ParentShape);
 
                 this.datagrid_Shapes.SelectedItem = newVM;
                 this.datagrid_Shapes.ScrollIntoView(this.datagrid_Shapes.SelectedItem);

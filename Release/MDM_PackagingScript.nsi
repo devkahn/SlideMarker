@@ -3,7 +3,7 @@
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_COMPANY_NAME "DLENC"
 !define PRODUCT_NAME "SlideMarker"
-!define PRODUCT_VERSION "0.9.7"
+!define PRODUCT_VERSION "0.9.7.1"
 !define PRODUCT_PUBLISHER "DL E&C"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_COMPANY_NAME}_${PRODUCT_NAME}"
 !define PRODUCT_UNINST_CranePlanner_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_COMPANY_NAME}_${PRODUCT_NAME}"
