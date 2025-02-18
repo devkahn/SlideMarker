@@ -61,28 +61,32 @@ namespace MDM.Views.DataLabeling.Pages
 
             var items = this.Material.CurrentSlide.Items;//.OrderBy(x => x.Temp.Order).ToList(
 
-            switch (this.ItemFilterCode)
+            ObservableCollection<vmItem> output = new ObservableCollection<vmItem>();
+            foreach (vmItem item in items)
             {
-                case eItemType.Content:
-                    items = new ObservableCollection<vmItem>(items.Where(x => x.ItemTypeCode % 220 < 10));
-                    break;
-                case eItemType.Text:
-                    items = new ObservableCollection<vmItem>(items.Where(x => x.ItemType == this.ItemFilterCode || x.ItemType == eItemType.None));
-                    break;
-                case eItemType.Header:
-                case eItemType.Image:
-                case eItemType.Table:
-                    items = new ObservableCollection<vmItem>(items.Where(x => x.ItemType == this.ItemFilterCode));
-                    break;
-                case eItemType.None:
-                case eItemType.All:
-                default:
-                    break;
+                switch (this.ItemFilterCode)
+                {
+                    case eItemType.Content: 
+                        if (item.ItemTypeCode % 200 < 10) output.Add(item);
+                        break;
+                    case eItemType.Text:
+                        if (item.ItemType == this.ItemFilterCode || item.ItemType == eItemType.None) output.Add(item);
+                        break;
+                    case eItemType.Header:
+                    case eItemType.Image:
+                    case eItemType.Table:
+                        if(item.ItemType == this.ItemFilterCode) output.Add(item);  
+                        break;
+                    case eItemType.None:
+                    case eItemType.All:
+                    default:
+                        output.Add(item);
+                        break;
+                }
             }
 
-
             this.datagrid_Shapes.ItemsSource = null;
-            this.datagrid_Shapes.ItemsSource = items;
+            this.datagrid_Shapes.ItemsSource = output;
             this.datagrid_Shapes.SelectedIndex = 0;
         }
 
@@ -276,7 +280,7 @@ namespace MDM.Views.DataLabeling.Pages
                 mItem newItem = new mItem();
                 vmItem newVM = new vmItem(newItem);
                 newVM.SetParentItem(lastItem.IsHeader ? lastItem : lastItem.ParentItem, false);
-                this.Material.CurrentSlide.Items.Insert(index, newVM);
+                this.Material.CurrentSlide.AddItem(newVM, index);// Items.Insert(index, newVM);
 
                 if (lastItem != null || selectedItems.Count() > 0) newVM.SetParent(lastItem.ParentShape);
 
@@ -902,8 +906,8 @@ namespace MDM.Views.DataLabeling.Pages
         {
             try
             {
-                this.Material.CurrentSlide.Shapes.Clear();
-                this.Material.CurrentSlide.LoadChildren();
+                //this.Material.CurrentSlide.Clr
+                //this.Material.CurrentSlide.LoadChildren();
             }
             catch (Exception ee)
             {

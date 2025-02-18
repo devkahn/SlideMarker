@@ -6,6 +6,14 @@
              xmlns:local="clr-namespace:MDM.Views.MarkChecker.Pages"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Background="white">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Resources/Styles/resMDMColors.xaml"/>
+                <ResourceDictionary Source="../../Resources/Styles/resMDMStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MaxWidth="600"/>
@@ -73,9 +81,24 @@
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
-            <Grid Grid.Row="1">
-                
-            </Grid>
+            <Border Grid.Row="1" Background="{StaticResource color_White}">
+                <Grid Grid.Row="1">
+                    <Grid.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                            <Setter Property="Margin" Value="5"/>
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Button x:Name="btn_SelectionRemove" Content="선택 삭제" Click="btn_SelectionRemove_Click"/>
+                    </StackPanel>
+
+                </Grid>
+            </Border>
+            
         </Grid>
 
         

@@ -54,13 +54,13 @@ namespace MDM.Views.MarkChecker.Pages
                 this.IsTreeChanged = true;
 
                 vmHeading selectedItem = e.NewValue as vmHeading;
-                if (selectedItem == null || selectedItem.Content == null)
+                if (selectedItem == null || selectedItem.Contents.Count < 0)
                 {
                     this.IsTreeChanged = false;
                     return;
                 }
 
-                this.contentsPresenter.Content = selectedItem.Content.Display_Content;
+                this.contentsPresenter.Content = selectedItem.Contents;
 
                 this.IsTreeChanged = false;
 
@@ -85,12 +85,31 @@ namespace MDM.Views.MarkChecker.Pages
                 {
                     vmHeading selectedItem = item as vmHeading;
                     if (selectedItem == null) return;
-                    if (selectedItem.Content == null) return;
+                    if (selectedItem.Contents.Count() < 0) return;
 
-                    this.contentsPresenter.Content = selectedItem.Content.Display_Content;
+                    this.contentsPresenter.Content = selectedItem.Contents;
                 }
                 
 
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_SelectionRemove_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                vmHeading selectedItem = this.treeview_Header.SelectedItem as vmHeading;
+                if (selectedItem == null) return;
+
+                vmHeading parent = selectedItem.Parent;
+                foreach (vmHeading child in selectedItem.Children)
+                {
+                    //child.SetParentHeading(parent);
+                }
             }
             catch (Exception ee)
             {

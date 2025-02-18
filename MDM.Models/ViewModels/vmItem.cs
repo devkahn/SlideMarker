@@ -119,12 +119,12 @@ namespace MDM.Models.ViewModels
             {
                 if (this.ItemType != eItemType.Image) return false;
                 if (this.ParentShape == null) return false;
-                if (string.IsNullOrEmpty(this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath)) return false;
+                if (string.IsNullOrEmpty(this.ParentShape.ParentSlide.Material.DirectoryPath)) return false;
 
                 mShape iShape = this.ParentShape.Temp;
                 if(iShape == null) return false;
 
-                string path = Path.Combine(this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath, this.Temp.Uid + Defines.EXTENSION_IMAGE);
+                string path = Path.Combine(this.ParentShape.ParentSlide.Material.DirectoryPath, this.Temp.Uid + Defines.EXTENSION_IMAGE);
                 return File.Exists(path);
             }
         }
@@ -276,7 +276,7 @@ namespace MDM.Models.ViewModels
             int vmIndex = this.ParentShape.Items.IndexOf(this);
             this.ParentShape.Items.Insert(vmIndex + 1, output);
             int slideIndex = this.ParentShape.ParentSlide.Items.IndexOf(this);
-            this.ParentShape.ParentSlide.Items.Insert(slideIndex + 1, output);
+            this.ParentShape.ParentSlide.AddItem(output, slideIndex + 1);// Items.Insert(slideIndex + 1, output);
 
             return output;
         }
@@ -378,7 +378,7 @@ namespace MDM.Models.ViewModels
                         Image cellValue = new Image();
                         if (this.ParentShape != null)
                         {
-                            string dir = this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath;
+                            string dir = this.ParentShape.ParentSlide.Material.DirectoryPath;
                             string filePath = Path.Combine(dir, filename + Defines.EXTENSION_IMAGE);
                             if(File.Exists(filePath))
                             {
@@ -499,7 +499,7 @@ namespace MDM.Models.ViewModels
                         Image cellValue = new Image();
                         if (this.ParentShape != null)
                         {
-                            string dir = this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath;
+                            string dir = this.ParentShape.ParentSlide.Material.DirectoryPath;
                             string filePath = Path.Combine(dir, filename + Defines.EXTENSION_IMAGE);
                             if (File.Exists(filePath))
                             {
@@ -552,7 +552,7 @@ namespace MDM.Models.ViewModels
                 mShape iShape = this.ParentShape.Temp;
                 if (this.IsImageFileExist && iShape != null)
                 {
-                    string dir = this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath;
+                    string dir = this.ParentShape.ParentSlide.Material.DirectoryPath;
                     string filePath = Path.Combine(dir, item.Temp.Uid + Defines.EXTENSION_IMAGE);
 
                     BitmapImage bitmap = new BitmapImage();
@@ -629,7 +629,7 @@ namespace MDM.Models.ViewModels
                 mShape iShape = this.ParentShape.Temp;
                 if (this.IsImageFileExist && iShape != null)
                 {
-                    string dir = this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath;
+                    string dir = this.ParentShape.ParentSlide.Material.DirectoryPath;
                     string filePath = Path.Combine(dir, this.Temp.Uid + Defines.EXTENSION_IMAGE);
 
                     BitmapImage bitmap = new BitmapImage();
@@ -725,7 +725,7 @@ namespace MDM.Models.ViewModels
             string output = string.Empty;
             try
             {
-                output = this.ParentShape.ParentSlide.ParentMaterial.DirectoryPath;
+                output = this.ParentShape.ParentSlide.Material.DirectoryPath;
                 if (Directory.Exists(output) == false) return string.Empty;
             }
             catch (Exception)
@@ -848,8 +848,8 @@ namespace MDM.Models.ViewModels
         {
             if (this.ParentShape != null)
             {
-                if(this.ParentShape.Items.Contains(this)) this.ParentShape.Items.Remove(this);
-                if (this.ParentShape.ParentSlide != null  && this.ParentShape.ParentSlide.Items.Contains(this)) this.ParentShape.ParentSlide.Items.Remove(this);
+                if (this.ParentShape.Items.Contains(this)) this.ParentShape.Items.Remove(this);
+                if (this.ParentShape.ParentSlide != null && this.ParentShape.ParentSlide.Items.Contains(this)) this.ParentShape.ParentSlide.RemoveItem(this);
             }
             this.ParentShape = parent;
             if (this.ParentShape == null) return;
@@ -859,7 +859,7 @@ namespace MDM.Models.ViewModels
             if (this.ParentShape != null && !this.ParentShape.Items.Contains(this))
             {
                 if (!this.ParentShape.Items.Contains(this)) this.ParentShape.Items.Add(this);
-                if (this.ParentShape.ParentSlide != null && !this.ParentShape.ParentSlide.Items.Contains(this)) this.ParentShape.ParentSlide.Items.Add(this);
+                if (this.ParentShape.ParentSlide != null && !this.ParentShape.ParentSlide.Items.Contains(this)) this.ParentShape.ParentSlide.AddItem(this);
             }
         }
         public void SetParentItem(vmItem parent, bool isDbLoad = false)

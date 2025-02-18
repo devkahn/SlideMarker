@@ -72,6 +72,7 @@ namespace MDM.Models.ViewModels
 
         private ObservableCollection<vmHeading> OriginHeadings { get; set; }
         public ReadOnlyObservableCollection<vmHeading> Headings => new ReadOnlyObservableCollection<vmHeading>(this.OriginHeadings);
+        //public ReadOnlyObservableCollection<vmHeading> RootHeadings => new ReadOnlyObservableCollection<vmHeading>(new ObservableCollection<vmHeading>(this.Headings.Where(x => x.Parent == null)));
 
 
         public object Display_Name
@@ -95,25 +96,19 @@ namespace MDM.Models.ViewModels
     }
     public partial class vmMaterial
     {
-      public void SelectShape(Shape shape)
+        internal void AddSlide(vmSlide slide)
         {
-            if (this.SelectedShapes.Contains(shape)) return;
-            this.SelectedShapes.Add(shape);
-        }
-
-        public void AddSlide(vmSlide slide)
-        {
-            slide.SetParentMaterial(this);
+            if(this.OriginSlides.Contains(slide)) return;
             this.OriginSlides.Add(slide);
         }
-        public void AddContent(vmContent content)
+        internal void AddContent(vmContent content)
         {
-            content.SetParentMaterial(this);
+            if(this.OriginContents.Contains(content)) return;
             this.OriginContents.Add(content);
         }
-        public void AddHeading(vmHeading heading)
+        internal void AddHeading(vmHeading heading)
         {
-            heading.SetParentMaterial(this);
+            if(this.OriginHeadings.Contains(heading)) return;   
             this.OriginHeadings.Add(heading);
         }
         public void ClearSlides() => this.OriginSlides.Clear();
@@ -124,15 +119,33 @@ namespace MDM.Models.ViewModels
 
             OnModifyStatusChanged();
         }
-        public void OrderSlides()
+        public void OrderSlides() => this.OriginSlides = new ObservableCollection<vmSlide>(this.OriginSlides.OrderBy(x => x.Temp.Index));
+        private void OriginSlides_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => OnPropertyChanged(nameof(Slides));
+        private void OriginHeadings_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            this.OriginSlides = new ObservableCollection<vmSlide>(this.OriginSlides.OrderBy(x=> x.Temp.Index)); 
+            OnPropertyChanged(nameof(this.Headings));
+            //OnPropertyChanged(nameof(this.RootHeadings));
         }
-        private void OriginSlides_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void OriginContents_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => OnPropertyChanged(nameof(this.Contents));
+        public void RemoveSlide(vmSlide slide)
         {
-            OnPropertyChanged(nameof(Slides));
+            if (!this.OriginSlides.Contains(slide)) return;
+            this.OriginSlides.Remove(slide);
         }
-        public void RemoveSlide(vmSlide slide) => this.OriginSlides.Remove(slide);
+        public void RemoveHeading(vmHeading heading)
+        {
+            if (this.OriginHeadings.Contains(heading))
+            {
+                this.OriginHeadings.Remove(heading);
+            }
+        }
+        public void RemoveContent(vmContent content)
+        {
+            if(this.OriginContents.Contains(content))
+            {
+                this.OriginContents.Remove(content);    
+            }
+        }
         public override void SetInitialData()
         {
             //this.SelectedShapes = { };
@@ -141,11 +154,12 @@ namespace MDM.Models.ViewModels
             this.OriginSlides.CollectionChanged += OriginSlides_CollectionChanged;
 
             this.OriginContents = new ObservableCollection<vmContent>();
+            this.OriginContents.CollectionChanged += OriginContents_CollectionChanged;
 
             this.OriginHeadings = new ObservableCollection<vmHeading>();
+            this.OriginHeadings.CollectionChanged += OriginHeadings_CollectionChanged;
         }
         public void SetPresentation(Presentation ppt) => this.OriginPresentation = ppt; 
-
         public override object UpdateOriginData()
         {
             this.Origin.ParentUid = this.Temp.ParentUid;

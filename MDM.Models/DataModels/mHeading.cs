@@ -13,7 +13,5 @@ namespace MDM.Models.DataModels
         
         public int Level { get; set; } = -1;
         public string Name { get; set; } = string.Empty;
-        
-
     }
 }

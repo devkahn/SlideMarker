@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -41,12 +42,16 @@ namespace MDM.Models.ViewModels
             }
         }
         public mHeading Temp { get; private set; } = null;
-
-
-        public ObservableCollection<vmHeading> Children { get; private set; } = null;
-        public vmContent Content { get; private set; } = null;
         public vmMaterial ParentMaterial { get; private set; } = null;
         public vmHeading Parent { get; private set; } = null;
+
+        private ObservableCollection<vmHeading> OriginChildren { get; set; }
+        private ObservableCollection<vmContent> OriginContents { get; set; }
+
+
+        public ReadOnlyObservableCollection<vmHeading> Children => new ReadOnlyObservableCollection<vmHeading>(this.OriginChildren);
+        public ReadOnlyObservableCollection<vmContent> Contents => new ReadOnlyObservableCollection<vmContent>(this.OriginContents);
+
 
         public object Display_Name
         {
@@ -60,32 +65,64 @@ namespace MDM.Models.ViewModels
     }
     public partial class vmHeading 
     {
-        public void AddChild(vmHeading child)
+        internal void AddChild(vmHeading child)
         {
-            this.Children.Add(child);
-            child.SetParent(this);
+            this.OriginChildren.Add(child);
+           
+        }
+        internal void AddContent(vmContent content)
+        {
+            if (this.OriginContents.Contains(content)) return;
+            this.OriginContents.Add(content);
         }
         public override void InitializeDisplay()
         {
             this.Display_Name = this.Temp.Name;
         }
-
+        private void OriginChildren_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => OnPropertyChanged(nameof(this.Children));
+        private void OriginContents_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => OnPropertyChanged(nameof(OriginContents));
+        public void RemoveChild(vmHeading heading)
+        {
+            if (!this.OriginChildren.Contains(heading)) return; ;
+            this.OriginChildren.Remove(heading);
+        }
+        public void RemoveContent(vmContent content)
+        {
+            if(!this.OriginContents.Contains(content)) return;
+            this.OriginContents.Remove(content);
+        }
         public override void SetInitialData()
         {
-            this.Children = new ObservableCollection<vmHeading>();
+            this.OriginChildren = new ObservableCollection<vmHeading>();
+            this.OriginChildren.CollectionChanged += OriginChildren_CollectionChanged;
+
+            this.OriginContents = new ObservableCollection<vmContent>();
+            this.OriginContents.CollectionChanged += OriginContents_CollectionChanged;
         }
-        internal void SetParentMaterial(vmMaterial parent)
+        public void SetParentMaterial(vmMaterial parent)
         {
+            if (this.ParentMaterial != null) this.ParentMaterial.RemoveHeading(this);
             this.ParentMaterial = parent;
-            this.Origin.MaterialIdx = this.Temp.MaterialIdx = parent.Temp.Idx;
+            this.Temp.MaterialIdx = -1;
+            if(this.ParentMaterial != null)
+            {
+                this.ParentMaterial.AddHeading(this);
+                this.Temp.MaterialIdx = this.ParentMaterial.Temp.Idx;
+            }
         }
-        internal void SetParent(vmHeading parent)
+        public void SetParent(vmHeading parent)
         {
+            if (this.Parent != null) this.Parent.RemoveChild(this);
+
             this.Parent = parent;
-        }
-        internal void SetContent(vmContent item)
-        {
-            this.Content = item;
+            if (this.Parent == null)
+            {
+                this.ParentMaterial.AddHeading(this);
+            }
+            else
+            {
+                this.Parent.AddChild(this);
+            }
         }
         public override object UpdateOriginData()
         {

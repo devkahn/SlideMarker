@@ -131,7 +131,7 @@ namespace MDM.Helpers
         }
         public static void Delete(this vmShape obj)
         {
-            obj.ParentSlide.Shapes.Remove(obj);
+            obj.ParentSlide.RemoveShpae(obj);// Shapes.Remove(obj);
             obj.ParentSlide.Temp.Shapes.Remove(obj.Temp);
             obj.SetParent(null);
 
@@ -147,7 +147,7 @@ namespace MDM.Helpers
         {
             obj.ParentShape.Items.Remove(obj);
             obj.ParentShape.Temp.Lines.Remove(obj.Temp);
-            obj.ParentShape.ParentSlide.Items.Remove(obj);
+            obj.ParentShape.ParentSlide.RemoveItem(obj);// .Items.Remove(obj);
             obj.SetParent(null);
 
             foreach (vmItem child in obj.Children.ToList()) child.SetParentItem(obj.ParentItem);
@@ -169,7 +169,7 @@ namespace MDM.Helpers
             foreach (mSlide slide in children)
             {
                 vmSlide newSlide = new vmSlide(slide);
-                newSlide.SetParent(obj);
+                newSlide.SetParentMaterial(obj);
                 newSlide.LoadChildren();
             }
         }

@@ -155,31 +155,6 @@ namespace MDM.Views.DataLabeling.Pages
             }
         }
 
-        public void PowerPointApp_WindowSelectionChange(Selection selections)
-        {
-            try
-            {
-                if (this.Material == null) return;
-
-                // 선택된 항목이 있을 경우
-                if (selections.Type == PpSelectionType.ppSelectionShapes)
-                {
-                    List<Shape> shapes = new List<Shape>();
-                    // 선택된 개체들의 타입 출력
-                    foreach (Shape shape in selections.ShapeRange)
-                    {
-                        MessageBox.Show(shape.Name, "selected");
-                        this.Material.SelectShape(shape);
-                      
-                    }
-                }
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
         private void btn_BackUp_Click(object sender, RoutedEventArgs e)
         {
 

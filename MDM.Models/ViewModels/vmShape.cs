@@ -138,11 +138,11 @@ namespace MDM.Models.ViewModels
 
         public void SetParent(vmSlide parent)
         {
-            if (this.ParentSlide != null && this.ParentSlide.Shapes.Contains(this)) this.ParentSlide.Shapes.Remove(this);
+            if (this.ParentSlide != null && this.ParentSlide.Shapes.Contains(this)) this.ParentSlide.RemoveShpae(this);// .Shapes.Remove(this);
             this.ParentSlide = parent;
             this.Origin.ParentSlideIdx = this.Temp.ParentSlideIdx = parent.Temp.Idx;
             this.Origin.ParentUid = this.Temp.ParentUid = parent.Temp.Uid;
-            if (this.ParentSlide != null && !this.ParentSlide.Shapes.Contains(this)) this.ParentSlide.Shapes.Add(this);
+            if (this.ParentSlide != null && !this.ParentSlide.Shapes.Contains(this)) this.ParentSlide.AddShape(this);//.Shapes.Add(this);
         }
         public void UndoText()
         {

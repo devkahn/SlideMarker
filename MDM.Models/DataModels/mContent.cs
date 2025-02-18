@@ -17,6 +17,7 @@ namespace MDM.Models.DataModels
         [PropOrder(12)]
         [ColumnHeader("SlideIdx")]
         public int SlideIdx { get; set; } =  -1;
+        
 
         [PropOrder(13)]
         [ColumnHeader("Heading1Idx")]
