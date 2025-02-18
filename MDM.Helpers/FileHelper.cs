@@ -4,6 +4,7 @@ using MDM.Commons;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MDM.Commons.Enum;
 using System;
+using System.Collections.Generic;
 
 namespace MDM.Helpers
 {
@@ -16,7 +17,7 @@ namespace MDM.Helpers
             if (!Directory.Exists(Defines.PATH_DIRECOTRY_ERROR_LOG)) Directory.CreateDirectory(Defines.PATH_DIRECOTRY_ERROR_LOG);
         }
 
-        public static FileInfo GetOpenFileInfo(string caption = "파일 열기",eFILE_TYPE filter = eFILE_TYPE.None)
+        public static FileInfo GetOpenFileInfo(List<eFILE_TYPE> filters = null, string caption = "파일 열기")
         {
             FileInfo output = null;
 
@@ -29,13 +30,23 @@ namespace MDM.Helpers
             string basicName = EnumHelpers.GetDescription(eFILE_TYPE.None).Split('|')[0];
             string absicExtensions = EnumHelpers.GetDescription(eFILE_TYPE.None).Split('|')[1];
             ofd.Filters.Add(new CommonFileDialogFilter(basicName, absicExtensions));
-            if(filter != eFILE_TYPE.None)
+
             {
-                string name = EnumHelpers.GetDescription(filter).Split('|')[0];
-                string extensions = EnumHelpers.GetDescription(filter).Split('|')[1];
+                string name = EnumHelpers.GetDescription(eFILE_TYPE.None).Split('|')[0];
+                string extensions = EnumHelpers.GetDescription(eFILE_TYPE.None).Split('|')[1];
                 ofd.Filters.Add(new CommonFileDialogFilter(name, extensions));
             }
-
+            if(filters != null)
+            {
+                foreach (eFILE_TYPE filter in filters)
+                {
+                    string name = EnumHelpers.GetDescription(filter).Split('|')[0];
+                    string extensions = EnumHelpers.GetDescription(filter).Split('|')[1];
+                    ofd.Filters.Add(new CommonFileDialogFilter(name, extensions));
+                }
+            }
+           
+            
             
             if(ofd.ShowDialog() == CommonFileDialogResult.Ok)
             {

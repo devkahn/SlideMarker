@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using MDM.Commons.Enum;
 using MDM.Models.DataModels;
 
@@ -48,13 +49,13 @@ namespace MDM.Models.ViewModels
             }
         }
         public mSlide Temp { get; private set; } = null;
-        public vmMaterial ParentMaterial
+        public vmMaterial Material
         {
             get => _ParentMaterial;
             private set
             {
                 _ParentMaterial = value;
-                OnPropertyChanged(nameof(ParentMaterial));
+                OnPropertyChanged(nameof(this.Material));
             }
         }
         public vmSlideStatus Status
@@ -75,14 +76,15 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(CurrentItem), false);
             }
         }
+        private ObservableCollection<vmShape> OriginShapes { get; set; }
+        public ObservableCollection<vmItem> OriginItems { get; set; }
 
 
-        public ObservableCollection<vmShape> Shapes { get; private set; }
-        public ObservableCollection<vmItem> Items { get; private set; }
+
+        public ReadOnlyObservableCollection<vmShape> Shapes => new ReadOnlyObservableCollection<vmShape>(this.OriginShapes);
+        public ReadOnlyObservableCollection<vmItem> Items => new ReadOnlyObservableCollection<vmItem>(this.OriginItems);
+
         public ReadOnlyObservableCollection<object> PreviewItems => new ReadOnlyObservableCollection<object>(new ObservableCollection<object>(this.Items.Select(x => x.Display_PreviewItem_Slide)));
-
-
-
         public object Display_Index
         {
             get => _Display_Index;
@@ -114,7 +116,26 @@ namespace MDM.Models.ViewModels
 
     public partial class vmSlide
     {
-
+        internal void AddShape(vmShape shape)
+        {
+            if (this.OriginShapes.Contains(shape)) return;
+            this.OriginShapes.Add(shape);
+        }
+        internal void AddItem(vmItem item)
+        {
+            if (this.OriginItems.Contains(item)) return;
+            this.OriginItems.Add(item);
+        }
+        internal void AddItem(vmItem item, int index)
+        {
+            if (this.OriginItems.Contains(item)) return;
+            this.OriginItems.Insert(index, item);
+        }
+        public void ClearShapes()
+        {
+            foreach (vmShape item in this.OriginShapes) item.SetParentSlide(null);
+            this.OriginShapes.Clear();
+        }
         public override void InitializeDisplay()
         {
             this.Status = new vmSlideStatus((ePageStatus)this.Temp.Status);
@@ -123,15 +144,17 @@ namespace MDM.Models.ViewModels
             this.Display_UpdateDate = this.Temp.UpdateDate.HasValue ? this.Temp.UpdateDate.Value.ToString("yyyy-MM-dd hh:mm:ss") : "-";
             this.Display_Description = this.Temp.Description;
 
-            this.Shapes.Clear();
-            this.Items.Clear();
-            foreach (mShape item in this.Temp.Shapes)
+            this.OriginShapes.Clear();
+            this.OriginItems.Clear();
+            foreach (mShape shape in this.Temp.Shapes)
             {
-                vmShape newShape = new vmShape(item);
-                newShape.ParentSlide = this;
-                this.Shapes.Add(newShape);
+                vmShape newShape = new vmShape(shape);
+                newShape.SetParentSlide(this);
 
-                foreach (vmItem ln in newShape.Items) this.Items.Add(ln);
+                foreach (vmItem item in newShape.Items)
+                {
+                    item.SetParentSlide(this);
+                }
             }
 
             OnModifyStatusChanged();
@@ -142,17 +165,15 @@ namespace MDM.Models.ViewModels
             foreach (var item in e.NewItems)
             {
                 vmItem data = item as vmItem;
-                if(data == null) continue;
-
-                data.SetRowIndex();
+                if(data != null) data.SetRowIndex();
             }
         }
         public vmSlide NextItem()
         {
             vmSlide output = null;
 
-            int index = this.ParentMaterial.Slides.IndexOf(this);
-            if (index < this.ParentMaterial.Slides.Count() - 2) output = this.ParentMaterial.Slides.ElementAt(index + 1);
+            int index = this.Material.Slides.IndexOf(this);
+            if (index < this.Material.Slides.Count() - 2) output = this.Material.Slides.ElementAt(index + 1);
 
             return output;
         }
@@ -161,19 +182,30 @@ namespace MDM.Models.ViewModels
         {
             vmSlide output = null;
 
-            int index = this.ParentMaterial.Slides.IndexOf(this);
-            if (0 < index) output = this.ParentMaterial.Slides.ElementAt(index - 1);
+            int index = this.Material.Slides.IndexOf(this);
+            if (0 < index) output = this.Material.Slides.ElementAt(index - 1);
 
             return output;
         }
+        internal void RemoveShape(vmShape shape)
+        {
+            if (!this.OriginShapes.Contains(shape)) return;
+            this.OriginShapes.Remove(shape);
+
+            mShape sameShape = this.Temp.Shapes.Where(x => x.Uid == shape.Temp.Uid).FirstOrDefault();
+            if (sameShape != null) this.Temp.Shapes.Remove(sameShape);
+        }
+        internal void RemoveItem(vmItem item)
+        {
+            if (!this.OriginItems.Contains(item)) return;
+            this.OriginItems.Remove(item);
+        }
         public override void SetInitialData()
         {
-            this.Shapes = new ObservableCollection<vmShape>();
-            this.Items = new ObservableCollection<vmItem>();
-            this.Items.CollectionChanged += Items_CollectionChanged;
+            this.OriginShapes = new ObservableCollection<vmShape>();
+            this.OriginItems = new ObservableCollection<vmItem>();
+            this.OriginItems.CollectionChanged += Items_CollectionChanged;
         }
-        public void SetParentMaterial(vmMaterial parentMaterial) => this.ParentMaterial = parentMaterial;
-        
         public void SetStatus(ePageStatus status)
         {
             this.Status.Status = status;
@@ -182,13 +214,20 @@ namespace MDM.Models.ViewModels
             this.IsChanged = true;
             OnPropertyChanged(nameof(IsChanged));   
         }
-        public void SetParent(vmMaterial parent)
+        public void SetParentMaterial(vmMaterial parentMaterial)
         {
-            if (this.ParentMaterial != null) this.ParentMaterial.RemoveSlide(this);
-            this.ParentMaterial = parent;
-            this.Origin.MaterialId = this.Temp.MaterialId = parent.Temp.Idx;
-            this.Origin.ParentUid = this.Temp.ParentUid = parent.Temp.Uid;
-            if(this.ParentMaterial != null) this.ParentMaterial.AddSlide(this);
+            if (this.Material != null) this.Material.RemoveSlide(this);
+
+            this.Material = parentMaterial;
+            this.Temp.MaterialId = -1;
+            this.Temp.ParentUid = string.Empty;
+
+            if (this.Material != null)
+            {
+                this.Material.AddSlide(this);
+                this.Temp.MaterialId = parentMaterial.Temp.Idx;
+                this.Temp.ParentUid = parentMaterial.Temp.Uid;
+            }
         }
         public void SetDescription(string  description)
         {
@@ -196,18 +235,18 @@ namespace MDM.Models.ViewModels
         }
         public override object UpdateOriginData()
         {
-            this.Origin.MaterialId = this.Temp.MaterialId = this.ParentMaterial.Temp.Idx;
+            this.Origin.MaterialId = this.Temp.MaterialId;
+            this.Origin.ParentUid = this.Temp.ParentUid;
+
             this.Origin.Status = this.Temp.Status;
             this.Origin.Description = this.Temp.Description;
             this.Origin.UpdateDate = this.Temp.UpdateDate = this.Origin.UpdateDate.HasValue ? DateTime.Now : this.Origin.CreateDate;
-            
+
+            this.Origin.Shapes.Clear();
+            foreach (mShape shape in this.Temp.Shapes) this.Origin.Shapes.Add(shape);
 
             return this.Origin;
         }
-        
-        
-
-        
     }
 
  

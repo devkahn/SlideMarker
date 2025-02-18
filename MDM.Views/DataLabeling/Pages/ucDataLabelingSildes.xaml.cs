@@ -68,8 +68,6 @@ namespace MDM.Views.DataLabeling.Pages
                 isIndex = true;
             }
 
-            if (this.Material == null) return;
-
             vmSlide sameSlide = this.Material.Slides.Where(x => x.Temp.Index == index).FirstOrDefault();
             if (sameSlide == null)
             {

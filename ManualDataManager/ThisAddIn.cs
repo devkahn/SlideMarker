@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using ManualDataManager.Commons;
 using MDM.Helpers;
 
@@ -22,6 +23,22 @@ namespace ManualDataManager
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
         {
+            Process[] processes = Process.GetProcesses();
+            foreach (Process process in processes)
+            {
+                try
+                {
+                    if (process.MainModule.FileName.Contains("SQL.interop.dll"))
+                    {
+                        //Console.WriteLine($"Killing process: {process.ProcessName}");
+                        process.Kill();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    
+                }
+            }
             ProgramValues.PowerPointApp = null;
         }
 

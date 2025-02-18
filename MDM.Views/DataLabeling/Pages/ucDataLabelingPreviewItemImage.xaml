@@ -42,8 +42,8 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel >
                     <StackPanel >
-                        <Button Content="불러오기" Click="btn_ImageLoad_Click"/>
-                        <Button Content="붙혀넣기" Click="btn_ImagePaste_Click"/>
+                        <Button Content="불러오기" />
+                        <Button Content="붙혀넣기" />
                     </StackPanel>
                     <StackPanel >
                         

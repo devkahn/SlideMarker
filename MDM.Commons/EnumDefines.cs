@@ -74,7 +74,13 @@ namespace MDM.Commons.Enum
         MSExcel,
 
         [Description("MPP 파일|*.mpp")]
-        MSProject
+        MSProject,
+
+        [Description("JSON 파일|*.json")]
+        JSON,
+
+        [Description("TEXT 파일|*.txt")]
+        TXT,
     }
 }
   

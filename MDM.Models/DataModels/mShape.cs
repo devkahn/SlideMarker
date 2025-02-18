@@ -78,6 +78,6 @@ namespace MDM.Models.DataModels
 
 
 
-        public List<mItem> Lines { get; set; } = new List<mItem>();
+        public List<mItem> Items { get; set; } = new List<mItem>();
     }
 }

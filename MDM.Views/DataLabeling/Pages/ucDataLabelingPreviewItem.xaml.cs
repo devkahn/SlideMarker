@@ -137,11 +137,11 @@ namespace MDM.Views.DataLabeling.Pages
 
                 List<string> headers = new List<string>();
 
-                vmItem parent = data.ParentItem;
+                vmItem parent = data.Parent;
                 while (parent != null)
                 {
                     headers.Add(parent.Temp.LineText);
-                    parent = parent.ParentItem;
+                    parent = parent.Parent;
                 }
 
                 headers.Reverse();

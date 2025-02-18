@@ -94,7 +94,7 @@
   <ItemGroup>
     <Compile Include="ControlHelper.cs" />
     <Compile Include="DataHelper.cs" />
-    <Compile Include="DateHelper.cs" />
+    <Compile Include="DateTimeHelper.cs" />
     <Compile Include="DBHelper.cs" />
     <Compile Include="EnumHelpers.cs" />
     <Compile Include="ErrorHelper.cs" />

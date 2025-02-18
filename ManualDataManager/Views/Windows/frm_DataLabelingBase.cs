@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,24 @@ namespace ManualDataManager.Views.Windows
 
         private void frm_DataLabeling_Closing(object sender, FormClosingEventArgs e)
         {
+            Process[] processes = Process.GetProcesses();
+            foreach (Process process in processes)
+            {
+                try
+                {
+                    if (process.MainModule.FileName.Contains("SQL.interop.dll"))
+                    {
+                        //Console.WriteLine($"Killing process: {process.ProcessName}");
+                        process.Kill();
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+
+
             ProgramValues.DataLabelingWindow = null;
         }
     }
