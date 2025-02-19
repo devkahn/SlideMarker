@@ -24,7 +24,8 @@ namespace MDM.Helpers
             ofd.RestoreDirectory = true;
             ofd.Title  = caption;
             ofd.EnsureValidNames = true;
-            ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            //ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
 
             string basicName = EnumHelpers.GetDescription(eFILE_TYPE.None).Split('|')[0];
             string absicExtensions = EnumHelpers.GetDescription(eFILE_TYPE.None).Split('|')[1];

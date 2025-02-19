@@ -32,6 +32,7 @@ namespace MDM.Views.MarkChecker.Pages
                 this.mcExcelView.Material = value;
                 this.mcContentsByHeading.Material = value;
                 this.smDataLabeling.SetMaterial(value);
+                this.ucMarCheckerToXml.Material = value;
             }
         }
 
@@ -49,11 +50,278 @@ namespace MDM.Views.MarkChecker.Pages
 
 
                 mMaterial material = new mMaterial();
+                material.Name = Path.GetFileNameWithoutExtension(fInfo.FullName);
                 vmMaterial newMaterial = new vmMaterial(material);
+                newMaterial.DirectoryPath = fInfo.DirectoryName;    
 
                 string jsonString = File.ReadAllText(fInfo.FullName);
                 List<mContent> contentList = JsonHelper.ToObject<List<mContent>>(jsonString) as List<mContent>;
 
+
+                Dictionary<int, List<mContent>> slideDic = new Dictionary<int, List<mContent>>();
+                foreach (mContent content in contentList)
+                {
+                    int slideNum = content.SlideIdx;
+                    if (!slideDic.ContainsKey(slideNum)) slideDic.Add(slideNum, new List<mContent>());
+                    slideDic[slideNum].Add(content);
+                }
+                List<mSlide> slides = new List<mSlide>();
+                foreach (int key in slideDic.Keys)
+                {
+                    mSlide newSlide = new mSlide();
+                    newSlide.SlideNumber = key;
+                    newSlide.Index = key;
+                    slides.Add(newSlide);
+
+                    List<mItem> items = new List<mItem>();
+                    foreach (mContent content in slideDic[key])
+                    {
+                        mSlide sameSlide = slides.Where(x => x.SlideNumber == key).FirstOrDefault();
+                        if (sameSlide == null)
+                        {
+                            sameSlide = new mSlide();
+                            sameSlide.SlideNumber = content.SlideIdx;
+                            sameSlide.Index = sameSlide.SlideNumber;
+                            slides.Add(sameSlide);
+                        }
+
+                        sameSlide.Description += content.Description + "\n" + content.Message + "\n";
+                        if (TextHelper.IsNoText(content.Contents))
+                        {
+                            sameSlide.Status = ePageStatus.Exception.GetHashCode();
+                            continue;
+                        }
+
+                        sameSlide.Status = ePageStatus.Completed.GetHashCode();
+
+                        int level = 1;
+                        mItem header1 = GetSameItem(level++, content, items);
+                        if (header1 != null && !items.Contains(header1)) items.Add(header1);
+                        mItem header2 = GetSameItem(level++, content, items);
+                        if (header2 != null && !items.Contains(header2)) items.Add(header2);
+                        mItem header3 = GetSameItem(level++, content, items);
+                        if (header3 != null && !items.Contains(header3)) items.Add(header3);
+                        mItem header4 = GetSameItem(level++, content, items);
+                        if (header4 != null && !items.Contains(header4)) items.Add(header4);
+                        mItem header5 = GetSameItem(level++, content, items);
+                        if (header5 != null && !items.Contains(header5)) items.Add(header5);
+                        mItem header6 = GetSameItem(level++, content, items);
+                        if (header6 != null && !items.Contains(header6)) items.Add(header6);
+                        mItem header7 = GetSameItem(level++, content, items);
+                        if (header7 != null && !items.Contains(header7)) items.Add(header7);
+                        mItem header8 = GetSameItem(level++, content, items);
+                        if (header8 != null && !items.Contains(header8)) items.Add(header8);
+                        mItem header9 = GetSameItem(level++, content, items);
+                        if (header9 != null && !items.Contains(header9)) items.Add(header9);
+                        mItem header10 = GetSameItem(level++, content, items);
+                        if (header10 != null && !items.Contains(header10)) items.Add(header10);
+
+                        mItem conItem = new mItem();
+                        conItem.ItemType = content.ContentsType;
+                        conItem.Level = GetContentLevel(content);
+                        conItem.LineText = content.Contents;
+                        items.Add(conItem);
+                    }
+
+                    foreach (mItem item in items)
+                    {
+                        mShape newShape = new mShape();
+                        newShape.ShapeType = item.ItemType;
+                        if (item.ItemType == 210) newShape.ShapeType = eShapeType.Text.GetHashCode();
+                        newShape.Top = items.IndexOf(item);
+                        newShape.Text = item.LineText;
+                        newShape.Lines.Add(item);
+
+                        newSlide.Shapes.Add(newShape);
+                    }
+                }
+
+
+                DirectoryInfo dInfo = fInfo.Directory;
+                List<mHeading> headings = null;
+                FileInfo headerInfo = dInfo.GetFiles("*.headers", SearchOption.TopDirectoryOnly).OrderBy(x => x.Name).LastOrDefault();
+                if(headerInfo != null)
+                {
+                    string headerJsonString = File.ReadAllText(headerInfo.FullName);
+                    headings = JsonHelper.ToObject<List<mHeading>>(headerJsonString);
+                }
+                if (headings == null) headings = new List<mHeading>();
+
+                List<vmItem> allitems = new List<vmItem>();
+                foreach (mSlide slide in slides)
+                {
+                    vmSlide newSlide = new vmSlide(slide);
+                    newSlide.SetParentMaterial(newMaterial);
+                    if (headings.Count > 0)
+                    {
+                        foreach (vmItem item in newSlide.Items) allitems.Add(item);
+                        continue;
+                    }
+                    newSlide.ConvertAndSetContents();
+                }
+
+                foreach (mHeading heading in headings)
+                {
+                    SetHeading(heading, null, newMaterial, allitems);
+                }
+
+                #region 이전 코드
+                /*
+            
+
+                */
+
+                /*
+                Dictionary<int, List<mContent>> slides = new Dictionary<int, List<mContent>>();
+                foreach (mContent content in list) 
+                {
+                    int slideNum = content.SlideIdx;
+                    if (!slides.ContainsKey(slideNum)) slides.Add(slideNum, new List<mContent>());
+                    slides[slideNum].Add(content);
+                }
+                foreach (int key in slides.Keys)
+                {
+                    mSlide newSlide = new mSlide();
+                    newSlide.SlideNumber = key;
+
+                    List<mContent> contents = slides[key];
+                    Dictionary<int, List<mHeading>> levelOfHeadings = new Dictionary<int, List<mHeading>>();
+                    for (int i = 1; i <= 10; i++)
+                    {
+                        List<string> names = new List<string>();
+                        switch (i)
+                        {
+                            case 1: names = contents.Select(x => x.Heading1String).Distinct().ToList(); break;
+                            case 2: names = contents.Select(x => x.Heading2String).Distinct().ToList(); break;
+                            case 3: names = contents.Select(x => x.Heading3String).Distinct().ToList(); break;
+                            case 4: names = contents.Select(x => x.Heading4String).Distinct().ToList(); break;
+                            case 5: names = contents.Select(x => x.Heading5String).Distinct().ToList(); break;
+                            case 6: names = contents.Select(x => x.Heading6String).Distinct().ToList(); break;
+                            case 7: names = contents.Select(x => x.Heading7String).Distinct().ToList(); break;
+                            case 8: names = contents.Select(x => x.Heading8String).Distinct().ToList(); break;
+                            case 9: names = contents.Select(x => x.Heading9String).Distinct().ToList(); break;
+                            case 10: names = contents.Select(x => x.Heading10String).Distinct().ToList(); break;
+                            default: break;
+                        }
+                        List<mHeading> headingList = new List<mHeading>();
+                        foreach (string name in names)
+                        {
+                            if(string.IsNullOrEmpty(name) || string.IsNullOrWhiteSpace(name)) continue;
+                            mHeading newHeading = new mHeading();
+                            newHeading.Level = i;
+                            newHeading.Name = name; 
+                        }
+                        levelOfHeadings.Add(i, headingList);
+                    }
+                }
+                */
+
+                /*
+                foreach (int slideNum in slides.Keys)
+                {
+                    mSlide slide = new mSlide();
+                    slide.SlideNumber = slideNum;
+
+                    //List<mItem> items = new List<mItem>();
+                    int order = 1;
+                    
+                    foreach (mContent content in slides[slideNum])
+                    {
+                        int level = 1;
+                        #region Heading
+                        
+                        for (int i = 1; i < 10; i++)
+                        {
+                            string value = string.Empty;
+                            switch (i)
+                            {
+                                case 1: value = content.Heading1String; break;
+                                case 2: value = content.Heading2String; break;
+                                case 3: value = content.Heading3String; break;
+                                case 4: value = content.Heading4String; break;
+                                case 5: value = content.Heading5String; break;
+                                case 6: value = content.Heading6String; break;
+                                case 7: value = content.Heading7String; break;
+                                case 8: value = content.Heading8String; break;
+                                case 9: value = content.Heading9String; break;
+                                case 10: value = content.Heading10String; break;
+                                default: break;
+                            }
+
+                            if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value)) continue;
+
+                            mItem newItem = new mItem();
+                            newItem.Order = order++;
+                            newItem.ItemType = eItemType.Header.GetHashCode();
+                            newItem.Level = level;
+                            newItem.LineText = value;
+
+                            mShape newShape = new mShape(eShapeType.Text);
+                            newShape.Top = newItem.Order;
+                            newShape.Text = value;
+                            newShape.Lines.Add(newItem);
+
+                            slide.Shapes.Add(newShape);
+
+                            level++;
+                        }
+                        #endregion
+                        #region 본문
+
+                        string contentValue = content.Contents;
+                        if (string.IsNullOrEmpty(contentValue) || string.IsNullOrWhiteSpace(contentValue)) continue;
+
+                        mItem conItem = new mItem();
+                        conItem.Order = order++;
+                        conItem.ItemType = content.ContentsType;
+                        conItem.Level = level++;
+                        conItem.LineText = contentValue;
+
+                        mShape conShape = new mShape((eShapeType)conItem.ItemType);
+                        conShape.Top = conItem.Order;
+                        conShape.Text = contentValue;
+                        conShape.Lines.Add(conItem);
+                        slide.Shapes.Add(conShape);
+
+                        #endregion
+                        slide.Description = content.Description;
+                    }
+
+                    vmSlide newSlide = new vmSlide(slide);
+                    newSlide.SetParentMaterial(newMaterial);
+
+                    vmHeading lastHeading = null;
+                    foreach (vmItem item in newSlide.Items)
+                    {
+                        if(item.ItemType == eItemType.Header)
+                        {
+                            vmHeading sameHeading = newMaterial.Headings.Where(x => x.Temp.Level == item.Temp.Level && x.Temp.Name == item.Temp.LineText).FirstOrDefault();
+                            if (sameHeading == null)
+                            {
+                                mHeading heading = new mHeading();
+                                heading.Level= item.Temp.Level;
+                                heading.Name = item.Temp.LineText;
+
+                                vmHeading newHeading = new vmHeading(heading);
+                                newHeading.SetParentMaterial(newMaterial);
+                                newHeading.SetParent(lastHeading);
+                                lastHeading = newHeading;
+                            }
+                        }
+                        else
+                        {
+                            vmContent newContent = new vmContent(item);
+                            newContent.SetParentMaterial(newMaterial);
+                            newContent.SetParentHeading(lastHeading);   
+                        }
+                    }
+                }
+
+                */
+
+                /*
+                 * 
+             
                 Dictionary<int, vmSlide> slides = new Dictionary<int, vmSlide>();
                 foreach (mContent content in contentList)
                 {
@@ -282,251 +550,60 @@ namespace MDM.Views.MarkChecker.Pages
 
                 foreach (vmSlide sl in slides.Values) newMaterial.AddSlide(sl);
 
-
-                this.Material = newMaterial;
-
-                #region 이전 코드
-                /*
-                     Dictionary<int, List<mContent>> slideDic = new Dictionary<int, List<mContent>>();
-                foreach (mContent content in contentList)
-                {
-                    int slideNum = content.SlideIdx;
-                    if (!slideDic.ContainsKey(slideNum)) slideDic.Add(slideNum, new List<mContent>());
-                    slideDic[slideNum].Add(content);
-                }
-                List<mSlide> slides = new List<mSlide>();
-                foreach (int key in slideDic.Keys)
-                {
-                    mSlide newSlide = new mSlide();
-                    newSlide.SlideNumber = key;
-                    slides.Add(newSlide);
-
-                    List<mItem> items = new List<mItem>();
-                    foreach (mContent content in slideDic[key])
-                    {
-                        mSlide sameSlide = slides.Where(x => x.SlideNumber == key).FirstOrDefault();
-                        if (sameSlide == null)
-                        {
-                            sameSlide = new mSlide();
-                            sameSlide.SlideNumber = content.SlideIdx;
-                            sameSlide.Description = content.Description + "\n" + content.Message;
-                            slides.Add(sameSlide);
-                        }
-                        if (TextHelper.IsNoText(content.Contents)) continue;
-
-                        int level = 1;
-                        mItem header1 = GetSameItem(level++, content, items);
-                        if (header1 != null && !items.Contains(header1)) items.Add(header1);
-                        mItem header2 = GetSameItem(level++, content, items);
-                        if (header2 != null && !items.Contains(header2)) items.Add(header2);
-                        mItem header3 = GetSameItem(level++, content, items);
-                        if (header3 != null && !items.Contains(header3)) items.Add(header3);
-                        mItem header4 = GetSameItem(level++, content, items);
-                        if (header4 != null && !items.Contains(header4)) items.Add(header4);
-                        mItem header5 = GetSameItem(level++, content, items);
-                        if (header5 != null && !items.Contains(header5)) items.Add(header5);
-                        mItem header6 = GetSameItem(level++, content, items);
-                        if (header6 != null && !items.Contains(header6)) items.Add(header6);
-                        mItem header7 = GetSameItem(level++, content, items);
-                        if (header7 != null && !items.Contains(header7)) items.Add(header7);
-                        mItem header8 = GetSameItem(level++, content, items);
-                        if (header8 != null && !items.Contains(header8)) items.Add(header8);
-                        mItem header9 = GetSameItem(level++, content, items);
-                        if (header9 != null && !items.Contains(header9)) items.Add(header9);
-                        mItem header10 = GetSameItem(level++, content, items);
-                        if (header10 != null && !items.Contains(header10)) items.Add(header10);
-
-                        mItem conItem = new mItem();
-                        conItem.ItemType = content.ContentsType;
-                        conItem.Level = level++;
-                        conItem.LineText = content.Contents;
-                        items.Add(conItem);
-                    }
-
-                    foreach (mItem item in items)
-                    {
-                        mShape newShape = new mShape();
-                        newShape.ShapeType = item.ItemType;
-                        if (item.ItemType == 210) newShape.ShapeType = eShapeType.Text.GetHashCode();
-                        newShape.Top = items.IndexOf(item);
-                        newShape.Text = item.LineText;
-                        newShape.Lines.Add(item);
-
-                        newSlide.Shapes.Add(newShape);
-                    }
-                }
-
-                foreach (mSlide slide in slides)
-                {
-                    vmSlide newSlide = new vmSlide(slide);
-                    newSlide.SetParentMaterial(newMaterial);
-
-                    newSlide.ConvertAndSetContents();
-                }
-
-                */
-
-                /*
-                Dictionary<int, List<mContent>> slides = new Dictionary<int, List<mContent>>();
-                foreach (mContent content in list) 
-                {
-                    int slideNum = content.SlideIdx;
-                    if (!slides.ContainsKey(slideNum)) slides.Add(slideNum, new List<mContent>());
-                    slides[slideNum].Add(content);
-                }
-                foreach (int key in slides.Keys)
-                {
-                    mSlide newSlide = new mSlide();
-                    newSlide.SlideNumber = key;
-
-                    List<mContent> contents = slides[key];
-                    Dictionary<int, List<mHeading>> levelOfHeadings = new Dictionary<int, List<mHeading>>();
-                    for (int i = 1; i <= 10; i++)
-                    {
-                        List<string> names = new List<string>();
-                        switch (i)
-                        {
-                            case 1: names = contents.Select(x => x.Heading1String).Distinct().ToList(); break;
-                            case 2: names = contents.Select(x => x.Heading2String).Distinct().ToList(); break;
-                            case 3: names = contents.Select(x => x.Heading3String).Distinct().ToList(); break;
-                            case 4: names = contents.Select(x => x.Heading4String).Distinct().ToList(); break;
-                            case 5: names = contents.Select(x => x.Heading5String).Distinct().ToList(); break;
-                            case 6: names = contents.Select(x => x.Heading6String).Distinct().ToList(); break;
-                            case 7: names = contents.Select(x => x.Heading7String).Distinct().ToList(); break;
-                            case 8: names = contents.Select(x => x.Heading8String).Distinct().ToList(); break;
-                            case 9: names = contents.Select(x => x.Heading9String).Distinct().ToList(); break;
-                            case 10: names = contents.Select(x => x.Heading10String).Distinct().ToList(); break;
-                            default: break;
-                        }
-                        List<mHeading> headingList = new List<mHeading>();
-                        foreach (string name in names)
-                        {
-                            if(string.IsNullOrEmpty(name) || string.IsNullOrWhiteSpace(name)) continue;
-                            mHeading newHeading = new mHeading();
-                            newHeading.Level = i;
-                            newHeading.Name = name; 
-                        }
-                        levelOfHeadings.Add(i, headingList);
-                    }
-                }
-                */
-
-                /*
-                foreach (int slideNum in slides.Keys)
-                {
-                    mSlide slide = new mSlide();
-                    slide.SlideNumber = slideNum;
-
-                    //List<mItem> items = new List<mItem>();
-                    int order = 1;
-                    
-                    foreach (mContent content in slides[slideNum])
-                    {
-                        int level = 1;
-                        #region Heading
-                        
-                        for (int i = 1; i < 10; i++)
-                        {
-                            string value = string.Empty;
-                            switch (i)
-                            {
-                                case 1: value = content.Heading1String; break;
-                                case 2: value = content.Heading2String; break;
-                                case 3: value = content.Heading3String; break;
-                                case 4: value = content.Heading4String; break;
-                                case 5: value = content.Heading5String; break;
-                                case 6: value = content.Heading6String; break;
-                                case 7: value = content.Heading7String; break;
-                                case 8: value = content.Heading8String; break;
-                                case 9: value = content.Heading9String; break;
-                                case 10: value = content.Heading10String; break;
-                                default: break;
-                            }
-
-                            if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value)) continue;
-
-                            mItem newItem = new mItem();
-                            newItem.Order = order++;
-                            newItem.ItemType = eItemType.Header.GetHashCode();
-                            newItem.Level = level;
-                            newItem.LineText = value;
-
-                            mShape newShape = new mShape(eShapeType.Text);
-                            newShape.Top = newItem.Order;
-                            newShape.Text = value;
-                            newShape.Lines.Add(newItem);
-
-                            slide.Shapes.Add(newShape);
-
-                            level++;
-                        }
-                        #endregion
-                        #region 본문
-
-                        string contentValue = content.Contents;
-                        if (string.IsNullOrEmpty(contentValue) || string.IsNullOrWhiteSpace(contentValue)) continue;
-
-                        mItem conItem = new mItem();
-                        conItem.Order = order++;
-                        conItem.ItemType = content.ContentsType;
-                        conItem.Level = level++;
-                        conItem.LineText = contentValue;
-
-                        mShape conShape = new mShape((eShapeType)conItem.ItemType);
-                        conShape.Top = conItem.Order;
-                        conShape.Text = contentValue;
-                        conShape.Lines.Add(conItem);
-                        slide.Shapes.Add(conShape);
-
-                        #endregion
-                        slide.Description = content.Description;
-                    }
-
-                    vmSlide newSlide = new vmSlide(slide);
-                    newSlide.SetParentMaterial(newMaterial);
-
-                    vmHeading lastHeading = null;
-                    foreach (vmItem item in newSlide.Items)
-                    {
-                        if(item.ItemType == eItemType.Header)
-                        {
-                            vmHeading sameHeading = newMaterial.Headings.Where(x => x.Temp.Level == item.Temp.Level && x.Temp.Name == item.Temp.LineText).FirstOrDefault();
-                            if (sameHeading == null)
-                            {
-                                mHeading heading = new mHeading();
-                                heading.Level= item.Temp.Level;
-                                heading.Name = item.Temp.LineText;
-
-                                vmHeading newHeading = new vmHeading(heading);
-                                newHeading.SetParentMaterial(newMaterial);
-                                newHeading.SetParent(lastHeading);
-                                lastHeading = newHeading;
-                            }
-                        }
-                        else
-                        {
-                            vmContent newContent = new vmContent(item);
-                            newContent.SetParentMaterial(newMaterial);
-                            newContent.SetParentHeading(lastHeading);   
-                        }
-                    }
-                }
-
-                */
-
-                /*
-                 * 
-             
                 
                 */
 
                 #endregion
-
+                this.Material = newMaterial;
             }
             catch (Exception ee)
             {
                 ErrorHelper.ShowError(ee);
             }
+        }
+
+        private void SetHeading(mHeading heading, vmHeading parent ,vmMaterial material, List<vmItem> items)
+        {
+            vmHeading newHeading = new vmHeading(heading);
+            newHeading.SetParentMaterial(material);
+            newHeading.SetParent(parent);
+
+            foreach (mContent content in heading.Contents)
+            {
+                vmItem sameItem = items.Where(x => x.Temp.ItemType == content.ContentsType && x.Temp.LineText == content.Contents).FirstOrDefault();
+                if(sameItem == null)
+                {
+                    mItem item = new mItem();
+                    item.ItemType = content.ContentsType;
+                    item.Level = newHeading.Temp.Level + 1;
+                    item.LineText = content.Contents;
+
+                    sameItem = new vmItem(item);
+                }
+
+                vmContent newContent = new vmContent(sameItem);
+                newContent.SetParentMaterial(material);
+                newContent.SetParentHeading(newHeading);
+            }
+
+            foreach (mHeading child in heading.Children)
+            {
+                SetHeading(child, newHeading, material, items);
+            }
+        }
+
+        private int GetContentLevel(mContent content)
+        {
+            if (TextHelper.IsNoText(content.Heading1String)) return 1;
+            if (TextHelper.IsNoText(content.Heading2String)) return 2;
+            if (TextHelper.IsNoText(content.Heading3String)) return 3;
+            if (TextHelper.IsNoText(content.Heading4String)) return 4;
+            if (TextHelper.IsNoText(content.Heading5String)) return 5;
+            if (TextHelper.IsNoText(content.Heading6String)) return 6;
+            if (TextHelper.IsNoText(content.Heading7String)) return 7;
+            if (TextHelper.IsNoText(content.Heading8String)) return 8;
+            if (TextHelper.IsNoText(content.Heading9String)) return 9;
+            return 10;
         }
 
         private mItem GetSameItem(int level, mContent content, List<mItem> items)

@@ -287,7 +287,7 @@ namespace MDM.Models.ViewModels
 
         public override object UpdateOriginData()
         {
-            return null;
+            return this.Temp;
         }
     }
 }

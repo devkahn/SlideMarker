@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="MDM.Views.MarkChecker.Pages.ucMarkCheckerContensByHeading"
+﻿<UserControl x:Class="MDM.Views.MarkChecker.Pages.ucMarCheckerToXml"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MDM.Views.MarkChecker.Pages"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Background="white">
+             d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -17,10 +17,11 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MaxWidth="500"/>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*" MaxWidth="300"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="0"/>
         </Grid.ColumnDefinitions>
+
 
         <Grid>
             <Grid.RowDefinitions>
@@ -39,25 +40,25 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <!--<StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="3,0,3,0">
                             <Button Uid="1" x:Name="btn_ChildrenFold" Content="하위 접기" Click="btn_ChildrenFold_Click"/>
                             <Button Uid="0" x:Name="btn_ChildrenUnFold" Content="하위 펼치기" Click="btn_ChildrenFold_Click"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="3,0,3,0">
-                            <!--<Button Uid="1" x:Name="btn_AddRoot" Content="루트 추가" Click="btn_AddRoot_Click"/>
-                            <Button Uid="0" x:Name="btn_AddChild" Content="하위 추가" Click="btn_AddChild_Click"/>-->
+                            --><!--<Button Uid="1" x:Name="btn_AddRoot" Content="루트 추가" Click="btn_AddRoot_Click"/>
+                         <Button Uid="0" x:Name="btn_AddChild" Content="하위 추가" Click="btn_AddChild_Click"/>--><!--
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <!--<Button x:Name="btn_MoveUp" Content="▲" Click="btn_MoveUp_Click"/>
-                        <Button x:Name="btn_MoveDown" Content="▼" Click="btn_MoveDown_Click"/>-->
-                    </StackPanel>
+                        --><!--<Button x:Name="btn_MoveUp" Content="▲" Click="btn_MoveUp_Click"/>
+                     <Button x:Name="btn_MoveDown" Content="▼" Click="btn_MoveDown_Click"/>--><!--
+                    </StackPanel>-->
                 </Grid>
             </Border>
 
             <TreeView Grid.Row="1" x:Name="treeview_Header"  ItemsSource="{Binding RootHeadings}" 
-                      SelectedItemChanged="treeview_Header_SelectedItemChanged">
+                   SelectedItemChanged="treeview_Header_SelectedItemChanged">
                 <TreeView.Resources>
                     <Style TargetType="TreeViewItem">
                         <Setter Property="IsExpanded" Value="{Binding IsTreeExpanded, Mode=TwoWay}"/>
@@ -100,11 +101,11 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </Border.Style>
-                                            <TextBlock Text="컨" FontSize="10" Margin="1" Foreground="DarkGreen" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        <TextBlock Text="컨" FontSize="10" Margin="1" Foreground="DarkGreen" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-                                   
+
                                 </StackPanel>
-                                
+
                             </Grid>
                         </Border>
                     </HierarchicalDataTemplate>
@@ -121,63 +122,41 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <!--<Button x:Name="btn_SelectionRemove" Content="선택 삭제" Click="btn_SelectionRemove_Click"/>
-                        <Button x:Name="btn_SelectionMove" Content="선택 이동" Click="btn_SelectionMove_Click"/>
-                        <Button x:Name="btn_SelectionCopy" Content="선택 복사" Click="btn_SelectionCopy_Click"/>-->
-                    </StackPanel>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <!--<Button x:Name="btn_ReLoad" Content="다시 로드" Click="btn_ReLoad_Click"/>-->
-                        <Button x:Name="btn_Save" Content="제목 저장" Click="btn_Save_Click"/>
-                    </StackPanel>
-
                 </Grid>
             </Border>
-            
+
         </Grid>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="35"/>
-                <RowDefinition />
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+                <RowDefinition MinHeight="30" Height="auto"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="0" Background="{StaticResource color_Primary3}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Rules" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="5"/>
-                </Grid>
-            </Border>
-            <ListBox Grid.Row="1" x:Name="listbox_RuleSet" SelectionChanged="listbox_RuleSet_SelectionChanged" >
-                <ListBox.Resources>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Height" Value="35"/>
-                    </Style>
-                </ListBox.Resources>
-                <ListBoxItem Uid="1" Content="목차 전처리"/>
-                <ListBoxItem Uid="101" Content="목차 동기화 검토"/>
-                <ListBoxItem Uid="102" Content="동일 제목 검토"/>
-                <ListBoxItem Uid="999" Content="일괄 수정"/>
-
+            <ListBox Grid.Row="1" ItemsSource="{Binding SelectedItem.Contents, ElementName=treeview_Header}" DisplayMemberPath="{Binding Display_Content}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="5" BorderBrush="{StaticResource color_Gray2}">
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{Binding Display_ContentType}"/>
+                                <TextBlock Grid.Row="1" Text="{Binding Display_Content}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-
-
-        <ContentPresenter Grid.Column="2" x:Name="contentPresenter"/>
-
-
-
-        <Border Grid.Column="3" Background="LightGray">
-
-            <ListBox ItemsSource="{Binding SelectedItem.Contents, ElementName=treeview_Header}" DisplayMemberPath="{Binding Contents}">
-                
-            </ListBox>
-        </Border>
-
-
-
-
+        <TabControl Grid.Column="2">
+            <TabItem Header="일괄 설정">
+                <local:ucMarCheckerToXmlAllSetting />
+            </TabItem>
+            <TabItem Header="단일 설정">
+                <local:ucMarCheckerToXmlUnitSetting/> 
+            </TabItem>
+        </TabControl>
 
     </Grid>
 </UserControl>

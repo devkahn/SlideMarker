@@ -233,12 +233,42 @@ namespace MDM.Models.ViewModels
         {
             if (this.Material == null) return;
 
-            vmHeading lastHeading = null;
+
+            vmHeading level1Header = null;
+            vmHeading level2Header = null;
+            vmHeading level3Header = null;
+            vmHeading level4Header = null;
+            vmHeading level5Header = null;
+            vmHeading level6Header = null;
+            vmHeading level7Header = null;
+            vmHeading level8Header = null;
+            vmHeading level9Header = null;
+            vmHeading level10Header = null;
+
+
             foreach (vmItem item in Items)
             {
                 if(item.ItemType == eItemType.Header)
                 {
-                    vmHeading sameHeading = this.Material.Headings.Where(x => x.Temp.Level == item.Temp.Level && x.Temp.Name == item.Temp.LineText).FirstOrDefault();
+                    vmHeading parent = null;
+                    List<vmHeading> headingList = new List<vmHeading>();
+                    switch (item.Temp.Level)
+                    {
+                        case 1: parent = null; break;
+                        case 2: parent = level1Header; break;
+                        case 3: parent = level2Header; break;
+                        case 4: parent = level3Header; break;
+                        case 5: parent = level4Header; break;
+                        case 6: parent = level5Header; break;
+                        case 7: parent = level6Header; break;
+                        case 8: parent = level7Header; break;
+                        case 9: parent = level8Header; break;
+                        case 10: parent = level9Header; break;
+                        default: break;
+                    }
+                    headingList = parent == null ? this.Material.Headings.ToList() : parent.Children.ToList();
+
+                    vmHeading sameHeading = headingList.Where(x => x.Temp.Level == item.Temp.Level && x.Temp.Name == item.Temp.LineText).FirstOrDefault();
                     if(sameHeading == null)
                     {
                         mHeading heading = new mHeading();
@@ -246,24 +276,44 @@ namespace MDM.Models.ViewModels
                         heading.Name = item.Temp.LineText;
                         sameHeading = new vmHeading(heading);
                         sameHeading.SetParentMaterial(this.Material);
-
-                        vmHeading parent = null;
-                        vmItem parentItem = Items.Where(x => x.ItemType == eItemType.Header && x.Temp.Order < item.Temp.Order &&  x.Temp.Level == item.Temp.Level - 1).LastOrDefault();
-                        if(parentItem != null)
-                        {
-                            parent = this.Material.Headings.Where(x => )
-                        }
                         sameHeading.SetParent(parent);
-
-             
                     }
-                    lastHeading = sameHeading;
+
+                    switch (item.Temp.Level)
+                    {
+                        case 1: level1Header = sameHeading; break;
+                        case 2: level2Header = sameHeading; break;
+                        case 3: level3Header = sameHeading; break;
+                        case 4: level4Header = sameHeading; break;
+                        case 5: level5Header = sameHeading; break;
+                        case 6: level6Header = sameHeading; break;
+                        case 7: level7Header = sameHeading; break;
+                        case 8: level8Header = sameHeading; break;
+                        case 9: level9Header = sameHeading; break;
+                        case 10: level10Header = sameHeading; break;
+                        default: break;
+                    }
                 }
                 else
                 {
                     vmContent newContent = new vmContent(item);
-                    newContent.SetParentHeading(lastHeading);
                     newContent.SetParentMaterial(this.Material);
+                    switch (item.Temp.Level)
+                    {
+                        case 1: newContent.SetParentHeading(level1Header); break;
+                        case 2: newContent.SetParentHeading(level1Header); break;
+                        case 3: newContent.SetParentHeading(level2Header); break;
+                        case 4: newContent.SetParentHeading(level3Header); break;
+                        case 5: newContent.SetParentHeading(level4Header); break;
+                        case 6: newContent.SetParentHeading(level5Header); break;
+                        case 7: newContent.SetParentHeading(level6Header); break;
+                        case 8: newContent.SetParentHeading(level7Header); break;
+                        case 9: newContent.SetParentHeading(level8Header); break;
+                        case 10: newContent.SetParentHeading(level9Header); break;
+                        default: break;
+                    }
+                    
+                    
                 }
             }
 

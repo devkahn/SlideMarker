@@ -13,9 +13,12 @@ namespace MDM.Models.ViewModels
         private mMaterial _Origin = null;
         private vmSlide _CurrentSlide = null;
         private vmContent _CurrentContent = null;
+        private vmHeading _CurrentHeading = null;
 
         private object _Display_Name = null;
         private object _Display_Update = null;
+
+        
     }
     public partial class vmMaterial : vmViewModelbase
     {
@@ -68,11 +71,20 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(CurrentContent));
             }
         }
-        
+        public vmHeading CurrentHeading
+        {
+            get => _CurrentHeading;
+            set
+            {
+                _CurrentHeading = value;
+                OnPropertyChanged(nameof(CurrentHeading));
+            }
+        }
 
-        private ObservableCollection<vmHeading> OriginHeadings { get; set; }
+
+        internal ObservableCollection<vmHeading> OriginHeadings { get; set; }
         public ReadOnlyObservableCollection<vmHeading> Headings => new ReadOnlyObservableCollection<vmHeading>(this.OriginHeadings);
-        //public ReadOnlyObservableCollection<vmHeading> RootHeadings => new ReadOnlyObservableCollection<vmHeading>(new ObservableCollection<vmHeading>(this.Headings.Where(x => x.Parent == null)));
+        public ReadOnlyObservableCollection<vmHeading> RootHeadings => new ReadOnlyObservableCollection<vmHeading>(new ObservableCollection<vmHeading>(this.Headings.Where(x => x.Parent == null)));
 
 
         public object Display_Name
@@ -111,7 +123,11 @@ namespace MDM.Models.ViewModels
             if(this.OriginHeadings.Contains(heading)) return;   
             this.OriginHeadings.Add(heading);
         }
+
+        public void ClearContents() => this.OriginContents.Clear();
         public void ClearSlides() => this.OriginSlides.Clear();
+        public void ClearHeading() => this.OriginHeadings.Clear();
+        
         public override void InitializeDisplay()
         {
             this.Display_Name = this.Temp.Name;
@@ -124,7 +140,7 @@ namespace MDM.Models.ViewModels
         private void OriginHeadings_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             OnPropertyChanged(nameof(this.Headings));
-            //OnPropertyChanged(nameof(this.RootHeadings));
+            OnPropertyChanged(nameof(this.RootHeadings));
         }
         private void OriginContents_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => OnPropertyChanged(nameof(this.Contents));
         public void RemoveSlide(vmSlide slide)

@@ -22,54 +22,54 @@ namespace MDM.Models.DataModels
         [PropOrder(13)]
         [ColumnHeader("Heading1Idx")]
         public int Heading1Idx { get; set; } = -1;
-        public string Heading1String { get; set; } = string.Empty;
+        
+        
 
 
 
         [PropOrder(14)]
         [ColumnHeader("Heading2Idx")]
         public int Heading2Idx { get; set; } = -1;
-        public string Heading2String { get; set; } = string.Empty;
+        
 
         [PropOrder(15)]
         [ColumnHeader("Heading3Idx")]
         public int Heading3Idx { get; set; } = -1;
-        public string Heading3String { get; set; } = string.Empty;
+        
 
         [PropOrder(16)]
         [ColumnHeader("Heading4Idx")]
         public int Heading4Idx { get; set; } = -1;
-        public string Heading4String { get; set; } = string.Empty;
+        
 
         [PropOrder(17)]
         [ColumnHeader("Heading5Idx")]
         public int Heading5Idx { get; set; } = -1;
-        public string Heading5String { get; set; } = string.Empty;
+        
 
         [PropOrder(18)]
         [ColumnHeader("Heading6Idx")]
         public int Heading6Idx { get; set; } = -1;
-        public string Heading6String { get; set; } = string.Empty;
+        
 
         [PropOrder(19)]
         [ColumnHeader("Heading7Idx")]
         public int Heading7Idx { get; set; } = -1;
-        public string Heading7String { get; set; } = string.Empty;
+        
 
         [PropOrder(20)]
         [ColumnHeader("Heading8Idx")]
         public int Heading8Idx { get; set; } = -1;
-        public string Heading8String { get; set; } = string.Empty;
+        
 
         [PropOrder(21)]
         [ColumnHeader("Heading9Idx")]
         public int Heading9Idx { get; set; } = -1;
-        public string Heading9String { get; set; } = string.Empty;
+        
 
         [PropOrder(22)]
         [ColumnHeader("Heading10Idx")]
         public int Heading10Idx { get; set; } = -1;
-        public string Heading10String { get; set; } = string.Empty;
 
         [PropOrder(23)]
         [ColumnHeader("ContentsType")]
@@ -86,5 +86,30 @@ namespace MDM.Models.DataModels
         [PropOrder(26)]
         [ColumnHeader("Message")]
         public string Message { get; set; } = string.Empty;
+
+
+        public string Heading1String { get; set; } = string.Empty;
+        public string Heading2String { get; set; } = string.Empty;
+        public string Heading3String { get; set; } = string.Empty;
+        public string Heading4String { get; set; } = string.Empty;
+        public string Heading5String { get; set; } = string.Empty;
+        public string Heading6String { get; set; } = string.Empty;
+        public string Heading7String { get; set; } = string.Empty;
+        public string Heading8String { get; set; } = string.Empty;
+        public string Heading9String { get; set; } = string.Empty;
+        public string Heading10String { get; set; } = string.Empty;
+
+
+        public string HeadingUid_1 { get; set; } = string.Empty;
+        public string HeadingUid_2 { get; set; } = string.Empty;
+        public string HeadingUid_3 { get; set; } = string.Empty;
+        public string HeadingUid_4 { get; set; } = string.Empty;
+        public string HeadingUid_5 { get; set; } = string.Empty;
+        public string HeadingUid_6 { get; set; } = string.Empty;
+        public string HeadingUid_7 { get; set; } = string.Empty;
+        public string HeadingUid_8 { get; set; } = string.Empty;
+        public string HeadingUid_9 { get; set; } = string.Empty;
+        public string HeadingUid_10 { get; set; } = string.Empty;
+
     }
 }

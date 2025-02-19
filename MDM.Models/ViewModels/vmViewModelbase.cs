@@ -40,7 +40,7 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(this.IsChanged));
             }
         }
-        internal void OnPropertyChanged([CallerMemberName] string propertyName = "", bool isChanged = true)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "", bool isChanged = true)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             if (string.Equals(propertyName, nameof(IsChanged))) return;

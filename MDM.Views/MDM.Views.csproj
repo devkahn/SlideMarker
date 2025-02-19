@@ -142,6 +142,27 @@
     <Compile Include="ExcelToDatabase\Pages\ucExcelToDatabaseMain.xaml.cs">
       <DependentUpon>ucExcelToDatabaseMain.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckContentsSync.xaml.cs">
+      <DependentUpon>ucRuleCheckContentsSync.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckSameNameFinder.xaml.cs">
+      <DependentUpon>ucRuleCheckSameNameFinder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckTreePreprocessing.xaml.cs">
+      <DependentUpon>ucRuleCheckTreePreprocessing.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckUserModify.xaml.cs">
+      <DependentUpon>ucRuleCheckUserModify.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\ucMarCheckerToXml.xaml.cs">
+      <DependentUpon>ucMarCheckerToXml.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\ucMarCheckerToXmlAllSetting.xaml.cs">
+      <DependentUpon>ucMarCheckerToXmlAllSetting.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\ucMarCheckerToXmlUnitSetting.xaml.cs">
+      <DependentUpon>ucMarCheckerToXmlUnitSetting.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MarkChecker\Pages\ucMarkCheckerContensByHeading.xaml.cs">
       <DependentUpon>ucMarkCheckerContensByHeading.xaml</DependentUpon>
     </Compile>
@@ -150,6 +171,42 @@
     </Compile>
     <Compile Include="MarkChecker\Pages\ucMarkCheckerOriginExcel.xaml.cs">
       <DependentUpon>ucMarkCheckerOriginExcel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingBook.xaml.cs">
+      <DependentUpon>ucXMLSettingBook.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingChapter.xaml.cs">
+      <DependentUpon>ucXMLSettingChapter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingContentsImages.xaml.cs">
+      <DependentUpon>ucXMLSettingContentsImages.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingContentsTable.xaml.cs">
+      <DependentUpon>ucXMLSettingContentsTable.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingContentsText.xaml.cs">
+      <DependentUpon>ucXMLSettingContentsText.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingHeading1.xaml.cs">
+      <DependentUpon>ucXMLSettingHeading1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingHeading2.xaml.cs">
+      <DependentUpon>ucXMLSettingHeading2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingHeading3.xaml.cs">
+      <DependentUpon>ucXMLSettingHeading3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingHeading4.xaml.cs">
+      <DependentUpon>ucXMLSettingHeading4.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingHeading5.xaml.cs">
+      <DependentUpon>ucXMLSettingHeading5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Windows\wndHeaderNameInput.xaml.cs">
+      <DependentUpon>wndHeaderNameInput.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Windows\wndTargetHeaderSelection.xaml.cs">
+      <DependentUpon>wndTargetHeaderSelection.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -250,6 +307,34 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckContentsSync.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckSameNameFinder.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckTreePreprocessing.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckUserModify.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\ucMarCheckerToXml.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\ucMarCheckerToXmlAllSetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\ucMarCheckerToXmlUnitSetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MarkChecker\Pages\ucMarkCheckerContensByHeading.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -259,6 +344,54 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MarkChecker\Pages\ucMarkCheckerOriginExcel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingBook.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingChapter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingContentsImages.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingContentsTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingContentsText.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingHeading1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingHeading2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingHeading3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingHeading4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingHeading5.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Windows\wndHeaderNameInput.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Windows\wndTargetHeaderSelection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

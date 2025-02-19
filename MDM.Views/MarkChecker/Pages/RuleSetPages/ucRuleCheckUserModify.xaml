@@ -1,0 +1,180 @@
+﻿<UserControl x:Class="MDM.Views.MarkChecker.Pages.RuleSetPages.ucRuleCheckUserModify"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MDM.Views.MarkChecker.Pages.RuleSetPages"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../../Resources/Styles/resMDMColors.xaml"/>
+                <ResourceDictionary Source="../../../Resources/Styles/resMDMStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Grid.Column="2" DataContext="{Binding CurrentHeading}" DataContextChanged="Grid_DataContextChanged">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="#e9e9e9">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Center"  >
+                    <StackPanel.Resources>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <Setter Property="Orientation" Value="Horizontal"/>
+                            <Setter Property="Margin" Value="3,2,3,2"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <StackPanel>
+                        <Button Content="초기화" Click="btn_Reset_Click"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <Button Content="선택 제외"/>
+                    </StackPanel>
+
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="3,2,3,2">
+                    <Button Content="변경" Click="btn_Change_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <DataGrid Grid.Row="1" x:Name="datagrid_Children">
+            <DataGrid.Style>
+                <Style TargetType="DataGrid">
+                    <Setter Property="AutoGenerateColumns" Value="False"/>
+                    <Setter Property="Background" Value="White"/>
+                    <Setter Property="RowHeight" Value="25"/>
+                    <Setter Property="HorizontalGridLinesBrush" Value="LightGray"/>
+                    <Setter Property="HeadersVisibility" Value="Column"/>
+                    <Setter Property="IsReadOnly" Value="True"/>
+                    <Setter Property="Margin" Value="0,0,10,0"/>
+                </Style>
+            </DataGrid.Style>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="변경 전" Binding="{Binding Display_OriginName}" Width="*" />
+                <DataGridTextColumn Header="변경 후" Binding="{Binding Display_TargetName}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=Grid}}">
+            <StackPanel.Resources>
+                <Style x:Key="subStyle_Fuction_StackPanel" TargetType="StackPanel" >
+                    <Setter Property="Orientation" Value="Horizontal"/>
+                    <Setter Property="Margin" Value="5"/>
+                    <Setter Property="VerticalAlignment" Value="Top"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=Grid}}"/>
+                </Style>
+                <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+                <Style TargetType="TextBox" BasedOn="{StaticResource baseStyle_Common_Textbox}">
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Margin" Value="7,5,7,5"/>
+                    <Setter Property="MinWidth" Value="35"/>
+                    <Setter Property="MinHeight" Value="22"/>
+                    <Setter Property="FontSize" Value="10"/>
+                </Style>
+                <Style TargetType="TextBlock" >
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="FontSize" Value="11"/>
+                </Style>
+
+            </StackPanel.Resources>
+
+            <StackPanel Style="{StaticResource subStyle_Fuction_StackPanel}">
+                <StackPanel.Resources>
+                    <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                        <EventSetter Event="Click" Handler="btn_Trim_Click"/>
+                        <Setter Property="Margin" Value="5"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Button Uid="10" Content="앞 공백 제거" />
+                <Button Uid="20" Content="뒤 공백 제거" />
+                <Button Uid="0" Content="앞뒤 공백 제거"/>
+                <Button Uid="100" Content="모든 공백 제거"/>
+            </StackPanel>
+            <Border Height="2" Background="{StaticResource color_Gray2}" Margin="5"/>
+            <StackPanel Style="{StaticResource subStyle_Fuction_StackPanel}">
+                <Button Content="글자 제거" Click="btn_RemoveChar_Click"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0">
+                    <RadioButton GroupName="removeText" Content="앞" Style="{StaticResource baseStyle_LeftEnd_RadioButton}" IsChecked="True"/>
+                    <RadioButton GroupName="removeText" Content="뒤" Style="{StaticResource baseStyle_RightEnd_RadioButton}"/>
+                </StackPanel>
+                <TextBox Grid.Column="1" x:Name="txtbox_RemoveCharCount" Width="35" HorizontalContentAlignment="Center"/>
+                <!--<TextBox Grid.Column="1" x:Name="txtbox_RemoveText" MinWidth="500"/>-->
+            </StackPanel>
+            <Border Height="2" Background="{StaticResource color_Gray2}" Margin="5"/>
+            <StackPanel Style="{StaticResource subStyle_Fuction_StackPanel}" >
+                <Button Grid.Row="0" Grid.Column="0" Content="글자 추가" Margin="5" Click="btn_AddChar_Click"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0">
+                    <RadioButton GroupName="addText" Content="앞"  Style="{StaticResource baseStyle_LeftEnd_RadioButton}" IsChecked="True"/>
+                    <RadioButton GroupName="addText" Content="뒤"  Style="{StaticResource baseStyle_RightEnd_RadioButton}"/>
+                </StackPanel>
+                <TextBox Grid.Column="1" x:Name="txtbox_AddCharIndex" Width="35"/>
+                <TextBox Grid.Column="1" x:Name="txtbox_AddText" MinWidth="500"/>
+            </StackPanel>
+            <Border Height="2" Background="{StaticResource color_Gray2}" Margin="5"/>
+            <StackPanel Style="{StaticResource subStyle_Fuction_StackPanel}">
+                <Button Content="글자 변경" Click="btn_ChangeChar_Click"/>
+                <StackPanel Orientation="Horizontal" Margin="10,0,5,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="시작"/>
+                        <TextBox x:Name="txtbox_ChangeCharStartIndex" Text="0" HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="끝"/>
+                        <TextBox x:Name="txtbox_ChangeCharEndIndex"  Text="0" HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+                <TextBlock Text="전"/>
+                <TextBox x:Name="txtbox_OriginChar"/>
+                <TextBlock Text="후"/>
+                <TextBox x:Name="txtbox_TargetChar"/>
+            </StackPanel>
+            <Border Height="2" Background="{StaticResource color_Gray2}" Margin="5"/>
+            <StackPanel Style="{StaticResource subStyle_Fuction_StackPanel}">
+                <Button Grid.Row="0" Grid.Column="0" Content="잘라내기"  Click="btn_Cut_Click"/>
+                <Button Grid.Row="0" Grid.Column="0" Content="복사 하기"/>
+                <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="시작"/>
+                        <TextBox x:Name="txtbox_CutCopyStartIndex" Text="0" HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="끝"/>
+                        <TextBox x:Name="txtbox_CutCopyEndIndex"  Text="0" HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+                <Border Width="2" Background="{StaticResource color_Gray3}" Margin="5"/>
+                <Button Content="붙혀넣기" Click="btn_paste_click"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
+                    <TextBlock Text="시작"/>
+                    <TextBox  x:Name="txtbox_PasteStartIndex"  Text="-1" HorizontalContentAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
+                    <TextBlock Text="(추가문자"/>
+                    <TextBox x:Name="txtbox_FrontAddText"/>
+                    <TextBlock Text="+ 잘라낸 문구 +"/>
+                    <TextBox x:Name="txtbox_BackAddText"/>
+                    <TextBlock Text=")"/>
+                </StackPanel>
+            </StackPanel>
+            <Border Height="2" Background="{StaticResource color_Gray2}" Margin="5"/>
+        </StackPanel>
+
+
+    </Grid>
+</UserControl>
