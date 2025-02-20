@@ -9,14 +9,14 @@ namespace MDM.Models.Attributes
 {
     public class xmlSubPropertyAttribute : Attribute
     {
-        public xmlSubProperty prorperty { get; set; } = null;
+        public xmlSubProperty Prorperty { get; set; } = null;
 
 
         public xmlSubPropertyAttribute(string name)
         {
             xmlSubProperty newProp = new xmlSubProperty();
             newProp.Name = name;
-            this.prorperty = newProp;
+            this.Prorperty = newProp;
         }
     }
 }

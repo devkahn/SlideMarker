@@ -33,9 +33,8 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlSubProperty("type")]
         [Nullable(false)]
         [Description("단락 유형")]
-        public object Type { get; set; } = null;
+        public eXMLElementType ElementType { get; set; } = eXMLElementType.NONE;
     }
-
 
     public class xmlElementConfig
     {
@@ -47,11 +46,13 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlElementType(eXMLElementType.Ordered_list)]
         [JsonProperty("renumbered")]
         [Description("웹 뷰어에서 EPUB 내려받기를 허용하지 않습니다.")]
-        public bool IsRenumbered { get;set; } = false;
+        [DefaultValue(false)]
+        public bool IsRenumbered { get; set; } = false;
 
         [xmlElementType(eXMLElementType.Table)]
         [JsonProperty("table_layout")]
         [Description("표 레이아웃")]
+        [DefaultValue(eXMLElementTableLayout.auto)]
         public eXMLElementTableLayout TableLayout { get; set; } = eXMLElementTableLayout.auto;
 
 
@@ -68,13 +69,14 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlElementType(eXMLElementType.Image)]
         [JsonProperty("mode")]
         [Description("그림 단락 모드")]
+        [DefaultValue(eXLMElementMode.file)]
         public eXLMElementMode Mode { get; set; } = eXLMElementMode.file;
 
 
-        [xmlElementType(eXMLElementType.Image)]
-        //[xmlElementType(eXMLElementType.Table)]
+        [xmlElementType(eXMLElementType.Image, eXMLElementType.Table)]
         [JsonProperty("omit_caption")]
         [Description("제목 생략")]
+        [DefaultValue(false)]
         public bool OmitCaption { get; set; } = false;
 
         [xmlElementType(eXMLElementType.Image)]
@@ -95,6 +97,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlElementType(eXMLElementType.Image)]
         [JsonProperty("image_float")]
         [Description("그림 Float")]
+        [DefaultValue(eXMLElemnetImageFloat.NONE)]
         public eXMLElemnetImageFloat ImageFloat { get; set; } = eXMLElemnetImageFloat.NONE;
 
         [xmlElementType(eXMLElementType.Image)]
@@ -105,6 +108,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlElementType(eXMLElementType.Toc)]
         [JsonProperty("toc_level")]
         [Description("표시할 차례 수준")]
+        [DefaultValue(eXMLElementLevel.CHAPTER_TITLE)]
         public eXMLElementLevel PresentationLevel { get; set; } = eXMLElementLevel.CHAPTER_TITLE;
 
         [xmlElementType(eXMLElementType.Glossary)]
@@ -115,6 +119,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlElementType(eXMLElementType.Index)]
         [JsonProperty("index_sort")]
         [Description("찾아보기 정렬 기준")]
+        [DefaultValue(eXMLElementSortType.letter_by_letter)]
         public eXMLElementSortType SortType { get; set; } = eXMLElementSortType.letter_by_letter;
 
         [xmlElementType(eXMLElementType.Space)]
@@ -125,10 +130,10 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlElementType(eXMLElementType.Layout_page)]
         [JsonProperty("layout_page")]
         [Description("레이아웃 페이지 유형")]
+        [DefaultValue(eXMLElementLayoytType.half_title_page)]
         public eXMLElementLayoytType LayoutType { get; set; } = eXMLElementLayoytType.half_title_page;
 
-        [xmlElementType(eXMLElementType.Include)]
-        //[xmlElementType(eXMLElementType.Single_design_page)]
+        [xmlElementType(eXMLElementType.Include, eXMLElementType.Single_design_page)]
         [JsonProperty("description")]
         [Description("설명")]
         public string Description { get; set; } = string.Empty;
@@ -136,29 +141,31 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlElementType(eXMLElementType.Include)]
         [JsonProperty("heading_adjustment")]
         [Description("제목 수준 조정")]
+        [DefaultValue(eXMLElementHeadingAdjustment.Not)]
         public eXMLElementHeadingAdjustment HeadingAdjustment { get; set; } = eXMLElementHeadingAdjustment.Not;
 
         [xmlElementType(eXMLElementType.Heading1)]
         [JsonProperty("section_view")]
         [Description("절 모습을 설정합니다.")]
+        [DefaultValue(eXMLElementSectionView.NONE)]
         public eXMLElementSectionView SectionView { get; set; } = eXMLElementSectionView.NONE;
 
         [xmlElementType(eXMLElementType.Code)]
         [JsonProperty("code_language")]
         [Description("소스 코드 언어를 설정합니다.")]
+        [DefaultValue(eXMLElementCodeLanguage.NONE)]
         public eXMLElementCodeLanguage CodeLanguage { get; set; } = eXMLElementCodeLanguage.NONE;
 
         [xmlElementType(eXMLElementType.Code)]
         [JsonProperty("code_numbering")]
         [Description("소스 코드 번호 매기기")]
+        [DefaultValue(false)]
         public bool CanCodeNumbering { get; set; } = false;
 
-        [xmlElementType(eXMLElementType.Normal)]
-        //[xmlElementType(eXMLElementType.note)]
-        //[xmlElementType(eXMLElementType.Tip)]
-        //[xmlElementType(eXMLElementType.Caution)]
+        [xmlElementType(eXMLElementType.Normal, eXMLElementType.note, eXMLElementType.Tip, eXMLElementType.Caution)]
         [JsonProperty("ignore_step_indent")]
         [Description("단계 단락 이후 들여쓰기를 하지 않습니다.")]
+        [DefaultValue(false)]
         public bool IgnoreStepIndent { get; set; } = false;
 
     }

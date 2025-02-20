@@ -9,12 +9,15 @@ namespace MDM.Models.Attributes
 {
     public class xmlElementTypeAttribute : Attribute
     {
-        public eXMLElementType Type { get; set; } = eXMLElementType.Normal;
+        public eXMLElementType[] Types { get; set; } = { eXMLElementType.Normal };
 
 
-        public xmlElementTypeAttribute(eXMLElementType type)
+        public xmlElementTypeAttribute(params eXMLElementType[] types)
         {
-            this.Type = type;
+            foreach (eXMLElementType item in types)
+            {
+                this.Types.Append(item);
+            }
         }
     }
     

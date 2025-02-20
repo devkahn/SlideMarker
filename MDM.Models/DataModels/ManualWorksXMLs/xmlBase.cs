@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
 
         [Nullable(true)]
         [xmlSubProperty("creator")]
+        [DefaultValue("DLENC")]
         public string Creator { get; set; } = "DLENC";
 
         [Nullable(true)]

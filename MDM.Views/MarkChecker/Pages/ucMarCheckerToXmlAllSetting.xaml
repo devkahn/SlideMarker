@@ -29,7 +29,7 @@
                     </Style>
                     <Style TargetType="Border">
                         <Setter Property="Background" Value="{StaticResource color_DarkBlue}"/>
-                        <Setter Property="Height" Value="30"/>
+                        <Setter Property="Height" Value="35"/>
                     </Style>
                     <Style TargetType="TextBlock">
                         <Setter Property="HorizontalAlignment" Value="Left"/>

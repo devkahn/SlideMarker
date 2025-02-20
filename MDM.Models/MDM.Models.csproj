@@ -60,7 +60,6 @@
     <Compile Include="Attributes\UpdateUseAttribute.cs" />
     <Compile Include="Attributes\xmlElementTypeAttribute.cs" />
     <Compile Include="Attributes\xmlSubPropertyAttribute.cs" />
-    <Compile Include="DataModels\ManualWorksXMLs\eXMLElementType.cs" />
     <Compile Include="DataModels\ManualWorksXMLs\xmlBase.cs" />
     <Compile Include="DataModels\ManualWorksXMLs\xmlBook.cs" />
     <Compile Include="DataModels\ManualWorksXMLs\xmlChapter.cs" />
@@ -85,6 +84,8 @@
     <Compile Include="ViewModels\vmItem.cs" />
     <Compile Include="ViewModels\vmSlideStatus.cs" />
     <Compile Include="ViewModels\vmViewModelbase.cs" />
+    <Compile Include="ViewModels\vmXMLConfigure.cs" />
+    <Compile Include="ViewModels\vmXMLProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

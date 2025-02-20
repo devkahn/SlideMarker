@@ -93,6 +93,22 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\XMLProperyValues\ctrlXMLPropValue.cs" />
+    <Compile Include="Controls\XMLProperyValues\ctrlXMLPropValueBool.xaml.cs">
+      <DependentUpon>ctrlXMLPropValueBool.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\XMLProperyValues\ctrlXMLPropValueDigit.xaml.cs">
+      <DependentUpon>ctrlXMLPropValueDigit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\XMLProperyValues\ctrlXMLPropValueSelection.xaml.cs">
+      <DependentUpon>ctrlXMLPropValueSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\XMLProperyValues\ctrlXMLPropValueString.xaml.cs">
+      <DependentUpon>ctrlXMLPropValueString.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\XMLProperyValues\ucXMLPropValueAddableList.xaml.cs">
+      <DependentUpon>ucXMLPropValueAddableList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverterReverse.cs" />
     <Compile Include="Converters\DoubleToHalfConverter.cs" />
@@ -251,6 +267,26 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\XMLProperyValues\ctrlXMLPropValueBool.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\XMLProperyValues\ctrlXMLPropValueDigit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\XMLProperyValues\ctrlXMLPropValueSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\XMLProperyValues\ctrlXMLPropValueString.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\XMLProperyValues\ucXMLPropValueAddableList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DataLabeling\Pages\ucDataLabelingPreviewItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

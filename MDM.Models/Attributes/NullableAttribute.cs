@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MDM.Models.Attributes
 {
-    internal class NullableAttribute : Attribute
+    public class NullableAttribute : Attribute
     {
         public bool Nullalble { get; set; } = false;
 

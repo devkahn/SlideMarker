@@ -6,6 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
+using MDM.Models.DataModels.ManualWorksXMLs;
+using System.ComponentModel;
+using System.Reflection;
+using System.Windows.Forms;
 
 namespace MDM.Helpers
 {
@@ -27,6 +31,8 @@ namespace MDM.Helpers
             }
             return null;
         }
+
+       
 
     }
 }
