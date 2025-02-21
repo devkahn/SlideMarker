@@ -26,6 +26,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
     /// </summary>
     public partial class ucXMLSettingContentsImages : UserControl
     {
+        public eXMLElementType ContentType => eXMLElementType.Image;
         public ucXMLSettingContentsImages()
         {
             InitializeComponent();
@@ -50,6 +51,15 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
 
                 vmXMLProperty newProp = new vmXMLProperty(pInfo);
                 UserControl panel = ctrlXMLPropValue.GetValueContent(pInfo);
+                if (pInfo.Name == "ElementType")
+                {
+                    panel = ctrlXMLPropValue.GetValueContent(pInfo, this.ContentType);
+                    panel.IsEnabled = false;
+                }
+                else
+                {
+                    panel = ctrlXMLPropValue.GetValueContent(pInfo);
+                }
                 newProp.SetValuePanel(panel);
                 this.propertyList.Items.Add(newProp);
             }
@@ -61,10 +71,12 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
             this.conFigureList.Items.Clear();
             foreach (PropertyInfo pInfo in pInfos)
             {
+                xmlElementTypeAttribute typeAttr = pInfo.GetCustomAttribute(typeof(xmlElementTypeAttribute)) as xmlElementTypeAttribute;
+                if (typeAttr == null) continue;
+                if (!typeAttr.Types.Contains(eXMLElementType.NONE) && !typeAttr.Types.Contains(this.ContentType)) continue;
+
                 bool hasDescription = pInfo.CustomAttributes.Where(x => x.AttributeType == typeof(DescriptionAttribute)).Any();
                 if (!hasDescription) continue;
-
-                
 
                 vmXMLProperty newProp = new vmXMLProperty(pInfo);
                 UserControl panel = ctrlXMLPropValue.GetValueContent(pInfo);

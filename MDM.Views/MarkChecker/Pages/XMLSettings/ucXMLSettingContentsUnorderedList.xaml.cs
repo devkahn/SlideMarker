@@ -22,17 +22,18 @@ using System.Windows.Shapes;
 namespace MDM.Views.MarkChecker.Pages.XMLSettings
 {
     /// <summary>
-    /// ucXMLSettingHeading2.xaml에 대한 상호 작용 논리
+    /// ucXMLSettingContentsUnorderedList.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class ucXMLSettingHeading2 : UserControl
+    public partial class ucXMLSettingContentsUnorderedList : UserControl
     {
-        public eXMLElementType ContentType => eXMLElementType.Heading2;
-        public ucXMLSettingHeading2()
+        public eXMLElementType ContentType => eXMLElementType.Unordered_list;
+        public ucXMLSettingContentsUnorderedList()
         {
             InitializeComponent();
             BindPropertyList();
             BindConFigureList();
         }
+
 
         private void BindPropertyList()
         {

@@ -33,6 +33,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlSubProperty("type")]
         [Nullable(false)]
         [Description("단락 유형")]
+        [DefaultValue(eXMLElementType.NONE)]
         public eXMLElementType ElementType { get; set; } = eXMLElementType.NONE;
     }
 

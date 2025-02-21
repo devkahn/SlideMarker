@@ -56,6 +56,8 @@ namespace MDM.Views.MarkChecker.Pages
                         case 221: page = new ucXMLSettingContentsText(); break;
                         case 222: page = new ucXMLSettingContentsImages(); break;
                         case 223: page = new ucXMLSettingContentsTable(); break;
+                        case 224: page = new ucXMLSettingContentsOrderedList(); break;
+                        case 225: page = new ucXMLSettingContentsUnorderedList(); break;
                         default:
                             break;
                     }

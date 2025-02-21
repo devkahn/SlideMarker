@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MDM.Views.MarkChecker.Pages.XMLSettings.ucXMLSettingBook"
+﻿<UserControl x:Class="MDM.Views.MarkChecker.Pages.XMLSettings.ucXMLSettingContentsOrderedList"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -30,7 +30,7 @@
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Background="{StaticResource color_Gray2}"> 
+    <Grid Background="{StaticResource color_Gray2}">
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
             <RowDefinition Height="*"/>
@@ -43,7 +43,7 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="BOOK 객체 속성 설정" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="10,0,10,0"/>
+                <TextBlock Grid.Column="0" Text="순서 목록 객체 속성 설정" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="10,0,10,0"/>
             </Grid>
         </Border>
 
@@ -71,7 +71,7 @@
                             <TextBlock Grid.Column="1" Text="속성" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="5,0,5,0"/>
                         </Grid>
                     </Border>
-                    <DataGrid Grid.Row="1" x:Name="propertyList" PreviewKeyDown="propertyList_PreviewKeyDown">
+                    <DataGrid Grid.Row="1" x:Name="propertyList" >
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Width="35"/>
                             <DataGridTemplateColumn >
@@ -163,10 +163,9 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="설정 완료" Width="100" Click="btn_SettingCompleted_Click"/>
+                    <Button Content="설정 완료" Width="100"/>
                 </StackPanel>
             </Grid>
         </Border>
     </Grid>
-    
 </UserControl>

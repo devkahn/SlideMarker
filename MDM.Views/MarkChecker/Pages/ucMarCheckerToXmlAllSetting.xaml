@@ -89,6 +89,8 @@
                         <TextBlock Text="본문 설정"/>
                     </Border>
                     <RadioButton Uid="221" Content="글 속성 설정"/>
+                    <RadioButton Uid="224" Content="순서 목록 속성 설정"/>
+                    <RadioButton Uid="225" Content="비순서 목록 속성 설정"/>
                     <RadioButton Uid="222" Content="그림 속성 설정"/>
                     <RadioButton Uid="223" Content="표 속성 설정"/>
                 </StackPanel>

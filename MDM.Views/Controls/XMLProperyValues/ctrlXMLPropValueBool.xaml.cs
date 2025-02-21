@@ -32,20 +32,25 @@ namespace MDM.Views.Controls.XMLProperyValues
         public ctrlXMLPropValueBool(object defaultValue)
         {
             InitializeComponent();
-            bool isTrue = (bool)defaultValue;
-            if (isTrue)
+            bool? isTrue = (bool?)defaultValue;
+            if(isTrue.HasValue)
             {
-                this.rBtn_True.IsChecked = true;
-            }
-            else if(!isTrue)
-            {
-                this.rBtn_False.IsChecked = true;
+                if (isTrue.Value)
+                {
+                    this.rBtn_True.IsChecked = true;
+                }
+                else
+                {
+                    this.rBtn_False.IsChecked = true;
+                }
             }
             else
             {
                 this.rBtn_False.IsChecked = false;
                 this.rBtn_True.IsChecked = false;
             }
+            
+            
             
         }
     }

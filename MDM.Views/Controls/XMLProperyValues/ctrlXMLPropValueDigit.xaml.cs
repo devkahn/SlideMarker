@@ -33,7 +33,7 @@ namespace MDM.Views.Controls.XMLProperyValues
         public ctrlXMLPropValueDigit(object defaultValue)
         {
             InitializeComponent();
-            this.value.Text = defaultValue.ToString();
+            if(defaultValue != null) this.value.Text = defaultValue.ToString();
         }
     }
 }

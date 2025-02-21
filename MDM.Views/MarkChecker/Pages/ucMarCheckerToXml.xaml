@@ -40,20 +40,6 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <!--<StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="3,0,3,0">
-                            <Button Uid="1" x:Name="btn_ChildrenFold" Content="하위 접기" Click="btn_ChildrenFold_Click"/>
-                            <Button Uid="0" x:Name="btn_ChildrenUnFold" Content="하위 펼치기" Click="btn_ChildrenFold_Click"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="3,0,3,0">
-                            --><!--<Button Uid="1" x:Name="btn_AddRoot" Content="루트 추가" Click="btn_AddRoot_Click"/>
-                         <Button Uid="0" x:Name="btn_AddChild" Content="하위 추가" Click="btn_AddChild_Click"/>--><!--
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        --><!--<Button x:Name="btn_MoveUp" Content="▲" Click="btn_MoveUp_Click"/>
-                     <Button x:Name="btn_MoveDown" Content="▼" Click="btn_MoveDown_Click"/>--><!--
-                    </StackPanel>-->
                 </Grid>
             </Border>
 

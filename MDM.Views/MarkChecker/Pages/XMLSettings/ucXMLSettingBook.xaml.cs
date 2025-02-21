@@ -92,5 +92,28 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
                 ErrorHelper.ShowError(ee);
             }
         }
+
+        private void btn_SettingCompleted_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                xmlBook newBookElement = new xmlBook();
+
+                foreach (vmXMLProperty property in this.propertyList.Items)
+                {
+                    
+                }
+
+                xmlBookConfig newConfig = new xmlBookConfig();
+                foreach (vmXMLConfigure config in this.conFigureList.Items)
+                {
+
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
     }
 }
