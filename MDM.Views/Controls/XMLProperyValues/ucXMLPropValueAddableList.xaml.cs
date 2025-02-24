@@ -22,7 +22,7 @@ namespace MDM.Views.Controls.XMLProperyValues
     /// </summary>
     public partial class ucXMLPropValueAddableList : UserControl
     {
-        public string[] Values
+        public string[] Value
         {
             get
             {
@@ -93,7 +93,7 @@ namespace MDM.Views.Controls.XMLProperyValues
         {
             string value = this.value.Text;
 
-            if (!this.Values.Contains(value))
+            if (!this.Value.Contains(value))
             {
                 ListBoxItem newItem = new ListBoxItem();
                 newItem.Uid = value;

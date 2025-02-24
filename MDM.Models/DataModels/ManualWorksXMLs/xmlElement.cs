@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Xml.Serialization;
 using MDM.Models.Attributes;
 using System.ComponentModel;
+using System.Xml.Linq;
 
 namespace MDM.Models.DataModels.ManualWorksXMLs
 {
@@ -14,12 +15,13 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
     {
         [JsonIgnore]
         [XmlElement("content")]
-        public xmlContent Content { get; set; } = null;
+       // [XmlAttribute(typeof(XCData))]
+        public string Content { get; set; } = string.Empty;
 
 
         [Nullable(true)]
-        [xmlSubProperty("config")]
-        public xmlElementConfig Config { get; set; }
+        
+        public xmlElementConfig Config { get; set; } = new xmlElementConfig();
 
 
 
@@ -35,6 +37,13 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Description("단락 유형")]
         [DefaultValue(eXMLElementType.NONE)]
         public eXMLElementType ElementType { get; set; } = eXMLElementType.NONE;
+
+        public void Duplicate(xmlElement target)
+        {
+            target.Config = this.Config;
+            target.Alias = this.Alias;
+            target.ElementType = this.ElementType;
+        }
     }
 
     public class xmlElementConfig

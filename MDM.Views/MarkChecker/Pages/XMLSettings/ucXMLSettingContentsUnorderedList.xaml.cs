@@ -1,4 +1,5 @@
-﻿using MDM.Models.Attributes;
+﻿using MDM.Helpers;
+using MDM.Models.Attributes;
 using MDM.Models.DataModels.ManualWorksXMLs;
 using MDM.Models.ViewModels;
 using MDM.Views.Controls.XMLProperyValues;
@@ -27,17 +28,18 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
     public partial class ucXMLSettingContentsUnorderedList : UserControl
     {
         public eXMLElementType ContentType => eXMLElementType.Unordered_list;
-        public ucXMLSettingContentsUnorderedList()
+        public vmMaterial Material { get; set; }
+        public ucXMLSettingContentsUnorderedList(vmMaterial material)
         {
+            this.Material = material;
             InitializeComponent();
             BindPropertyList();
             BindConFigureList();
         }
 
-
         private void BindPropertyList()
         {
-            PropertyInfo[] pInfos = typeof(xmlElement).GetProperties();
+            PropertyInfo[] pInfos = this.Material.XMLSets.UnorderedListElement.GetType().GetProperties();
 
             this.propertyList.Items.Clear();
             foreach (PropertyInfo pInfo in pInfos)
@@ -65,7 +67,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
         }
         private void BindConFigureList()
         {
-            PropertyInfo[] pInfos = typeof(xmlElementConfig).GetProperties();
+            PropertyInfo[] pInfos = this.Material.XMLSets.UnorderedListElement.Config.GetType().GetProperties();
 
             this.conFigureList.Items.Clear();
             foreach (PropertyInfo pInfo in pInfos)
@@ -82,6 +84,33 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
                 newProp.SetValuePanel(panel);
                 this.conFigureList.Items.Add(newProp);
             }
+        }
+
+        public void SetProperty()
+        {
+            xmlElement option = this.Material.XMLSets.UnorderedListElement;
+
+            foreach (vmXMLProperty propItem in this.propertyList.Items)
+            {
+
+                PropertyInfo pInfo = propItem.Origin;
+                if (pInfo == null) continue;
+
+                var value = propItem.ValuePanel.GetType().GetProperty("Value").GetValue(propItem.ValuePanel, null);
+                pInfo.SetValue(option, value);
+            }
+
+
+            foreach (vmXMLProperty configItem in this.conFigureList.Items)
+            {
+                PropertyInfo pInfo = configItem.Origin;
+                if (pInfo == null) continue;
+
+                var value = configItem.ValuePanel.GetType().GetProperty("Value").GetValue(configItem.ValuePanel, null);
+                pInfo.SetValue(option.Config, value);
+            }
+
+            this.Material.XMLSets.UnorderedListElement = option;
         }
     }
 }

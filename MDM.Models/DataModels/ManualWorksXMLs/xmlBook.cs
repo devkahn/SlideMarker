@@ -16,11 +16,11 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
     {
         [JsonIgnore]
         [XmlElement("chapter")]
-        public List<xmlChapter> Chapters { get; set; }
+        public List<xmlChapter> Chapters { get; set; } = new List<xmlChapter>();
 
+        [XmlIgnore]
         [JsonIgnore]
-        [XmlElement("config")]
-        public xmlBookConfig Config { get; set; }
+        public xmlBookConfig Config { get; set; } = new xmlBookConfig();
 
 
 
@@ -29,7 +29,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Nullable(false)]
         [Description("저자로서 사용자 아이디를 입력")]
         [DefaultValue("DLENC")]
-        public string Author { get; set; } 
+        public string Author { get; set; } = "DLENC";
 
         [XmlIgnore]
         [xmlSubProperty("title")]
@@ -74,6 +74,22 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Nullable(true)]
         [Description("라벨을 입력합니다.")]
         public string[] Tags { get; set; } = null;
+
+
+        
+
+        public void Duplicate(xmlBook target)
+        {
+            target.Author = this.Author;
+            target.Title = this.Title;
+            target.SubTitle = this.SubTitle;
+            target.Edition = this.Edition;
+            target.Keywords = this.Keywords;
+            target.Type = this.Type;
+            target.Locale = this.Locale;
+            target.Tags = this.Tags;
+
+        }
     }
 
 

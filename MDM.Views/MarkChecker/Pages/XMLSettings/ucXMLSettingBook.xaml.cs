@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,33 +29,20 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
     /// </summary>
     public partial class ucXMLSettingBook : UserControl
     {
-        public ucXMLSettingBook()
+        public vmMaterial Material { get; set; }
+        
+        public ucXMLSettingBook(vmMaterial material)
         {
+            this.Material = material;
             InitializeComponent();
+
             BindPropertyList();
             BindConFigureList();
         }
-
-
-        private void BindConFigureList()
-        {
-            PropertyInfo[] pInfos = typeof(xmlBookConfig).GetProperties();
-
-            this.conFigureList.Items.Clear();
-            foreach (PropertyInfo pInfo in pInfos)
-            {
-                  bool hasDescription = pInfo.CustomAttributes.Where(x => x.AttributeType == typeof(DescriptionAttribute)).Any();
-                if (!hasDescription) continue;
-
-                vmXMLProperty newProp = new vmXMLProperty(pInfo);
-                UserControl panel = ctrlXMLPropValue.GetValueContent(pInfo);
-                newProp.SetValuePanel(panel);
-                this.conFigureList.Items.Add(newProp);
-            }
-        }
+        
         private void BindPropertyList()
         {
-            PropertyInfo[] pInfos = typeof(xmlBook).GetProperties();
+            PropertyInfo[] pInfos = this.Material.XMLSets.Book.GetType().GetProperties();
 
             this.propertyList.Items.Clear();
             foreach (PropertyInfo pInfo in pInfos)
@@ -71,9 +59,50 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
                 this.propertyList.Items.Add(newProp);
             }
         }
+        private void BindConFigureList()
+        {
+            this.Material.XMLSets.Book.Config = new xmlBookConfig();
+
+            PropertyInfo[] pInfos = this.Material.XMLSets.Book.Config.GetType().GetProperties();
+
+            this.conFigureList.Items.Clear();
+            foreach (PropertyInfo pInfo in pInfos)
+            {
+                bool hasDescription = pInfo.CustomAttributes.Where(x => x.AttributeType == typeof(DescriptionAttribute)).Any();
+                if (!hasDescription) continue;
+
+                vmXMLProperty newProp = new vmXMLProperty(pInfo);
+                UserControl panel = ctrlXMLPropValue.GetValueContent(pInfo);
+                newProp.SetValuePanel(panel);
+                this.conFigureList.Items.Add(newProp);
+            }
+        }
+
+        public void SetProperty()
+        {
+            xmlBook bookOption = this.Material.XMLSets.Book;
+
+            foreach (vmXMLProperty propItem in this.propertyList.Items)
+            {
+                PropertyInfo pInfo = propItem.Origin;
+                if(pInfo == null) continue;
+
+                var value = propItem.ValuePanel.GetType().GetProperty("Value").GetValue(propItem.ValuePanel, null);
+                pInfo.SetValue(bookOption, value);
+            }
 
 
-      
+            foreach (vmXMLProperty configItem in this.conFigureList.Items)
+            {
+                PropertyInfo pInfo = configItem.Origin;
+                if (pInfo == null) continue;
+
+                var value = configItem.ValuePanel.GetType().GetProperty("Value").GetValue(configItem.ValuePanel, null);
+                pInfo.SetValue(bookOption.Config, value);
+            }
+
+            this.Material.XMLSets.Book = bookOption;
+        }
 
         private void propertyList_PreviewKeyDown(object sender, KeyEventArgs e)
         {

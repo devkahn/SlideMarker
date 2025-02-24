@@ -26,8 +26,12 @@ namespace MDM.Helpers
             byte[] randomBytes = new byte[byteNum];
             RandomNumberGenerator.Create().GetBytes(randomBytes);
 
-            return BitConverter.ToString(randomBytes);
+            return BitConverter.ToString(randomBytes).Replace("-", "").ToLower();
         }
 
+        public static string ConvertContents(string value)
+        {
+            return string.Format("<![CDATA[{0}]]>", value);
+        }
     }
 }

@@ -24,6 +24,7 @@ namespace MDM.Views.Controls.XMLProperyValues
             if (typeName == typeof(string).Name) return new ctrlXMLPropValueString(defaultValue);
             if (typeName == typeof(eXMLBookType).Name) return new ctrlXMLPropValueSelection(defaultValue);
             if (typeName == typeof(eXMLLocale).Name) return new ctrlXMLPropValueSelection(defaultValue);
+            if (typeName == typeof(eXMLChapterType).Name) return new ctrlXMLPropValueSelection(defaultValue);
             if (typeName == typeof(eXMLChapterSectionView).Name) return new ctrlXMLPropValueSelection(defaultValue);
             if (typeName == typeof(eXMLElementType).Name) return new ctrlXMLPropValueSelection(defaultValue);
             if (typeName == typeof(eXMLElementTableLayout).Name) return new ctrlXMLPropValueSelection(defaultValue);

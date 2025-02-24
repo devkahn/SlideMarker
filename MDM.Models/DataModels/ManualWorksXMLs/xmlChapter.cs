@@ -14,11 +14,10 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
     {
         [JsonIgnore]
         [XmlElement("element")]
-        public List<xmlElement> Elements { get; set; }
+        public List<xmlElement> Elements { get; set; } = new List<xmlElement>();
 
         [Nullable(true)]
-        [xmlSubProperty("config")]
-        public xmlChapterConfig Config { get; set; }
+        public xmlChapterConfig Config { get; set; } = new xmlChapterConfig();
 
 
         [XmlIgnore]
@@ -51,7 +50,8 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlSubProperty("type")]
         [Nullable(false)]
         [Description("장 유형")]
-        public object Type { get; set; } = null;
+        [DefaultValue(eXMLChapterType.CHAPTER)]
+        public eXMLChapterType Type { get; set; } = eXMLChapterType.NONE;
 
         [XmlIgnore]
         [xmlSubProperty("always_top")]
@@ -59,6 +59,18 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Description("장을 부와 동일한 최상위 단계로 하려면 true입력")]
         [DefaultValue(false)]
         public bool AlwaysTop { get; set; } = false;
+
+
+        public void Duplicate(xmlChapter target)
+        {
+            target.Author = this.Author;
+            target.Alias = this.Alias;  
+            target.Title = this.Title;
+            target.SubTitle = this.SubTitle;
+            target.Type = this.Type;
+            target.AlwaysTop = this.AlwaysTop;
+            target.Config = this.Config;
+        }
     }
 
     public class xmlChapterConfig
@@ -113,4 +125,39 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Description("ACCORDION")]
         ACCORDION
     }
+    public enum eXMLChapterType
+    {
+        [Description("")]
+        NONE,
+
+        [Description("제목")]
+        TITLE,
+        [Description("추천사")]
+        FOREWORD,
+        [Description("차례")]
+        TOC,
+        [Description("그림 차례")]
+        LIST_OF_FIGURES,
+        [Description("표 차례")]
+        LIST_OF_TABLES,
+        [Description("코드 차례")]
+        LIST_OF_CODES,
+        [Description("머리말")]
+        PREFACE,
+        [Description("감사의 글")]
+        ACKNOWLEDGMENTS,
+        [Description("권두 장")]
+        FRONT_CHAPTER,
+        [Description("장")]
+        CHAPTER,
+        [Description("부")]
+        PART,
+        [Description("부록")]
+        APPENDIX,
+        [Description("찾아보기")]
+        INDEX,
+        [Description("권말 장")]
+        BACK_CHAPTER,
+    }
+
 }

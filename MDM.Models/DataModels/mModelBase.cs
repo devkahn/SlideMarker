@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.ComponentModel;
 using MDM.Models.Attributes;
+using System.Security.Cryptography;
+using System.Net.NetworkInformation;
 
 namespace MDM.Models.DataModels
 {
@@ -18,9 +20,10 @@ namespace MDM.Models.DataModels
         public int Idx { get; set; } = -1;
 
         [PropOrder(2)]
-        [InsertUse][SelectUse]
+        [InsertUse]
+        [SelectUse]
         [ColumnHeader("Uid")]
-        public string Uid { get; set; } = Guid.NewGuid().ToString();
+        public string Uid { get; set; } = GenerateUUId(8);
 
         [PropOrder(3)]
         [InsertUse][SelectUse][UpdateUse]
@@ -62,6 +65,13 @@ namespace MDM.Models.DataModels
             }
 
             return output;
+        }
+        public static string GenerateUUId(int byteNum)
+        {
+            byte[] randomBytes = new byte[byteNum];
+            RandomNumberGenerator.Create().GetBytes(randomBytes);
+
+            return BitConverter.ToString(randomBytes).Replace("-", "").ToLower();
         }
     }
 }

@@ -8,5 +8,9 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
 {
     public class xmlContent
     {
+        public xmlContent(string value)
+        {
+
+        }
     }
 }

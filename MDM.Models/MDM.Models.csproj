@@ -66,6 +66,7 @@
     <Compile Include="DataModels\ManualWorksXMLs\xmlContent.cs" />
     <Compile Include="DataModels\ManualWorksXMLs\xmlElement.cs" />
     <Compile Include="DataModels\ManualWorksXMLs\xmlImage.cs" />
+    <Compile Include="DataModels\ManualWorksXMLs\xmlSet.cs" />
     <Compile Include="DataModels\ManualWorksXMLs\xmlSubProperty.cs" />
     <Compile Include="DataModels\mContent.cs" />
     <Compile Include="DataModels\mHeading.cs" />

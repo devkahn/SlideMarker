@@ -108,6 +108,7 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
+                    <Button Content="추출" Click="btn_Export_Click"/>
                 </Grid>
             </Border>
 
@@ -137,10 +138,10 @@
         </Grid>
         <TabControl Grid.Column="2">
             <TabItem Header="일괄 설정">
-                <local:ucMarCheckerToXmlAllSetting />
+                <local:ucMarCheckerToXmlAllSetting x:Name="ucMarCheckerToXmlAllSetting" />
             </TabItem>
-            <TabItem Header="단일 설정">
-                <local:ucMarCheckerToXmlUnitSetting/> 
+            <TabItem Header="단일 설정" IsEnabled="False">
+                <local:ucMarCheckerToXmlUnitSetting x:Name="ucMarCheckerToXmlUnitSetting"/> 
             </TabItem>
         </TabControl>
 

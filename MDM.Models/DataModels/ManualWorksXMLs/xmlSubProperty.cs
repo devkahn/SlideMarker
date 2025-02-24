@@ -9,10 +9,25 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
 {
     public class xmlSubProperty
     {
+
+        public xmlSubProperty()
+        {
+
+        }
+        public xmlSubProperty(string name)
+        {
+            Name = name;
+        }
+        public xmlSubProperty(string name, string value)
+        {
+            Name = name;
+            Value = value;
+        }
+
         [XmlAttribute("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [XmlAttribute("value")]
-        public string Value { get; set; }
+        public string Value { get; set; } = string.Empty;
     }
 }

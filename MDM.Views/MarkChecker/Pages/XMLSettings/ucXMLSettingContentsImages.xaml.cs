@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MDM.Helpers;
 using MDM.Models.Attributes;
 using MDM.Models.DataModels.ManualWorksXMLs;
 using MDM.Models.ViewModels;
@@ -27,8 +28,11 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
     public partial class ucXMLSettingContentsImages : UserControl
     {
         public eXMLElementType ContentType => eXMLElementType.Image;
-        public ucXMLSettingContentsImages()
+        public vmMaterial Material { get; set; }
+
+        public ucXMLSettingContentsImages(vmMaterial material)
         {
+            this.Material = material;
             InitializeComponent();
             BindPropertyList();
             BindConFigureList();
@@ -38,7 +42,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
 
         private void BindPropertyList()
         {
-            PropertyInfo[] pInfos = typeof(xmlElement).GetProperties();
+            PropertyInfo[] pInfos = this.Material.XMLSets.ImageElement.GetType().GetProperties();
 
             this.propertyList.Items.Clear();
             foreach (PropertyInfo pInfo in pInfos)
@@ -66,7 +70,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
         }
         private void BindConFigureList()
         {
-            PropertyInfo[] pInfos = typeof(xmlElementConfig).GetProperties();
+            PropertyInfo[] pInfos = this.Material.XMLSets.ImageElement.Config.GetType().GetProperties();
 
             this.conFigureList.Items.Clear();
             foreach (PropertyInfo pInfo in pInfos)
@@ -83,6 +87,47 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
                 newProp.SetValuePanel(panel);
                 this.conFigureList.Items.Add(newProp);
             }
+        }
+
+        public void SetProperty()
+        {
+            xmlElement imageOption = this.Material.XMLSets.ImageElement;
+
+            foreach (vmXMLProperty propItem in this.propertyList.Items)
+            {
+
+                PropertyInfo pInfo = propItem.Origin;
+                if (pInfo == null) continue;
+
+                var value = propItem.ValuePanel.GetType().GetProperty("Value").GetValue(propItem.ValuePanel, null);
+                pInfo.SetValue(imageOption, value);
+            }
+
+
+            foreach (vmXMLProperty configItem in this.conFigureList.Items)
+            {
+                PropertyInfo pInfo = configItem.Origin;
+                if (pInfo == null) continue;
+
+                var value = configItem.ValuePanel.GetType().GetProperty("Value").GetValue(configItem.ValuePanel, null);
+                pInfo.SetValue(imageOption.Config, value);
+            }
+
+            this.Material.XMLSets.ImageElement = imageOption;
+        }
+
+        private string ArrayValueSerialize(object value)
+        {
+            string output = string.Empty;
+
+            string[] arrayValue = value as string[];
+            foreach (var item in arrayValue)
+            {
+                output += item;
+                if (arrayValue.Last() != item) output += ",";
+            }
+
+            return output;
         }
 
     }

@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MDM.Helpers;
 using MDM.Models.Attributes;
 using MDM.Models.DataModels.ManualWorksXMLs;
 using MDM.Models.ViewModels;
@@ -26,32 +27,18 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
     /// </summary>
     public partial class ucXMLSettingChapter : UserControl
     {
-        public ucXMLSettingChapter()
+        public vmMaterial Material { get; set; }
+        public ucXMLSettingChapter(vmMaterial material)
         {
+            this.Material = material;
             InitializeComponent();
             BindPropertyList();
             BindConFigureList();
         }
-
-        private void BindConFigureList()
-        {
-            PropertyInfo[] pInfos = typeof(xmlChapterConfig).GetProperties();
-
-            this.conFigureList.Items.Clear();
-            foreach (PropertyInfo pInfo in pInfos)
-            {
-                bool hasDescription = pInfo.CustomAttributes.Where(x => x.AttributeType == typeof(DescriptionAttribute)).Any();
-                if (!hasDescription) continue;
-
-                vmXMLProperty newProp = new vmXMLProperty(pInfo);
-                UserControl panel = ctrlXMLPropValue.GetValueContent(pInfo);
-                newProp.SetValuePanel(panel);
-                this.conFigureList.Items.Add(newProp);
-            }
-        }
+        
         private void BindPropertyList()
         {
-            PropertyInfo[] pInfos = typeof(xmlChapter).GetProperties();
+            PropertyInfo[] pInfos = this.Material.XMLSets.Chapter.GetType().GetProperties();
 
             this.propertyList.Items.Clear();
             foreach (PropertyInfo pInfo in pInfos)
@@ -68,8 +55,50 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
                 this.propertyList.Items.Add(newProp);
             }
         }
+        private void BindConFigureList()
+        {
+            PropertyInfo[] pInfos = this.Material.XMLSets.Chapter.Config.GetType().GetProperties();
+
+            this.conFigureList.Items.Clear();
+            foreach (PropertyInfo pInfo in pInfos)
+            {
+                bool hasDescription = pInfo.CustomAttributes.Where(x => x.AttributeType == typeof(DescriptionAttribute)).Any();
+                if (!hasDescription) continue;
+
+                vmXMLProperty newProp = new vmXMLProperty(pInfo);
+                UserControl panel = ctrlXMLPropValue.GetValueContent(pInfo);
+                newProp.SetValuePanel(panel);
+                this.conFigureList.Items.Add(newProp);
+            }
+        }
+
+        public void SetProperty()
+        {
+            xmlChapter chapterOption = this.Material.XMLSets.Chapter;
+
+            foreach (vmXMLProperty propItem in this.propertyList.Items)
+            {
+                PropertyInfo pInfo = propItem.Origin;
+                if (pInfo == null) continue;
+
+                var value = propItem.ValuePanel.GetType().GetProperty("Value").GetValue(propItem.ValuePanel, null);
+                pInfo.SetValue(chapterOption, value);
+            }
 
 
-    
+            foreach (vmXMLProperty configItem in this.conFigureList.Items)
+            {
+                PropertyInfo pInfo = configItem.Origin;
+                if (pInfo == null) continue;
+
+                var value = configItem.ValuePanel.GetType().GetProperty("Value").GetValue(configItem.ValuePanel, null);
+                pInfo.SetValue(chapterOption.Config, value);
+            }
+
+            this.Material.XMLSets.Chapter = chapterOption;
+        }
+
+
+        
     }
 }

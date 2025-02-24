@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using MDM.Models.DataModels;
+using MDM.Models.DataModels.ManualWorksXMLs;
 using Microsoft.Office.Interop.PowerPoint;
 
 namespace MDM.Models.ViewModels
@@ -46,6 +47,7 @@ namespace MDM.Models.ViewModels
         public string DirectoryPath { get; set; } = string.Empty;
         public Presentation OriginPresentation { get; private set; } = null;
         public List<Shape> SelectedShapes { get; set; } = new List<Shape>();
+        public xmlSet XMLSets { get; set; }
 
 
         private ObservableCollection<vmSlide> OriginSlides { get; set; }
@@ -164,7 +166,7 @@ namespace MDM.Models.ViewModels
         }
         public override void SetInitialData()
         {
-            //this.SelectedShapes = { };
+            this.XMLSets = new xmlSet();
 
             this.OriginSlides = new ObservableCollection<vmSlide>();
             this.OriginSlides.CollectionChanged += OriginSlides_CollectionChanged;
