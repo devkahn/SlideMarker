@@ -186,6 +186,8 @@ namespace MDM.Helpers
                 newShape.LoadChildren();
             }
 
+            obj.ItemsOrderBy();
+
             foreach (vmItem item in obj.Items)
             {
                 if (string.IsNullOrEmpty(item.Temp.ParentItemUid)) continue;

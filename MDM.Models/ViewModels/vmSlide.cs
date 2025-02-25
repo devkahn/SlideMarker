@@ -194,6 +194,11 @@ namespace MDM.Models.ViewModels
         {
             this.Display_Description = this.Temp.Description = description;   
         }
+        public void ItemsOrderBy()
+        {
+            this.Items = new ObservableCollection<vmItem>(this.Items.OrderBy(x => x.Temp.Order));
+            OnPropertyChanged(nameof(this.PreviewItems));
+        }
         public override object UpdateOriginData()
         {
             this.Origin.MaterialId = this.Temp.MaterialId = this.ParentMaterial.Temp.Idx;
