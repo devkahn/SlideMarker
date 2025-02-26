@@ -973,6 +973,7 @@ namespace MDM.Models.ViewModels
             //SetRowIndex();
             if (this.ParentShape != null) this.Origin.ParentShapeIdx = this.Temp.ParentShapeIdx = this.ParentShape.Temp.Idx;
             if (this.ParentItem != null) this.Origin.ParentItemUid = this.Temp.ParentItemUid = this.ParentItem.Temp.Uid;
+            this.Origin.IsUsed = this.Temp.IsUsed;
             this.Origin.Uid = this.Temp.Uid;
             this.Origin.Order = this.Temp.Order;
             this.Origin.ItemType = this.Temp.ItemType;

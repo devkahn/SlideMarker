@@ -279,6 +279,8 @@ namespace ManualDataManager.Views.Pages
                     vmSlide newSlide = new vmSlide(sl);
                     newVm.AddSlide(newSlide);
                     newSlide.OnModifyStatusChanged(true);
+                    foreach (vmItem item in newSlide.Items) item.SetRowIndex();
+                    
                 }
 
                 newVm.OrderSlides();

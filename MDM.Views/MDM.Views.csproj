@@ -100,6 +100,9 @@
     <Compile Include="Converters\IntToVisibilityConverterReverse.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverterReverse.cs" />
+    <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewAllSetting.xaml.cs">
+      <DependentUpon>ucDataLabelingPreviewAllSetting.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewItem.xaml.cs">
       <DependentUpon>ucDataLabelingPreviewItem.xaml</DependentUpon>
     </Compile>
@@ -112,11 +115,11 @@
     <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewItemText.xaml.cs">
       <DependentUpon>ucDataLabelingPreviewItemText.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewQualityCheck.xaml.cs">
+      <DependentUpon>ucDataLabelingPreviewQualityCheck.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewSlide.xaml.cs">
       <DependentUpon>ucDataLabelingPreviewSlide.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewTree.xaml.cs">
-      <DependentUpon>ucDataLabelingPreviewTree.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataLabeling\Pages\ucDataLabelingShapes.xaml.cs">
       <DependentUpon>ucDataLabelingShapes.xaml</DependentUpon>
@@ -132,9 +135,6 @@
     </Compile>
     <Compile Include="DataLabeling\Pages\ucDataLabelingPreview.xaml.cs">
       <DependentUpon>ucDataLabelingPreview.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewContentTable.xaml.cs">
-      <DependentUpon>ucDataLabelingPreviewContentTable.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataLabeling\Windows\wndSlidePreview.xaml.cs">
       <DependentUpon>wndSlidePreview.xaml</DependentUpon>
@@ -194,6 +194,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewAllSetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DataLabeling\Pages\ucDataLabelingPreviewItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -210,11 +214,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewSlide.xaml">
+    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewQualityCheck.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewTree.xaml">
+    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewSlide.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -235,10 +239,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="DataLabeling\Pages\ucDataLabelingPreview.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DataLabeling\Pages\ucDataLabelingPreviewContentTable.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

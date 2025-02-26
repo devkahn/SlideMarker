@@ -81,7 +81,7 @@ namespace MDM.Helpers
                 bool isUpdate = data.Update();
                 if (!isUpdate) return;
             }
-            foreach (vmItem item in obj.Items)
+            foreach (vmItem item in obj.Items.ToList())
             {
                 item.Save();
             }

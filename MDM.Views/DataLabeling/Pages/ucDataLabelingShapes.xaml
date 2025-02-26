@@ -583,7 +583,7 @@
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5,10,5">
                         <Button x:Name="btn_AlignLines" Content="전체 레벨 정렬" Click="btn_AlignLines_Click"/>
-                        <Button x:Name="btn_CheckQuality" Content="품질 검토하기" Click="btn_CheckQuality_Click"/>
+                        <Button x:Name="btn_CheckQuality" Content="품질 검토하기" Click="btn_CheckQuality_Click" IsEnabled="False"/>
                     </StackPanel>
                     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5,10,5">
                         <Button Content="완료 저장하고 다음 ▶" Width="130" Click="btn_CompletedSaveNext_Click"/>

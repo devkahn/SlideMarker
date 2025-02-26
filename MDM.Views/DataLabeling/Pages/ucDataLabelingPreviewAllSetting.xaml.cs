@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace MDM.Views.DataLabeling.Pages
 {
     /// <summary>
-    /// ucDataLabelingPreviewTree.xaml에 대한 상호 작용 논리
+    /// ucDataLabelingPreviewAllSetting.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class ucDataLabelingPreviewTree : UserControl
+    public partial class ucDataLabelingPreviewAllSetting : UserControl
     {
-        public ucDataLabelingPreviewTree()
+        public ucDataLabelingPreviewAllSetting()
         {
             InitializeComponent();
         }

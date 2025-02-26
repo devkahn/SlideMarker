@@ -202,6 +202,7 @@ namespace MDM.Views.DataLabeling.Pages
                     }
                     firstItem.SetText(temp);
                     firstItem.InitializeDisplay();
+                    firstItem.SetRowIndex(this.BindingItems);
                 }
                 else
                 {
@@ -221,6 +222,7 @@ namespace MDM.Views.DataLabeling.Pages
                             imageItem.SetTitle(textItem.Temp.LineText);
                             imageItem.SetImageText(imageItem.Temp.Title, imageItem.ParentShape.Temp.Text);
                             this.Material.CurrentSlide.RemoveItem(textItem);
+                            imageItem.SetRowIndex(this.BindingItems);
                         }
                     }
                     else
@@ -334,7 +336,8 @@ namespace MDM.Views.DataLabeling.Pages
                     this.Material.CurrentSlide.RemoveItem(item);
                     this.BindingItems.Remove(item);
                 }
-                //BindItems();
+                foreach (vmItem item in this.BindingItems) item.SetRowIndex(this.BindingItems);
+                
             }
             catch (Exception ee)
             {
@@ -610,6 +613,8 @@ namespace MDM.Views.DataLabeling.Pages
                     this.BindingItems.Remove(cItem);
                 }
                 firstItem.InitializeDisplay();
+                firstItem.SetRowIndex(this.BindingItems);
+
             }
             catch (Exception ee)
             {
@@ -689,6 +694,8 @@ namespace MDM.Views.DataLabeling.Pages
             {
                 vmSlide current = this.Material.CurrentSlide;
                 if (current == null) return;
+
+                foreach (vmItem item in this.Material.CurrentSlide.Items) item.SetRowIndex();
 
                 current.SetStatus(ePageStatus.Completed);
                 
@@ -977,6 +984,8 @@ namespace MDM.Views.DataLabeling.Pages
         {
             try
             {
+                if (this.Material.CurrentSlide.Temp.Idx == -1) return;
+
                 this.Material.CurrentSlide.ClearItems();
                 this.Material.CurrentSlide.Shapes.Clear();
                 this.Material.CurrentSlide.LoadChildren();

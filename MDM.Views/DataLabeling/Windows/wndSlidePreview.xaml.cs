@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using MDM.Models.ViewModels;
 using MDM.Views.DataLabeling.Pages;
 
 namespace MDM.Views.DataLabeling.Windows
@@ -21,18 +22,28 @@ namespace MDM.Views.DataLabeling.Windows
     public partial class wndSlidePreview : Window
     {
         public ucDataLabeling ParentPage { get; set; }
+        private vmMaterial _Material = null;
+        public vmMaterial Material
+        {
+            get => _Material;
+            set
+            {
+                _Material = value;
+                this.PreviewSlidePage.DataContext = value.CurrentSlide;
+            }
+        }
 
         public wndSlidePreview()
         {
             InitializeComponent();
-            this.PreviewSlidePage.DataContext = this.DataContext;
+           // this.PreviewSlidePage.DataContext = (this.DataContext as vmMaterial).CurrentSlide;
             
         }
         public wndSlidePreview(ucDataLabeling parentPage)
         {
             this.ParentPage = parentPage;
             InitializeComponent();
-            this.PreviewSlidePage.DataContext = this.DataContext;
+          //  this.PreviewSlidePage.DataContext = (this.DataContext as vmMaterial).CurrentSlide;
         }
 
         private void Window_Closed(object sender, EventArgs e)

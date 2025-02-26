@@ -76,19 +76,19 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Resources>
-                        <RadioButton x:Name="rBtn_Item" Content="아이템" IsChecked="True"/>
-                        <RadioButton x:Name="rBtn_Slide" Content="슬라이드" IsEnabled="True"/>
-                        <RadioButton x:Name="rBtn_Tree" Content="목차"/>
-                        <RadioButton x:Name="rBtn_ContentsTable" Content="컨텐츠 테이블"/>
+                        <RadioButton x:Name="rBtn_Item" Content="아이템 설정" IsChecked="True"/>
+                        <RadioButton x:Name="rBtn_AllSetting" Content="일괄 설정" IsEnabled="True"/>
+                        <RadioButton x:Name="rBtn_QualityCheck" Content="정합성 검토"/>
+                        <!--<RadioButton x:Name="rBtn_ContentsTable" Content="컨텐츠 테이블"/>-->
                     </StackPanel>
                 </StackPanel>
             </Border>
 
             <Grid Grid.Row="2">
                 <local:ucDataLabelingPreviewItem Visibility="{Binding IsChecked, ElementName=rBtn_Item, Converter={StaticResource converter_BoolToVisible}}"/>
-                <local:ucDataLabelingPreviewSlide Visibility="{Binding IsChecked, ElementName=rBtn_Slide, Converter={StaticResource converter_BoolToVisible}}" />
-                <local:ucDataLabelingPreviewTree Visibility="{Binding IsChecked, ElementName=rBtn_Tree, Converter={StaticResource converter_BoolToVisible}}"/>
-                <local:ucDataLabelingPreviewContentTable Visibility="{Binding IsChecked, ElementName=rBtn_ContentsTable, Converter={StaticResource converter_BoolToVisible}}"/>
+                <local:ucDataLabelingPreviewAllSetting Visibility="{Binding IsChecked, ElementName=rBtn_AllSetting, Converter={StaticResource converter_BoolToVisible}}" />
+                <local:ucDataLabelingPreviewQualityCheck Visibility="{Binding IsChecked, ElementName=rBtn_QualityCheck, Converter={StaticResource converter_BoolToVisible}}"/>
+                <!--<local:ucDataLabelingPreviewContentTable Visibility="{Binding IsChecked, ElementName=rBtn_ContentsTable, Converter={StaticResource converter_BoolToVisible}}"/>-->
             </Grid>
         </Grid>
     </Border>
