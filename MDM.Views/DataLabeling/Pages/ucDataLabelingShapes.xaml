@@ -136,7 +136,7 @@
                                 <Button x:Name="btn_SplitLines" Content="행 분리" Click="btn_SplitLines_Click"/>
                             </StackPanel>
                             <StackPanel Uid="AlignManager" Orientation="Horizontal" Margin="5">
-                                <Button x:Name="btn_AlignLines" Content="정렬" Click="btn_AlignLines_Click"/>
+                                
                                 <Button x:Name="btn_ClearLines" Content="빈 칸 정리" Click="btn_ClearLines_Click"/>
                             </StackPanel>
                         </StackPanel>
@@ -577,12 +577,13 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5">
-
-                        <Button Content="선택객체 추가하기" Click="btn_AddNEwShape_Click" Visibility="Collapsed"/>
+                        <Button Content="저장으로 되돌리기" Click="btn_ReLoadDb_Click" />
+                        <!--<Button Content="원본으로 되돌리기" Click="btn_ReLoadOrigin_Click" Visibility="Collapsed" />-->
+                        <!--<Button Content="선택객체 추가하기" Click="btn_AddNEwShape_Click" Visibility="Collapsed"/>-->
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5,10,5">
-                        <!--<Button Content="원본으로 되돌리기" Click="btn_ReLoadOrigin_Click" Visibility="Collapsed" />-->
-                        <Button Content="저장으로 되돌리기" Click="btn_ReLoadDb_Click" />
+                        <Button x:Name="btn_AlignLines" Content="전체 레벨 정렬" Click="btn_AlignLines_Click"/>
+                        <Button x:Name="btn_CheckQuality" Content="품질 검토하기" Click="btn_CheckQuality_Click"/>
                     </StackPanel>
                     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5,10,5">
                         <Button Content="완료 저장하고 다음 ▶" Width="130" Click="btn_CompletedSaveNext_Click"/>

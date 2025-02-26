@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using MDM.Views.DataLabeling.Pages;
 
 namespace MDM.Views.DataLabeling.Windows
 {
@@ -19,11 +20,24 @@ namespace MDM.Views.DataLabeling.Windows
     /// </summary>
     public partial class wndSlidePreview : Window
     {
+        public ucDataLabeling ParentPage { get; set; }
+
         public wndSlidePreview()
         {
             InitializeComponent();
             this.PreviewSlidePage.DataContext = this.DataContext;
-            this.PreviewSlidePage.BottomPanel.Visibility = Visibility.Collapsed;
+            
+        }
+        public wndSlidePreview(ucDataLabeling parentPage)
+        {
+            this.ParentPage = parentPage;
+            InitializeComponent();
+            this.PreviewSlidePage.DataContext = this.DataContext;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            this.ParentPage.PreviewWindow = null;
         }
     }
 }

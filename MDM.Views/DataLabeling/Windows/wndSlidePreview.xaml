@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MDM.Views.DataLabeling.Windows"
         xmlns:pages ="clr-namespace:MDM.Views.DataLabeling.Pages"
         mc:Ignorable="d"
-        Title="Slide Preview" Height="450" Width="800">
+        Title="Slide Preview" Height="450" Width="800" Closed="Window_Closed">
     <Grid>
         <pages:ucDataLabelingPreviewSlide x:Name="PreviewSlidePage"/>
     </Grid>

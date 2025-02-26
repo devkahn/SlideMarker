@@ -80,10 +80,10 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5">
-                    <Button x:Name="btn_ShowSlidePreviewWindow" Content="창으로 보기" Click="btn_ShowSlidePreviewWindow_Click"/>
+                    <Button x:Name="btn_ShowSlidePreviewWindow" Content="창으로 보기" Click="btn_ShowSlidePreviewWindow_Click" Visibility="Collapsed"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
-                    <Button x:Name="btn_Refresh" Content="Refresh" Click="btn_Refresh_Click"/>
+                    <Button x:Name="btn_Refresh" Content="새로 고침" Click="btn_Refresh_Click"/>
                 </StackPanel>
             </Grid>
 

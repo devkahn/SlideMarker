@@ -9,6 +9,7 @@ using System.Windows.Input;
 using MDM.Helpers;
 using MDM.Models.DataModels;
 using MDM.Models.ViewModels;
+using MDM.Views.DataLabeling.Windows;
 using Microsoft.Office.Core;
 using Microsoft.Office.Interop.PowerPoint;
 using Shape = Microsoft.Office.Interop.PowerPoint.Shape;
@@ -39,6 +40,8 @@ namespace MDM.Views.DataLabeling.Pages
         public Button LoadButton => this.btn_FileLoad;
         public ucDataLabelingSildes DataLabelingSlides => this.ucDataLabelingSlides;
         public ucDataLabelingShapes DataLabelingShapes => this.ucDataLabelingShapes;
+        public wndSlidePreview PreviewWindow { get; set; }
+
 
 
         public ucDataLabeling()
@@ -203,6 +206,41 @@ namespace MDM.Views.DataLabeling.Pages
 
                 string msg = "이미지 파일 입력 완료하였습니다.";
                 MessageHelper.ShowMessage("이미지 입력", msg);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_ShowPreview_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (this.PreviewWindow == null)
+                {
+                    this.PreviewWindow = new wndSlidePreview(this);
+                    this.PreviewWindow.PreviewSlidePage.DataContext = this.Material;
+                    this.PreviewWindow.Show();
+                }
+
+                this.PreviewWindow.Activate();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void parent_Unloaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (this.PreviewWindow != null)
+                {
+                    this.PreviewWindow.Close();
+                    this.PreviewWindow = null;
+                }
             }
             catch (Exception ee)
             {

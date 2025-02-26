@@ -241,7 +241,18 @@ namespace MDM.Views.DataLabeling.Pages
         {
             try
             {
-
+                int currentHeaderLevel = -1;
+                foreach (vmItem item in this.BindingItems.OrderBy(x=> x.RowIndex))
+                {
+                    if(item.ItemType == eItemType.Header)
+                    {
+                        currentHeaderLevel = item.Temp.Level;
+                    }
+                    else
+                    {
+                        item.SetLevel(currentHeaderLevel + 1);
+                    }
+                } 
             }
             catch (Exception ee)
             {
@@ -680,6 +691,7 @@ namespace MDM.Views.DataLabeling.Pages
                 if (current == null) return;
 
                 current.SetStatus(ePageStatus.Completed);
+                
                 current.Save();
                 (this.Tag as ucDataLabeling).DataLabelingSlides.MoveNext();
             }
@@ -1054,6 +1066,11 @@ namespace MDM.Views.DataLabeling.Pages
             {
                 ErrorHelper.ShowError(ee);
             }
+        }
+
+        private void btn_CheckQuality_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

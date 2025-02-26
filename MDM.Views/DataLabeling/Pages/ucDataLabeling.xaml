@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MDM.Views.DataLabeling.Pages"
              x:Name="parent"
-             Background="White">
+             Background="White" Unloaded="parent_Unloaded">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -31,14 +31,15 @@
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10" Background="{StaticResource color_White}" Margin="-5,-5,-5,5">
+            <Grid.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource baseStyle_TopMenu_Button}"/>
+            </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
-                <StackPanel.Resources>
-                    <Style TargetType="Button" BasedOn="{StaticResource baseStyle_TopMenu_Button}"/>
-                </StackPanel.Resources>
                 <StackPanel Orientation="Horizontal">
                     <Button x:Name="btn_FileOpen" Content="OPEN" Click="btn_FileOpen_Click"/>
                     <Button x:Name="btn_FileLoad" Content="LOAD" />
@@ -52,7 +53,12 @@
                     <Button Content="IMAGES IMPORT" Click="btn_ImagesImport_Click"/>
                 </StackPanel>
             </StackPanel>
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,10,15,5">
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
+                <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
+                    <Button Content="SHOW PREVIEW" Click="btn_ShowPreview_Click"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,10,15,5">
                 <StackPanel.Resources>
                     <Style TargetType="TextBlock">
                         <Setter Property="HorizontalAlignment" Value="Center"/>

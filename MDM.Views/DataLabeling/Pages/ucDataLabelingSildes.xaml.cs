@@ -510,5 +510,10 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
+
+        private void btn_ShowPreview_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
