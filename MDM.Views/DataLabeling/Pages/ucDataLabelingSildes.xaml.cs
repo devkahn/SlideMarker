@@ -131,6 +131,10 @@ namespace MDM.Views.DataLabeling.Pages
             if (selectedSlide == null) return;
             
             int order = cList.IndexOf(selectedSlide);
+
+            if (cList.Count - 1 == order) order = -1;
+
+
             this.txtbox_CurSlideIndex.Text = cList[++order].Temp.Index.ToString();
             MovePage();
         }
@@ -196,6 +200,7 @@ namespace MDM.Views.DataLabeling.Pages
                 if (selectedSlide == null) return;
 
                 int order = cList.IndexOf(selectedSlide);
+                if (cList.Count - 1 == order) order = -1;
                 this.txtbox_CurSlideIndex.Text = cList[++order].Temp.Index.ToString();
                 MovePage();
             }
