@@ -199,6 +199,9 @@ namespace MDM.Views.DataLabeling.Pages
                     string targetFilePath = Path.Combine(tempDirPath, file.Name);
                     file.CopyTo(targetFilePath, true);
                 }
+
+                string msg = "이미지 파일 입력 완료하였습니다.";
+                MessageHelper.ShowMessage("이미지 입력", msg);
             }
             catch (Exception ee)
             {
