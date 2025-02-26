@@ -22,6 +22,7 @@ using System.Windows.Media.Imaging;
 using Microsoft.Office.Core;
 using Shape = Microsoft.Office.Interop.PowerPoint.Shape;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace MDM.Views.DataLabeling.Pages
 {
@@ -296,8 +297,12 @@ namespace MDM.Views.DataLabeling.Pages
                 vmItem newVM = new vmItem(newItem);
                 newVM.SetParentItem(lastItem.IsHeader ? lastItem : lastItem.ParentItem, false);
                 this.Material.CurrentSlide.AddItem(newVM, index);// .Items.Insert(index, newVM);
+                this.BindingItems.Insert(index, newVM);
 
                 if (lastItem != null || selectedItems.Count() > 0) newVM.SetParent(lastItem.ParentShape);
+
+                for (int i = index; i < this.BindingItems.Count; i++) this.BindingItems[i].SetRowIndex(this.BindingItems);
+                
 
                 this.datagrid_Shapes.SelectedItem = newVM;
                 this.datagrid_Shapes.ScrollIntoView(this.datagrid_Shapes.SelectedItem);
@@ -341,6 +346,8 @@ namespace MDM.Views.DataLabeling.Pages
                     int cnt = lines.Count();
                     if (cnt <= 1) continue;
 
+                    int index = this.BindingItems.IndexOf(item);
+
                     vmItem current = item;
                     while (current != null)
                     {
@@ -349,11 +356,16 @@ namespace MDM.Views.DataLabeling.Pages
                             vmItem newItem = current.Duplicate();
                             newItem.SetText(lines[i]);
                             newItem.SetParentItem(current.ParentItem);
+                            this.BindingItems.Insert(index + i, newItem);
 
                             current = i + 1 == cnt ? null : newItem;
                         }
                     }
                     item.SetText(lines[0]);
+
+                    
+                    for (int i = index; i < this.BindingItems.Count() ; i++) this.BindingItems[i].SetRowIndex(this.BindingItems);
+                    
                 }
 
 
@@ -385,13 +397,18 @@ namespace MDM.Views.DataLabeling.Pages
                 bool isPreTextEmpty = string.IsNullOrEmpty(preText) || string.IsNullOrWhiteSpace(preText);
                 bool isNextTextEmpty = string.IsNullOrEmpty(nextText) || string.IsNullOrWhiteSpace(nextText);
 
+                int index = currentItem.ParentShape.ParentSlide.Items.IndexOf(currentItem);
                 if (!isPreTextEmpty && !isNextTextEmpty)
                 {
                     currentItem.SetText(preText);
-                    vmItem nextItem = currentItem.Duplicate();
-                    nextItem.SetText(nextText);
-                    nextItem.SetParentItem(currentItem.ParentItem);
+                    vmItem newItem = currentItem.Duplicate();
+                    newItem.SetText(nextText);
+                    newItem.SetParentItem(currentItem.ParentItem);
+                    //  newItem.ParentShape.ParentSlide.AddItem(newItem, index+1);
+                    this.BindingItems.Insert(index + 1, newItem);
                 }
+
+                for (int i = index; i < this.BindingItems.Count(); i++) this.BindingItems[i].SetRowIndex(this.BindingItems);
 
                 this.datagrid_Shapes.CommitEdit();
             }
@@ -525,8 +542,8 @@ namespace MDM.Views.DataLabeling.Pages
                 if (upperItem == null) return;
 
                 list.Move(index, index - 1);
-                selectedItem.SetRowIndex();
-                upperItem.SetRowIndex();
+                selectedItem.SetRowIndex(this.BindingItems);
+                upperItem.SetRowIndex(this.BindingItems);
 
                 if (upperItem.IsHeader) selectedItem.SetParentItem(upperItem.ParentItem);
             }
@@ -552,8 +569,8 @@ namespace MDM.Views.DataLabeling.Pages
                 if (downItem == null) return;
 
                 list.Move(index, index + 1);
-                selectedItem.SetRowIndex();
-                downItem.SetRowIndex();
+                selectedItem.SetRowIndex(this.BindingItems);
+                downItem.SetRowIndex(this.BindingItems);
 
                 if (downItem.IsHeader) selectedItem.SetParentItem(downItem);
             }

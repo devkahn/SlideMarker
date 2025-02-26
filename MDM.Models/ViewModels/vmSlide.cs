@@ -23,7 +23,7 @@ namespace MDM.Models.ViewModels
         private object _Display_Update = null;
         private object _Display_Description = null;
 
-  
+
     }
 
     public partial class vmSlide : vmViewModelbase
@@ -124,7 +124,7 @@ namespace MDM.Models.ViewModels
             {
                 this.OriginItems.Insert(index.Value, item);
             }
-
+            if (item.RowIndex == -1) item.SetRowIndex();
         }
         
         public void ClearItems()
@@ -170,7 +170,7 @@ namespace MDM.Models.ViewModels
                     vmItem data = item as vmItem;
                     if (data == null) continue;
 
-                    data.SetRowIndex();
+                   // data.SetRowIndex();
                 }
             }
             

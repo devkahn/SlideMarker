@@ -31,6 +31,7 @@ namespace MDM.Models.ViewModels
         private eItemType _ItemType = eItemType.None;
         private Thickness _RowMargin = new Thickness(5);
         private Visibility _RowVisibility = Visibility.Visible;
+        private int _RowIndex = -1;
 
         private object _Display_Level = null;
         private object _Display_Indent = null;
@@ -160,9 +161,14 @@ namespace MDM.Models.ViewModels
         }
         public int RowIndex
         {
-            get
+            get => this._RowIndex;
+            //{
+            //    return  this.ParentShape == null? -1 : this.ParentShape.ParentSlide.Items.IndexOf(this);
+            //}
+            private set
             {
-                return  this.ParentShape == null? -1 : this.ParentShape.ParentSlide.Items.IndexOf(this);
+                this._RowIndex = value;
+                OnPropertyChanged(nameof(this.RowIndex));
             }
         }
 
@@ -258,7 +264,15 @@ namespace MDM.Models.ViewModels
         }
         public vmItem Duplicate()
         {
-            mItem newItem = this.Origin.Copy<mItem>();
+            mItem newItem = new mItem();
+            newItem.ParentItemUid = this.Temp.ParentItemUid;
+            newItem.ParentShapeIdx = this.Temp.ParentShapeIdx;
+            newItem.ParentItemIdx = this.Temp.ParentItemIdx;
+            newItem.ItemType = this.Temp.ItemType;
+            newItem.Level = this.Temp.Level;
+            newItem.LineText = this.Temp.LineText;
+            newItem.Title = this.Temp.Title;
+
 
             int originIndex = this.ParentShape.Temp.Lines.IndexOf(this.Temp);
             this.ParentShape.Temp.Lines.Insert(originIndex + 1, newItem);
@@ -761,6 +775,7 @@ namespace MDM.Models.ViewModels
             this.Display_Title = this.Temp.Title;
             this.Display_UpdateDate = this.Temp.UpdateDate.HasValue ? this.Temp.UpdateDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : null;
 
+            this.RowIndex = this.Temp.Order;
             this.ItemType = (eItemType)this.Temp.ItemType;
             this.IsUsed = this.Temp.IsUsed;
             SetPreviewItem();
@@ -842,9 +857,16 @@ namespace MDM.Models.ViewModels
             this.Display_Text = this.Temp.LineText = string.Format("![{0}]({1}{2})", title, text, Defines.EXTENSION_IMAGE);
             SetPreviewItem();
         }
-        public void SetRowIndex()
+        public void SetRowIndex(ObservableCollection<vmItem> list = null)
         {
-            this.OnPropertyChanged(nameof(this.RowIndex));
+            if(list == null)
+            {
+                this.RowIndex = this.ParentShape == null ? -1 : this.ParentShape.ParentSlide.Items.IndexOf(this);
+            }
+            else
+            {
+                this.RowIndex = list.IndexOf(this);
+            }
         }
         public void SetItemType(eItemType type)
         {
@@ -947,6 +969,8 @@ namespace MDM.Models.ViewModels
         }
         public override object UpdateOriginData()
         {
+
+            //SetRowIndex();
             if (this.ParentShape != null) this.Origin.ParentShapeIdx = this.Temp.ParentShapeIdx = this.ParentShape.Temp.Idx;
             if (this.ParentItem != null) this.Origin.ParentItemUid = this.Temp.ParentItemUid = this.ParentItem.Temp.Uid;
             this.Origin.Uid = this.Temp.Uid;
