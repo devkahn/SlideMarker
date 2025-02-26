@@ -925,10 +925,35 @@ namespace MDM.Views.DataLabeling.Pages
         {
             try
             {
-                foreach (var item in this.Material.CurrentSlide.Shapes)
-                {
+                this.Material.CurrentSlide.ClearItems();
+                this.Material.CurrentSlide.Shapes.Clear();
 
-                } 
+                List<Shape> shapes = new List<Shape>();
+
+                #region Slide Shape
+               // foreach (Shape shape in this.Material.CurrentSlide.slid.Shapes)
+                //{
+                //    if (shape.Type == MsoShapeType.msoGroup)
+                //    {
+                //        shape.Ungroup();
+                //        continue;
+                //    }
+
+                //    bool isAny = shapes.Where(x => x != null && x.Id == shape.Id).Any();
+                //    if (!isAny) shapes.Add(shape);
+                //}
+                //var masterShapes = slide.Master.Shapes;
+                //foreach (Shape shape in masterShapes)
+                //{
+                //    if (shape.Type == MsoShapeType.msoGroup) shape.Ungroup();
+
+                //    bool isAny = shapes.Where(x => x.Id == shape.Id).Any();
+                //    if (!isAny) shapes.Add(shape);
+                //}
+                #endregion
+
+
+                BindItems();
 
             }
             catch (Exception ee)

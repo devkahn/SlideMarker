@@ -167,7 +167,10 @@ namespace ManualDataManager.Views.Pages
                     {
                         if (shape.Type == MsoShapeType.msoGroup)
                         {
-                            shape.Ungroup();
+                            //hape.Ungroup();
+
+                            List<Shape> subShapes = GetSubShapes(shape);
+                            foreach (var item in subShapes) shapes.Add(item);
                             continue;
                         }
 
@@ -177,13 +180,18 @@ namespace ManualDataManager.Views.Pages
                     var masterShapes = slide.Master.Shapes;
                     foreach (Shape shape in masterShapes)
                     {
-                        if (shape.Type == MsoShapeType.msoGroup) shape.Ungroup();
+                        if (shape.Type == MsoShapeType.msoGroup)
+                        {
+                            List<Shape> subShapes = GetSubShapes(shape);
+                            foreach (var item in subShapes) shapes.Add(item);
+                            continue;
+                        }
 
                         bool isAny = shapes.Where(x => x.Id == shape.Id).Any();
                         if (!isAny) shapes.Add(shape);
                     }
                     #endregion
-                    //#region Slide Shape
+                    #region Slide Shape
 
                     //bool hasGroupItem = true;
                     //while (hasGroupItem)
@@ -230,7 +238,7 @@ namespace ManualDataManager.Views.Pages
                     //    if (!isAny) shapes.Add(shape);
                     //}
 
-                    //#endregion
+                    #endregion
                     List<mShape> shapeInstances = new List<mShape>();
                     foreach (Shape shape in shapes)
                     {
@@ -283,6 +291,31 @@ namespace ManualDataManager.Views.Pages
 
         }
 
+        private List<Shape> GetSubShapes(Shape groupShape)
+        {
+            List<Shape> output = new List<Shape>();
+
+
+            foreach (Shape subShape in groupShape.GroupItems)
+            {
+                if(subShape.Type == MsoShapeType.msoGroup)
+                {
+                    List<Shape> subShapes = GetSubShapes(subShape);
+                    foreach (Shape susubShape in subShapes)
+                    {
+                        if (!output.Contains(susubShape)) output.Add(susubShape);
+                    }
+                }
+                else
+                {
+                    if(!output.Contains(subShape)) output.Add(subShape);
+                }
+            }
+
+            groupShape.Ungroup();
+
+            return output;
+        }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
