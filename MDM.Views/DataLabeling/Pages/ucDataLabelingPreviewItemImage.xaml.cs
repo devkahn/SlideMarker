@@ -20,6 +20,7 @@ using MDM.Models.ViewModels;
 using System.IO;
 using Path = System.IO.Path;
 using System.Diagnostics;
+using System.Windows.Media.Animation;
 
 namespace MDM.Views.DataLabeling.Pages
 {
@@ -131,7 +132,8 @@ namespace MDM.Views.DataLabeling.Pages
                 }
                 bitmap.Save(targetPath, ImageFormat.Png);
 
-
+                this.txtblock_ImageFileName.Text = data.Temp.Uid;
+                data.SetImageText();
                 data.OnImageFileExistChanged();
                 data.SetPreviewItem();
             }
@@ -180,7 +182,8 @@ namespace MDM.Views.DataLabeling.Pages
                 }
                 File.Copy(fInfo.FullName, targetPath);
 
-
+                this.txtblock_ImageFileName.Text = data.Temp.Uid;
+                data.SetImageText();
                 data.OnImageFileExistChanged();
                 data.SetPreviewItem();
             }
@@ -195,8 +198,9 @@ namespace MDM.Views.DataLabeling.Pages
             {
                 vmItem data = e.NewValue as vmItem;
                 if (data == null) return;
+                if (data.ItemType != Commons.Enum.eItemType.Image) return;
 
-
+                data.SetPreviewItem();
             }
             catch (Exception ee)
             {
@@ -227,6 +231,50 @@ namespace MDM.Views.DataLabeling.Pages
             {
                 ErrorHelper.ShowError(ee);
             }
+        }
+
+        private void btn_ImageTextClipboard_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                vmItem data = this.DataContext as vmItem;
+                if (data == null) return;
+                if (data.ItemType != Commons.Enum.eItemType.Image) return;
+
+                string text = data.Display_Text.ToString();
+                Clipboard.SetText(text);
+
+                DoubleAnimation fadeInAnimation = new DoubleAnimation
+                {
+                    From = 0,
+                    To = 1,
+                    Duration = TimeSpan.FromSeconds(1)
+                };
+                DoubleAnimation fadeOutAnimation = new DoubleAnimation
+                {
+                    From = 1,
+                    To = 0,
+                    Duration = TimeSpan.FromSeconds(1),
+                    BeginTime = TimeSpan.FromSeconds(2) // 3초 후에 시작
+                };
+                fadeOutAnimation.Completed += (s, ee) =>
+                {
+                    this.grid_CopyCompleteMark.Visibility = Visibility.Collapsed;
+                };
+                fadeInAnimation.Completed += (s, ee) =>
+                {
+                    // 3초 후 페이드 아웃 애니메이션 시작
+                    grid_CopyCompleteMark.BeginAnimation(UIElement.OpacityProperty, fadeOutAnimation);
+                };
+
+                this.grid_CopyCompleteMark.Visibility = Visibility.Visible;
+                this.grid_CopyCompleteMark.BeginAnimation(UIElement.OpacityProperty, fadeInAnimation);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+
         }
     }
 }

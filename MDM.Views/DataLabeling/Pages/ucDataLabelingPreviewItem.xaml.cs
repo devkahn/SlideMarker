@@ -85,46 +85,6 @@ namespace MDM.Views.DataLabeling.Pages
             }
         }
 
-        private void txtbox_ImageTitle_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            try
-            {
-                TextBox tb = sender as TextBox;
-                if (tb == null) return;
-
-                vmItem data = tb.DataContext as vmItem;
-                if (data == null) return;
-
-                if(data.ItemType == Commons.Enum.eItemType.Image)
-                {
-                    data.SetTitle(tb.Text);
-                    data.SetImageText(data.Temp.Title, data.Temp.LineText);
-                }
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void txtbox_ImageTitle_LostFocus(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                TextBox tb = sender as TextBox;
-                if (tb == null) return;
-
-                vmItem data = tb.DataContext as vmItem;
-                if (data == null) return;
-
-                //data.SetPreviewItem();
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
         private void Grid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             try
@@ -166,79 +126,6 @@ namespace MDM.Views.DataLabeling.Pages
             }
         }
 
-        private void btn_Clipboard_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Button btn = sender as Button;
-                if (btn == null) return;
 
-                vmItem data = btn.DataContext as vmItem;
-                if (data == null) return;
-
-                TextBox tb = btn.Tag as TextBox;
-                if (tb == null) return;
-
-                Clipboard.SetText(tb.Text);
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void btn_Align_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Button btn = sender as Button;
-                if (btn == null) return;
-
-                vmItem data = btn.DataContext as vmItem;
-                if (data == null) return;
-
-                TextBox tb = btn.Tag as TextBox;
-                if (tb == null) return;
-
-                
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void txtbox_OriginText_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            try
-            {
-                TextBox tb = sender as TextBox;
-                if (tb == null) return;
-
-                vmItem data = tb.DataContext as vmItem;
-                if (data == null) return;
-
-                if (data.ItemType != Commons.Enum.eItemType.Image)
-                {
-                    data.SetText(tb.Text);
-                }
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-
-        private void txtbox_OriginText_LostFocus(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
     }
 }

@@ -160,5 +160,22 @@ namespace MDM.Helpers
 
             return output;
         }
+        public static string GetTitleFromImageLineTet(string imageLineText)
+        {
+            string output = string.Empty;
+
+            string pattern = @"\[(.*?)\]";
+
+            // 정규식을 사용하여 대괄호 안의 텍스트 추출
+            Match match = Regex.Match(imageLineText, pattern);
+
+            if (match.Success)
+            {
+                string extractedText = match.Groups[1].Value;
+                output = extractedText;
+            }
+
+            return output;
+        }
     }
 }

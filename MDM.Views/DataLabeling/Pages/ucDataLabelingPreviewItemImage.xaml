@@ -123,7 +123,7 @@
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="파일명" Style="{StaticResource subStyle_Title_Textblock}"/>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" >
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ParentShape.Display_Text}" Style="{StaticResource subStyle_Value_Textblock}" Margin="10,0,2,0" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="txtblock_ImageFileName" Text="{Binding Temp.Uid}" Style="{StaticResource subStyle_Value_Textblock}" Margin="10,0,2,0" TextTrimming="CharacterEllipsis"/>
                     <TextBlock Grid.Row="1" Grid.Column="1" Text=".png" Style="{StaticResource subStyle_Value_Textblock}" Margin="0,0,5,0"/>
                 </StackPanel>
 
@@ -133,10 +133,19 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Display_Text}" Style="{StaticResource subStyle_Value_Textblock}" Margin="10,0,2,0" TextTrimming="CharacterEllipsis"/>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <Button Content="복사" Margin="3,5,3,5"/>
+                        <Border Grid.Column="1" x:Name="grid_CopyCompleteMark" CornerRadius="5" Margin="5,7,5,7" BorderThickness="1" BorderBrush="{StaticResource color_DarkGreen}" Visibility="Collapsed">
+                            <Grid>
+                                <Border Background="Green" Opacity="0.4"/>
+                                <TextBlock Text="Copied!" FontSize="8" Margin="5,3,5,3" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                            </Grid>
+                        </Border>
+
+                        
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                            <Button Content="복사" Margin="3,5,3,5" Click="btn_ImageTextClipboard_Click"/>
                         </StackPanel>
                     </Grid>
                 </Border>

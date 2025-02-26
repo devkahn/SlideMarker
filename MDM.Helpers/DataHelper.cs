@@ -213,6 +213,17 @@ namespace MDM.Helpers
 
             foreach (mItem item in children)
             {
+                if(item.ItemType == 222)
+                {
+                    string titile = TextHelper.GetTitleFromImageLineTet(item.LineText);
+                    if(titile != item.Title)
+                    {
+                        item.Title = titile;
+                        item.Update();
+                    }
+                }
+
+
                 vmItem newItem = new vmItem(item);
                 newItem.SetParent(obj);
             }

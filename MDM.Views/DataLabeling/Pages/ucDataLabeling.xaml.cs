@@ -93,6 +93,7 @@ namespace MDM.Views.DataLabeling.Pages
                 material.OrderSlides();
 
                 this.Material = material;
+                this.Material.DirectoryPath = fInfo.DirectoryName;
             }
             catch (Exception ee)
             {

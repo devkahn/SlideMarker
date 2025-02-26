@@ -555,10 +555,15 @@ namespace MDM.Models.ViewModels
                     string filePath = Path.Combine(dir, item.Temp.Uid + Defines.EXTENSION_IMAGE);
 
                     BitmapImage bitmap = new BitmapImage();
+                    bitmap.CacheOption = BitmapCacheOption.None;
+                    bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+
                     bitmap.BeginInit();
                     Uri url = new Uri(filePath, UriKind.Absolute);
                     bitmap.UriSource = url; // 이미지 파일 경로
                     bitmap.EndInit();
+
+                    
 
                     Image img = new Image();
                     img.Source = bitmap;
@@ -570,7 +575,7 @@ namespace MDM.Models.ViewModels
                     image.Background = Brushes.LightGray;
 
                     TextBlock noImage = new TextBlock();
-                    noImage.Text = "No Image";
+                    noImage.Text = item.Temp.Title;
                     noImage.FontSize = 15;
                     noImage.Foreground = Brushes.DimGray;
                     noImage.HorizontalAlignment = HorizontalAlignment.Center;
@@ -632,6 +637,9 @@ namespace MDM.Models.ViewModels
                     string filePath = Path.Combine(dir, this.Temp.Uid + Defines.EXTENSION_IMAGE);
 
                     BitmapImage bitmap = new BitmapImage();
+                    bitmap.CacheOption = BitmapCacheOption.None;
+                    bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+
                     bitmap.BeginInit();
                     Uri url = new Uri(filePath, UriKind.Absolute);
                     bitmap.UriSource = url; // 이미지 파일 경로
