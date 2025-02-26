@@ -44,6 +44,21 @@ namespace MDM.Views.DataLabeling.Pages
                 BindItems();
             }
         }
+
+        private ObservableCollection<vmItem> _BindingItems = new ObservableCollection<vmItem>();
+        public ObservableCollection<vmItem> BindingItems
+        {
+            get => _BindingItems;
+            set
+            {
+                _BindingItems = value;
+                this.datagrid_Shapes.ItemsSource = null;
+                this.datagrid_Shapes.ItemsSource = value;
+                this.datagrid_Shapes.SelectedIndex = 0;
+            }
+        }
+        
+
         public ucDataLabelingShapes()
         {
             InitializeComponent();
@@ -59,31 +74,33 @@ namespace MDM.Views.DataLabeling.Pages
             if (this.Material.CurrentSlide == null) return;
             if (this.datagrid_Shapes == null) return;
 
-            var items = this.Material.CurrentSlide.Items;//.OrderBy(x => x.Temp.Order).ToList(
+            var items = this.Material.CurrentSlide.Items.OrderBy(x => x.Temp.Order);
 
-            switch (this.ItemFilterCode)
+            ObservableCollection<vmItem> output = new ObservableCollection<vmItem>();
+            foreach (var item in items)
             {
-                case eItemType.Content:
-                    items = new ObservableCollection<vmItem>(items.Where(x => x.ItemTypeCode % 220 < 10));
-                    break;
-                case eItemType.Text:
-                    items = new ObservableCollection<vmItem>(items.Where(x => x.ItemType == this.ItemFilterCode || x.ItemType == eItemType.None));
-                    break;
-                case eItemType.Header:
-                case eItemType.Image:
-                case eItemType.Table:
-                    items = new ObservableCollection<vmItem>(items.Where(x => x.ItemType == this.ItemFilterCode));
-                    break;
-                case eItemType.None:
-                case eItemType.All:
-                default:
-                    break;
+                switch (this.ItemFilterCode)
+                {
+                    case eItemType.Content: 
+                        if(item.ItemTypeCode %220 <10) output.Add(item); 
+                        break;
+                    case eItemType.Text: 
+                        if (item.ItemType == this.ItemFilterCode || item.ItemType == eItemType.None) output.Add(item); 
+                        break;
+                    case eItemType.Header:
+                    case eItemType.Image:
+                    case eItemType.Table:
+                        if(item.ItemType == this.ItemFilterCode) output.Add(item);
+                        break;
+                    case eItemType.None:
+                    case eItemType.All:
+                    default:
+                        output.Add(item);
+                        break;
+                }
             }
 
-
-            this.datagrid_Shapes.ItemsSource = null;
-            this.datagrid_Shapes.ItemsSource = items;
-            this.datagrid_Shapes.SelectedIndex = 0;
+            this.BindingItems = output;
         }
 
 
@@ -179,7 +196,8 @@ namespace MDM.Views.DataLabeling.Pages
                         vmItem cItem = items[i];
                         temp += "\n";
                         temp += cItem.Temp.LineText;
-                        cItem.Delete();
+                        this.Material.CurrentSlide.RemoveItem(cItem);
+                        this.BindingItems.Remove(cItem);
                     }
                     firstItem.SetText(temp);
                     firstItem.InitializeDisplay();
@@ -201,7 +219,7 @@ namespace MDM.Views.DataLabeling.Pages
 
                             imageItem.SetTitle(textItem.Temp.LineText);
                             imageItem.SetImageText(imageItem.Temp.Title, imageItem.ParentShape.Temp.Text);
-                            textItem.Delete();
+                            this.Material.CurrentSlide.RemoveItem(textItem);
                         }
                     }
                     else
@@ -252,7 +270,8 @@ namespace MDM.Views.DataLabeling.Pages
                 foreach (vmItem item in selectedItems.ToList())
                 {
                     if (item == null) continue;
-                    item.Delete();
+                    this.Material.CurrentSlide.RemoveItem(item);
+                    this.BindingItems.Remove(item);
                 }
             }
             catch (Exception ee)
@@ -276,7 +295,7 @@ namespace MDM.Views.DataLabeling.Pages
                 mItem newItem = new mItem();
                 vmItem newVM = new vmItem(newItem);
                 newVM.SetParentItem(lastItem.IsHeader ? lastItem : lastItem.ParentItem, false);
-                this.Material.CurrentSlide.Items.Insert(index, newVM);
+                this.Material.CurrentSlide.AddItem(newVM, index);// .Items.Insert(index, newVM);
 
                 if (lastItem != null || selectedItems.Count() > 0) newVM.SetParent(lastItem.ParentShape);
 
@@ -296,9 +315,10 @@ namespace MDM.Views.DataLabeling.Pages
                 var emptyItems = this.Material.CurrentSlide.Items.Where(x => TextHelper.IsNoText(x.Temp.LineText));
                 foreach (vmItem item in emptyItems.ToList())
                 {
-                    item.Delete();
+                    this.Material.CurrentSlide.RemoveItem(item);
+                    this.BindingItems.Remove(item);
                 }
-                BindItems();
+                //BindItems();
             }
             catch (Exception ee)
             {
@@ -427,7 +447,8 @@ namespace MDM.Views.DataLabeling.Pages
                 vmItem data = btn.DataContext as vmItem;
                 if (data == null) return;
 
-                data.Delete();
+                this.Material.CurrentSlide.RemoveItem(data);
+                this.BindingItems.Remove(data);
             }
             catch (Exception ee)
             {
@@ -557,10 +578,10 @@ namespace MDM.Views.DataLabeling.Pages
                 {
                     vmItem cItem = list[i];
                     firstItem.Merge(cItem);
-                    cItem.Delete();
+                    this.Material.CurrentSlide.RemoveItem(cItem);
+                    this.BindingItems.Remove(cItem);
                 }
                 firstItem.InitializeDisplay();
-
             }
             catch (Exception ee)
             {
@@ -902,8 +923,10 @@ namespace MDM.Views.DataLabeling.Pages
         {
             try
             {
+                this.Material.CurrentSlide.ClearItems();
                 this.Material.CurrentSlide.Shapes.Clear();
                 this.Material.CurrentSlide.LoadChildren();
+                BindItems();
             }
             catch (Exception ee)
             {

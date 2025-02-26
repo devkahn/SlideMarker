@@ -23,6 +23,7 @@ namespace MDM.Models.ViewModels
         private object _Display_Update = null;
         private object _Display_Description = null;
 
+  
     }
 
     public partial class vmSlide : vmViewModelbase
@@ -75,10 +76,9 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(CurrentItem), false);
             }
         }
-
-
         public ObservableCollection<vmShape> Shapes { get; private set; }
-        public ObservableCollection<vmItem> Items { get; private set; }
+        private ObservableCollection<vmItem> OriginItems { get; set; }
+        public ReadOnlyObservableCollection<vmItem> Items => new ReadOnlyObservableCollection<vmItem>(new ObservableCollection<vmItem>(this.OriginItems.Where(x => x.IsUsed)));
         public ReadOnlyObservableCollection<object> PreviewItems => new ReadOnlyObservableCollection<object>(new ObservableCollection<object>(this.Items.Select(x => x.Display_PreviewItem_Slide)));
 
 
@@ -114,7 +114,32 @@ namespace MDM.Models.ViewModels
 
     public partial class vmSlide
     {
+        public void AddItem(vmItem item, int? index = null)
+        {
+            if (index == null)
+            {
+                this.OriginItems.Add(item);
+            }
+            else
+            {
+                this.OriginItems.Insert(index.Value, item);
+            }
 
+        }
+        
+        public void ClearItems()
+        {
+            this.OriginItems.Clear();
+            OnPropertyChanged(nameof(this.Items));
+        }
+        public void DeleteItem(vmItem item)
+        {
+            item.Remove();
+            OnPropertyChanged(nameof(this.Items));
+            OnPropertyChanged(nameof(this.PreviewItems));
+
+        }
+           
         public override void InitializeDisplay()
         {
             this.Status = new vmSlideStatus((ePageStatus)this.Temp.Status);
@@ -124,28 +149,32 @@ namespace MDM.Models.ViewModels
             this.Display_Description = this.Temp.Description;
 
             this.Shapes.Clear();
-            this.Items.Clear();
-            foreach (mShape item in this.Temp.Shapes)
+            this.OriginItems.Clear();
+            foreach (mShape shape in this.Temp.Shapes)
             {
-                vmShape newShape = new vmShape(item);
+                vmShape newShape = new vmShape(shape);
                 newShape.ParentSlide = this;
                 this.Shapes.Add(newShape);
 
-                foreach (vmItem ln in newShape.Items) this.Items.Add(ln);
+                foreach (vmItem item in newShape.Items) this.OriginItems.Add(item);
             }
 
             OnModifyStatusChanged();
         }
         private void Items_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (e.NewItems == null) return;
-            foreach (var item in e.NewItems)
+            if (e.NewItems != null)
             {
-                vmItem data = item as vmItem;
-                if(data == null) continue;
+                foreach (var item in e.NewItems)
+                {
+                    vmItem data = item as vmItem;
+                    if (data == null) continue;
 
-                data.SetRowIndex();
+                    data.SetRowIndex();
+                }
             }
+            
+            OnPropertyChanged(nameof(this.Items));
         }
         public vmSlide NextItem()
         {
@@ -166,14 +195,19 @@ namespace MDM.Models.ViewModels
 
             return output;
         }
+        public void RemoveItem(vmItem item)
+        {
+            item.Remove();
+            OnPropertyChanged(nameof(this.Items));
+            
+        }
         public override void SetInitialData()
         {
             this.Shapes = new ObservableCollection<vmShape>();
-            this.Items = new ObservableCollection<vmItem>();
-            this.Items.CollectionChanged += Items_CollectionChanged;
+            this.OriginItems = new ObservableCollection<vmItem>();
+            this.OriginItems.CollectionChanged += Items_CollectionChanged;
         }
         public void SetParentMaterial(vmMaterial parentMaterial) => this.ParentMaterial = parentMaterial;
-        
         public void SetStatus(ePageStatus status)
         {
             this.Status.Status = status;
@@ -196,7 +230,7 @@ namespace MDM.Models.ViewModels
         }
         public void ItemsOrderBy()
         {
-            this.Items = new ObservableCollection<vmItem>(this.Items.OrderBy(x => x.Temp.Order));
+            this.OriginItems = new ObservableCollection<vmItem>(this.Items.OrderBy(x => x.Temp.Order));
             OnPropertyChanged(nameof(this.PreviewItems));
         }
         public override object UpdateOriginData()
@@ -216,4 +250,5 @@ namespace MDM.Models.ViewModels
     }
 
  
+
 }

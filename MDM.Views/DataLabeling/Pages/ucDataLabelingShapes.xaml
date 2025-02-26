@@ -582,7 +582,7 @@
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5,10,5">
                         <Button Content="원본으로 되돌리기" Click="btn_ReLoadOrigin_Click" Visibility="Collapsed"/>
-                        <Button Content="저장으로 되돌리기" Click="btn_ReLoadDb_Click" Visibility="Collapsed"/>
+                        <Button Content="저장으로 되돌리기" Click="btn_ReLoadDb_Click" />
                     </StackPanel>
                     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5,10,5">
                         <Button Content="완료 저장하고 다음 ▶" Width="130" Click="btn_CompletedSaveNext_Click"/>

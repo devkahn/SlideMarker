@@ -31,7 +31,6 @@ namespace MDM.Models.ViewModels
         private eItemType _ItemType = eItemType.None;
         private Thickness _RowMargin = new Thickness(5);
         private Visibility _RowVisibility = Visibility.Visible;
-        
 
         private object _Display_Level = null;
         private object _Display_Indent = null;
@@ -40,8 +39,6 @@ namespace MDM.Models.ViewModels
         private object _Display_Update = null;
         private object _Display_PreviewItem = null;
         private object _Display_PreviewItem_Slide = null;
-
-  
     }
 
     public partial class vmItem : vmViewModelbase
@@ -129,6 +126,7 @@ namespace MDM.Models.ViewModels
             }
         }
         public int ItemTypeCode => this.ItemType.GetHashCode();
+        public bool IsUsed { get; set; } = false;
 
 
         public eItemType ItemType
@@ -167,10 +165,6 @@ namespace MDM.Models.ViewModels
                 return  this.ParentShape == null? -1 : this.ParentShape.ParentSlide.Items.IndexOf(this);
             }
         }
-        
-
-        
-      
 
 
         public ReadOnlyObservableCollection<vmItem> Children => new ReadOnlyObservableCollection<vmItem>(this.OriginChildren);
@@ -276,9 +270,14 @@ namespace MDM.Models.ViewModels
             int vmIndex = this.ParentShape.Items.IndexOf(this);
             this.ParentShape.Items.Insert(vmIndex + 1, output);
             int slideIndex = this.ParentShape.ParentSlide.Items.IndexOf(this);
-            this.ParentShape.ParentSlide.Items.Insert(slideIndex + 1, output);
+            this.ParentShape.ParentSlide.AddItem(output, slideIndex + 1);// .Items.Insert(slideIndex + 1, output);
 
             return output;
+        }
+        internal void Remove()
+        {
+            this.IsUsed = this.Temp.IsUsed = false;
+            
         }
         private UIElement GenerateTextCell(vmItem item)
         {
@@ -755,6 +754,7 @@ namespace MDM.Models.ViewModels
             this.Display_UpdateDate = this.Temp.UpdateDate.HasValue ? this.Temp.UpdateDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : null;
 
             this.ItemType = (eItemType)this.Temp.ItemType;
+            this.IsUsed = this.Temp.IsUsed;
             SetPreviewItem();
 
             OnModifyStatusChanged();
@@ -849,7 +849,7 @@ namespace MDM.Models.ViewModels
             if (this.ParentShape != null)
             {
                 if(this.ParentShape.Items.Contains(this)) this.ParentShape.Items.Remove(this);
-                if (this.ParentShape.ParentSlide != null  && this.ParentShape.ParentSlide.Items.Contains(this)) this.ParentShape.ParentSlide.Items.Remove(this);
+                if (this.ParentShape.ParentSlide != null && this.ParentShape.ParentSlide.Items.Contains(this)) this.ParentShape.ParentSlide.RemoveItem(this);// .Items.Remove(this);
             }
             this.ParentShape = parent;
             if (this.ParentShape == null) return;
@@ -859,7 +859,7 @@ namespace MDM.Models.ViewModels
             if (this.ParentShape != null && !this.ParentShape.Items.Contains(this))
             {
                 if (!this.ParentShape.Items.Contains(this)) this.ParentShape.Items.Add(this);
-                if (this.ParentShape.ParentSlide != null && !this.ParentShape.ParentSlide.Items.Contains(this)) this.ParentShape.ParentSlide.Items.Add(this);
+                if (this.ParentShape.ParentSlide != null && !this.ParentShape.ParentSlide.Items.Contains(this)) this.ParentShape.ParentSlide.AddItem(this);//.Items.Add(this);
             }
         }
         public void SetParentItem(vmItem parent, bool isDbLoad = false)

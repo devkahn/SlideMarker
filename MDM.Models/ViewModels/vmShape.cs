@@ -58,9 +58,10 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(this.SameShape));
             }
         }
-
-
         public ObservableCollection<vmItem> Items { get; private set; }
+
+
+
 
         public object Display_Title
         {
@@ -127,15 +128,6 @@ namespace MDM.Models.ViewModels
         {
             this.Display_Text = this.Temp.Text = text;
         }
-        public override object UpdateOriginData()
-        {
-            this.Origin.ParentSlideIdx = this.Temp.ParentSlideIdx = this.ParentSlide.Temp.Idx;
-            this.Origin.ShapeType = this.Temp.ShapeType;
-            this.Origin.UpdateDate = this.Temp.UpdateDate = this.Origin.UpdateDate.HasValue ? DateTime.Now : this.Origin.CreateDate;
-
-            return this.Origin;
-        }
-
         public void SetParent(vmSlide parent)
         {
             if (this.ParentSlide != null && this.ParentSlide.Shapes.Contains(this)) this.ParentSlide.Shapes.Remove(this);
@@ -144,11 +136,18 @@ namespace MDM.Models.ViewModels
             this.Origin.ParentUid = this.Temp.ParentUid = parent.Temp.Uid;
             if (this.ParentSlide != null && !this.ParentSlide.Shapes.Contains(this)) this.ParentSlide.Shapes.Add(this);
         }
+        public override object UpdateOriginData()
+        {
+            this.Origin.ParentSlideIdx = this.Temp.ParentSlideIdx = this.ParentSlide.Temp.Idx;
+            this.Origin.ShapeType = this.Temp.ShapeType;
+            this.Origin.UpdateDate = this.Temp.UpdateDate = this.Origin.UpdateDate.HasValue ? DateTime.Now : this.Origin.CreateDate;
+
+            return this.Origin;
+        }
         public void UndoText()
         {
             SetTitle(this.Origin.Title);
             SetText(this.Origin.Text);
         }
-
     }
 }

@@ -96,14 +96,24 @@ namespace MDM.Helpers
 
             if (data.Idx < 0)
             {
+                if (!data.IsUsed) return;
+
                 bool isCreated = data.Create();
                 if (!isCreated) return;
                 obj.Temp.Idx = data.Idx;
             }
             else
             {
-                bool isUpdate = data.Update();
-                if (!isUpdate) return;
+                if(data.IsUsed)
+                {
+                    bool isUpdate = data.Update();
+                    if (!isUpdate) return;
+                }
+                else
+                {
+                    obj.Delete();
+                }
+                
             }
             obj.IsChanged = false;
             obj.OnModifyStatusChanged();
@@ -141,13 +151,13 @@ namespace MDM.Helpers
             bool isDeleted = data.Delete();
             if (!isDeleted) return;
 
-            foreach (vmItem slide in obj.Items) slide.Delete();
+            foreach (vmItem item in obj.Items) item.Delete();
         }
         public static void Delete(this vmItem obj)
         {
             obj.ParentShape.Items.Remove(obj);
             obj.ParentShape.Temp.Lines.Remove(obj.Temp);
-            obj.ParentShape.ParentSlide.Items.Remove(obj);
+            obj.ParentShape.ParentSlide.RemoveItem(obj);// .Items.Remove(obj);
             obj.SetParent(null);
 
             foreach (vmItem child in obj.Children.ToList()) child.SetParentItem(obj.ParentItem);

@@ -246,8 +246,8 @@ namespace MDM.Views.MarkChecker.Pages
                                 sameItem.SetParentItem(parentItem);
                                 parentItem.AddChild(sameItem);
                             }
-                                
-                            newSlide.Items.Add(sameItem);
+
+                            newSlide.AddItem(sameItem);// .Items.Add(sameItem);
                         }
 
                         // Heading
@@ -279,7 +279,7 @@ namespace MDM.Views.MarkChecker.Pages
                             vmItem newConItem = new vmItem(contentItem);
                             newConItem.SetParentItem(sameItem); 
                             sameItem.AddChild(newConItem);
-                            newSlide.Items.Add(newConItem);
+                            newSlide.AddItem(newConItem);// .Items.Add(newConItem);
                         }
                     }
                     vmContent newContent = new vmContent(content);
