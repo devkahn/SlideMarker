@@ -33,7 +33,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlSubProperty("content_type")]
         [Nullable(false)]
         [Description("그림 파일 유형으로 image/png, image/jpeg, image/gif 만을 지원합니다.")]
-        public string ContentType { get; set; } = "image / png";
+        public string ContentType { get; set; } = "image/png";
 
 
     }

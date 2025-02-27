@@ -59,7 +59,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlSubProperty("type")]
         [Nullable(false)]
         [Description("유형으로 대문자 BOOK 또는 ARTICLE을 입력합니다.")]
-        [DefaultValue(eXMLBookType.BOOK)]
+        [DefaultValue(eXMLBookType.ARTICLE)]
         public eXMLBookType Type { get; set; } 
 
         [XmlIgnore]

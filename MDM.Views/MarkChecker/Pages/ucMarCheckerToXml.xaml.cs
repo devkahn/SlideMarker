@@ -20,6 +20,7 @@ using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using Markdig;
 using MDM.Helpers;
 using MDM.Models.Attributes;
 using MDM.Models.DataModels.ManualWorksXMLs;
@@ -64,108 +65,27 @@ namespace MDM.Views.MarkChecker.Pages
             try
             {
                 this.ucMarCheckerToXmlAllSetting.UpdaetOptions();
-                xmlSet setValue = this.Material.XMLSets;
+                xmlSet option = this.Material.XMLSets;
 
-                xmlBook book = new xmlBook();// setValues.Book.Copy();
-                setValue.Book.Duplicate(book);
-                book.Id = this.Material.Temp.Uid;
-                if (Guid.TryParse(book.Id, out Guid bookUid)) book.Id = this.Material.Temp.Uid = XMLHelper.GenerateUUId(8);
-
-                {
-                    PropertyInfo[] pInfos = book.GetType().GetProperties();
-                    foreach (PropertyInfo p in pInfos)
-                    {
-                        xmlSubPropertyAttribute subPropAtt = p.GetCustomAttribute(typeof(xmlSubPropertyAttribute)) as xmlSubPropertyAttribute;
-                        if (subPropAtt == null) continue;
-
-                        var value = p.GetValue(book, null);
-                        subPropAtt.Prorperty.Value = ConvertToString(value);
-                        book.Properties.Add(subPropAtt.Prorperty);
-                    }
-
-                    string jsonString = JsonHelper.ToJsonString(book.Config);
-                    xmlSubProperty configProp = new xmlSubProperty("config", jsonString);
-                    book.Properties.Add(configProp);
-                }
+                xmlBook bookElement = GetBookElement(option);
+                bookElement.Title = this.Material.Temp.Name;
                 
-
-                book.Chapters.Clear();
-                foreach (vmHeading root in this.Material.RootHeadings)
+                if(bookElement.Type == eXMLBookType.BOOK)
                 {
-                    xmlChapter chapter = new xmlChapter();
-                    setValue.Chapter.Duplicate(chapter);
-
-                    chapter.Properties.Clear();
-                    chapter.Elements.Clear();
-                    {
-                        book.Chapters.Add(chapter);
-                        chapter.Id = root.Temp.Uid;
-                        if (Guid.TryParse(chapter.Id, out Guid chapterUid)) chapter.Id = root.Temp.Uid = XMLHelper.GenerateUUId(8);
-                        chapter.Title = root.Temp.Name;
-
-                        PropertyInfo[] pInfos = chapter.GetType().GetProperties();
-                        foreach (PropertyInfo p in pInfos)
-                        {
-                            xmlSubPropertyAttribute subPropAtt = p.GetCustomAttribute(typeof(xmlSubPropertyAttribute)) as xmlSubPropertyAttribute;
-                            if (subPropAtt == null) continue;
-
-                            var value = p.GetValue(chapter, null);
-                            subPropAtt.Prorperty.Value = ConvertToString(value);
-                            chapter.Properties.Add(subPropAtt.Prorperty);
-                        }
-
-                        string jsonString = JsonHelper.ToJsonString(chapter.Config);
-                        xmlSubProperty configProp = new xmlSubProperty("config", jsonString);
-                        chapter.Properties.Add(configProp);
-                    }
-                    
-                    foreach (vmContent con in root.Contents)
-                    {
-                        xmlElement contentElement = new xmlElement();
-                        switch (con.Temp.ItemType)
-                        {
-                            case Commons.Enum.eItemType.Text: this.Material.XMLSets.TextElement.Duplicate(contentElement); break;
-                            case Commons.Enum.eItemType.Image: this.Material.XMLSets.ImageElement.Duplicate(contentElement); break;
-                            case Commons.Enum.eItemType.Table: this.Material.XMLSets.TableElement.Duplicate(contentElement); break;
-                            default: break;
-                        }
-                        if (contentElement == null) continue;
-
-
-                        chapter.Elements.Add(contentElement);
-                        contentElement.Id = con.Temp.Temp.Uid;
-                        if (Guid.TryParse(contentElement.Id, out Guid elementUid)) contentElement.Id = con.Temp.Temp.Uid = XMLHelper.GenerateUUId(8);
-                        contentElement.Content = con.Temp.Temp.LineText;
-
-                        PropertyInfo[] pInfos = contentElement.GetType().GetProperties();
-                        foreach (PropertyInfo p in pInfos)
-                        {
-                            xmlSubPropertyAttribute subPropAtt = p.GetCustomAttribute(typeof(xmlSubPropertyAttribute)) as xmlSubPropertyAttribute;
-                            if (subPropAtt == null) continue;
-
-                            var value = p.GetValue(contentElement, null);
-                            subPropAtt.Prorperty.Value = ConvertToString(value);
-                            contentElement.Properties.Add(subPropAtt.Prorperty);
-                        }
-
-                        string jsonString = JsonHelper.ToJsonString(contentElement.Config);
-                        xmlSubProperty configProp = new xmlSubProperty("config", jsonString);
-                        contentElement.Properties.Add(configProp);
-                    }
-
-                    foreach (vmHeading item in root.Children)
-                    {
-                        SetXmlElement(item, chapter);
-                    }
-
+                    SetChildrenBookType(bookElement, option);
                 }
-       
-                string xmlString = ConvertToXML(book);
-                string targetPath = Path.Combine(this.Material.DirectoryPath, this.Material.Temp.Name +"_"+ DateTime.Now.ToString("yyyyMMddhhmmss") +".xml");
-                if (File.Exists(targetPath))
+                else
                 {
-                    File.Delete(targetPath);
+                    SetChildrenArticleType(bookElement, option);
                 }
+
+
+                string xmlString = ConvertToXML(bookElement);
+
+                string fileName = string.Format("{0}_{1}_{2}.xml", bookElement.Id, this.Material.Temp.Name, DateTime.Now.ToString("yyyyMMddhhmmss"));
+                string targetPath = Path.Combine(this.Material.DirectoryPath, fileName);
+                
+                if (File.Exists(targetPath)) File.Delete(targetPath);
                 File.WriteAllText(targetPath, xmlString);
                 Debug.WriteLine("XML Export!!!!!!");
             }
@@ -173,6 +93,282 @@ namespace MDM.Views.MarkChecker.Pages
             {
                 ErrorHelper.ShowError(ee);
             }
+        }
+
+        private void SetChildrenBookType(xmlBook bookElement, xmlSet option)
+        {
+
+            bookElement.Chapters.Clear();
+            foreach (vmHeading root in this.Material.RootHeadings)
+            {
+                xmlChapter chapter = GetChapterElement(option.Chapter);// new xmlChapter();
+                bookElement.Chapters.Add(chapter);
+
+                chapter.Id = root.Temp.Uid;
+                if (Guid.TryParse(chapter.Id, out Guid chapterUid)) chapter.Id = root.Temp.Uid = XMLHelper.GenerateUUId(8);
+                chapter.Title = root.Temp.Name;
+
+                chapter.Elements.Clear();
+                //foreach (vmContent con in root.Contents)
+                //{
+                //    xmlElement contentElement = null;
+                //    switch (con.Temp.ItemType)
+                //    {
+                //        case Commons.Enum.eItemType.Text: contentElement = null; break;
+                //        case Commons.Enum.eItemType.Image: contentElement = GetImageContentElement(option.ImageElement, con); break;
+                //        case Commons.Enum.eItemType.Table: contentElement = GetTableContentElement(option.TableElement, con); break;
+                //        default: break;
+                //    }
+                //    if (contentElement == null) continue;
+
+                //    chapter.Elements.Add(contentElement);
+                //}
+
+                //foreach (vmHeading item in root.Children)
+                //{
+                //    SetXmlElement(item, chapter);
+                //}
+            }
+
+        }
+        private void SetChildrenArticleType(xmlBook bookElement, xmlSet option)
+        {
+            bookElement.Chapters.Clear();
+
+            xmlChapter chapter = GetChapterElement(option.Chapter);// new xmlChapter();
+            bookElement.Chapters.Add(chapter);
+
+            chapter.Id = XMLHelper.GenerateUUId(8);
+            chapter.Title = bookElement.Title;
+
+            chapter.Elements.Clear();
+
+            foreach (vmHeading rootHeading in this.Material.RootHeadings)
+            {
+                xmlElement heading1 = GetHeadlingElement(rootHeading, option.Heading1Element);
+                chapter.Elements.Add(heading1);
+
+                foreach (vmContent  content in rootHeading.Contents)
+                {
+                    xmlElement element = GetContentElement(content, option);
+                    if(element != null) chapter.Elements.Add(element);
+                }
+
+                foreach (vmHeading childHeding in rootHeading.Children)
+                {
+                    
+                }
+            }
+        }
+
+        private xmlElement GetContentElement(vmContent content, xmlSet option)
+        {
+            switch (content.Temp.ItemType)
+            {
+                case Commons.Enum.eItemType.Text: return GetTextContentElement(content, option);
+                case Commons.Enum.eItemType.Image: return GetImageContentElement(content, option.ImageElement);
+                case Commons.Enum.eItemType.Table: return GetTableContentElement(content, option.TableElement);
+                default: return null;
+            }
+        }
+
+ 
+
+        private xmlElement GetHeadlingElement(vmHeading heading, xmlElement headingOption)
+        {
+            xmlElement output = new xmlElement();
+
+
+            return output;
+        }
+        private xmlChapter GetHeadingChapter(vmHeading heading, xmlChapter chapterOption)
+        {
+            xmlChapter output = new xmlChapter();
+
+            return output;
+        }
+
+        private xmlChapter GetChapterElement(xmlChapter originTarget)
+        {
+            xmlChapter chapter = new xmlChapter();
+
+            chapter.Author = originTarget.Author;
+            chapter.Alias = originTarget.Alias;
+            chapter.Title = originTarget.Title;
+            chapter.SubTitle = originTarget.SubTitle;
+            chapter.Type = originTarget.Type;
+            chapter.AlwaysTop = originTarget.AlwaysTop;
+            chapter.Config = originTarget.Config;
+
+            chapter.Properties.Clear();
+            PropertyInfo[] pInfos = chapter.GetType().GetProperties();
+            foreach (PropertyInfo p in pInfos)
+            {
+                xmlSubPropertyAttribute subPropAtt = p.GetCustomAttribute(typeof(xmlSubPropertyAttribute)) as xmlSubPropertyAttribute;
+                if (subPropAtt == null) continue;
+
+                var value = p.GetValue(chapter, null);
+                subPropAtt.Prorperty.Value = ConvertToString(value);
+                chapter.Properties.Add(subPropAtt.Prorperty);
+            }
+
+            string jsonString = JsonHelper.ToJsonString(chapter.Config);
+            xmlSubProperty configProp = new xmlSubProperty("config", jsonString);
+            chapter.Properties.Add(configProp);
+
+
+            return chapter;
+        }
+        private xmlBook GetBookElement(xmlSet setValue)
+        {
+            xmlBook book = new xmlBook();// setValues.Book.Copy();
+            book.Id = this.Material.Temp.Uid;
+            if (Guid.TryParse(book.Id, out Guid bookUid)) book.Id = this.Material.Temp.Uid = XMLHelper.GenerateUUId(8);
+            book.Author = setValue.Book.Author;
+            
+            book.SubTitle = setValue.Book.SubTitle;
+            book.Edition = setValue.Book.Edition;
+            book.Keywords = setValue.Book.Keywords;
+            book.Type = setValue.Book.Type;
+            book.Locale = setValue.Book.Locale;
+            book.Tags = setValue.Book.Tags;
+
+            PropertyInfo[] pInfos = book.GetType().GetProperties();
+            foreach (PropertyInfo p in pInfos)
+            {
+                xmlSubPropertyAttribute subPropAtt = p.GetCustomAttribute(typeof(xmlSubPropertyAttribute)) as xmlSubPropertyAttribute;
+                if (subPropAtt == null) continue;
+
+                var value = p.GetValue(book, null);
+                subPropAtt.Prorperty.Value = ConvertToString(value);
+                book.Properties.Add(subPropAtt.Prorperty);
+            }
+
+            string jsonString = JsonHelper.ToJsonString(book.Config);
+            xmlSubProperty configProp = new xmlSubProperty("config", jsonString);
+            book.Properties.Add(configProp);
+
+            return book;
+        }
+        private xmlElement GetTextContentElement(vmContent content, xmlSet option)
+        {
+
+            string text = content.Temp.Temp.LineText;
+            string[] lines = TextHelper.SplitText(text);
+
+            if(lines.Count() == 1 )
+            {
+                return GetNormalTextElement(content, option.TextElement);
+            }
+            else
+            {
+                return GetUnorderListTextElement(content, option.UnorderedListElement);
+            }
+        }
+
+        private xmlElement GetNormalTextElement(vmContent content, xmlElement textOption)
+        {
+            xmlElement normalTextElement = new xmlElement();
+            normalTextElement.Config = textOption.Config;
+            normalTextElement.Alias = textOption.Alias;
+            normalTextElement.ElementType = eXMLElementType.Normal;
+
+
+
+            return normalTextElement;
+        }
+        private xmlElement GetOrderListTextElement(vmContent content, xmlElement orderOption)
+        {
+            xmlElement orderElement = new xmlElement();
+            orderElement.Config = orderOption.Config;
+            orderElement.Alias = orderOption.Alias;
+            orderElement.ElementType = eXMLElementType.Ordered_list;
+
+
+
+            return orderElement;
+        }
+        private xmlElement GetUnorderListTextElement(vmContent content, xmlElement unoderOption)
+        {
+            xmlElement unOrderElement = new xmlElement();
+            unOrderElement.Config = unoderOption.Config;
+            unOrderElement.Alias = unoderOption.Alias;
+            unOrderElement.ElementType = eXMLElementType.Ordered_list;
+
+
+
+            return unOrderElement;
+        }
+
+        private xmlElement GetImageContentElement(vmContent content, xmlElement imageOption)
+        {
+            xmlElement imageElement = new xmlElement();
+            imageElement.Config = imageOption.Config;
+            imageElement.Alias = imageOption.Alias;
+            imageElement.ElementType = imageOption.ElementType;
+
+            imageElement.Id = content.Temp.Temp.Uid;
+            if (Guid.TryParse(imageElement.Id, out Guid elementUid)) imageElement.Id = content.Temp.Temp.Uid = XMLHelper.GenerateUUId(8);
+            imageElement.Content = content.Temp.Temp.LineText;
+
+            // 속성
+            PropertyInfo[] pInfos = imageElement.GetType().GetProperties();
+            foreach (PropertyInfo p in pInfos)
+            {
+                xmlSubPropertyAttribute subPropAtt = p.GetCustomAttribute(typeof(xmlSubPropertyAttribute)) as xmlSubPropertyAttribute;
+                if (subPropAtt == null) continue;
+
+                var value = p.GetValue(imageElement, null);
+                subPropAtt.Prorperty.Value = ConvertToString(value);
+                imageElement.Properties.Add(subPropAtt.Prorperty);
+            }
+
+            // config
+            string jsonString = JsonHelper.ToJsonString(imageElement.Config);
+            xmlSubProperty configProp = new xmlSubProperty("config", jsonString);
+            imageElement.Properties.Add(configProp);
+
+            return imageElement;
+        }
+        private xmlElement GetTableContentElement(vmContent content, xmlElement tableOption)
+        {
+            xmlElement tableElement = new xmlElement();
+            tableElement.Config = tableOption.Config;
+            tableElement.Alias = tableOption.Alias;
+            tableElement.ElementType = tableOption.ElementType;
+
+            tableElement.Id = content.Temp.Temp.Uid;
+            if (Guid.TryParse(tableElement.Id, out Guid elementUid)) tableElement.Id = content.Temp.Temp.Uid = XMLHelper.GenerateUUId(8);
+            tableElement.Content = ConvertTableStringToHTML(content.Temp.Temp.LineText);
+
+            // 속성
+            PropertyInfo[] pInfos = tableElement.GetType().GetProperties();
+            foreach (PropertyInfo p in pInfos)
+            {
+                xmlSubPropertyAttribute subPropAtt = p.GetCustomAttribute(typeof(xmlSubPropertyAttribute)) as xmlSubPropertyAttribute;
+                if (subPropAtt == null) continue;
+
+                var value = p.GetValue(tableElement, null);
+                subPropAtt.Prorperty.Value = ConvertToString(value);
+                tableElement.Properties.Add(subPropAtt.Prorperty);
+            }
+
+            // config
+            string jsonString = JsonHelper.ToJsonString(tableElement.Config);
+            xmlSubProperty configProp = new xmlSubProperty("config", jsonString);
+            tableElement.Properties.Add(configProp);
+
+            return tableElement;
+        }
+
+        private string ConvertTableStringToHTML(string lineText)
+        {
+            string output = string.Empty;
+
+            var pipline = new MarkdownPipelineBuilder().Build();
+            output = Markdown.ToHtml(lineText, pipline);    
+
+            return output;
         }
 
         private string ConvertToString(object value)
