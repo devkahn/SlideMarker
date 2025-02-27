@@ -20,7 +20,7 @@
             <RowDefinition/>
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
-        <ListBox Grid.Row="0" x:Name="listbox_Preview" ItemsSource="{Binding CurrentSlide.Items}" 
+        <ListBox Grid.Row="0" x:Name="listbox_Preview" ItemsSource="{Binding Items}" 
                  DataContextChanged="listbox_Preview_DataContextChanged">
             <ListBox.Resources>
                 <Style TargetType="ListBoxItem">

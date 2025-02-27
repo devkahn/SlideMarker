@@ -140,7 +140,8 @@
                                 <Button x:Name="btn_ClearLines" Content="빈 칸 정리" Click="btn_ClearLines_Click"/>
                             </StackPanel>
                         </StackPanel>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="3,5,3,5">
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="3,5,3,5" Visibility="{Binding IsChecked, ElementName=rBtn_AllItemn_Filter, Converter={StaticResource converter_BoolToVisible}}">
+                            
                             <Button Content="▲" Width="30" Click="btn_GoToUp_Click"/>
                             <Button Content="▼" Width="30" Click="btn_GoToDown_Click"/>
                         </StackPanel>

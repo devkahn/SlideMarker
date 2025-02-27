@@ -78,7 +78,7 @@ namespace MDM.Models.ViewModels
         }
         public ObservableCollection<vmShape> Shapes { get; private set; }
         private ObservableCollection<vmItem> OriginItems { get; set; }
-        public ReadOnlyObservableCollection<vmItem> Items => new ReadOnlyObservableCollection<vmItem>(new ObservableCollection<vmItem>(this.OriginItems.Where(x => x.IsUsed)));
+        public ReadOnlyObservableCollection<vmItem> Items => new ReadOnlyObservableCollection<vmItem>(new ObservableCollection<vmItem>(this.OriginItems.Where(x => x.IsUsed).OrderBy(x=> x.RowIndex)));
         public ReadOnlyObservableCollection<object> PreviewItems => new ReadOnlyObservableCollection<object>(new ObservableCollection<object>(this.Items.Select(x => x.Display_PreviewItem_Slide)));
 
 
@@ -125,6 +125,8 @@ namespace MDM.Models.ViewModels
                 this.OriginItems.Insert(index.Value, item);
             }
             if (item.RowIndex == -1) item.SetRowIndex();
+
+            OnPreviewItemsChanged();
         }
         
         public void ClearItems()
@@ -150,13 +152,19 @@ namespace MDM.Models.ViewModels
 
             this.Shapes.Clear();
             this.OriginItems.Clear();
+
+            int order = 0;
             foreach (mShape shape in this.Temp.Shapes)
             {
                 vmShape newShape = new vmShape(shape);
                 newShape.ParentSlide = this;
                 this.Shapes.Add(newShape);
-
-                foreach (vmItem item in newShape.Items) this.OriginItems.Add(item);
+                
+                foreach (vmItem item in newShape.Items)
+                {
+                    this.OriginItems.Add(item);
+                    item.SetRowIndex(order++);
+                }
             }
 
             OnModifyStatusChanged();
@@ -174,7 +182,7 @@ namespace MDM.Models.ViewModels
                 }
             }
             
-            OnPropertyChanged(nameof(this.Items));
+            OnPreviewItemsChanged();
         }
         public vmSlide NextItem()
         {
@@ -185,7 +193,11 @@ namespace MDM.Models.ViewModels
 
             return output;
         }
-        public void OnPreviewItemsChanged() => OnPropertyChanged(nameof(this.PreviewItems));
+        public void OnPreviewItemsChanged()
+        {
+            OnPropertyChanged(nameof(this.Items));
+            OnPropertyChanged(nameof(this.PreviewItems));
+        }
         public vmSlide PrevItem()
         {
             vmSlide output = null;
@@ -198,8 +210,7 @@ namespace MDM.Models.ViewModels
         public void RemoveItem(vmItem item)
         {
             item.Remove();
-            OnPropertyChanged(nameof(this.Items));
-            
+            OnPreviewItemsChanged();
         }
         public override void SetInitialData()
         {
@@ -228,6 +239,7 @@ namespace MDM.Models.ViewModels
         {
             this.Display_Description = this.Temp.Description = description;   
         }
+
         public void ItemsOrderBy()
         {
             this.OriginItems = new ObservableCollection<vmItem>(this.Items.OrderBy(x => x.Temp.Order));

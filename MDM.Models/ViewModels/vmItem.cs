@@ -868,6 +868,10 @@ namespace MDM.Models.ViewModels
                 this.RowIndex = list.IndexOf(this);
             }
         }
+        public void SetRowIndex(int index)
+        {
+            this.RowIndex = index;
+        }
         public void SetItemType(eItemType type)
         {
             this.ItemType = type;
@@ -894,7 +898,7 @@ namespace MDM.Models.ViewModels
         }
         public void SetParentItem(vmItem parent, bool isDbLoad = false)
         {
-            this.ParentItem= parent;
+            //this.ParentItem= parent;
 
             if (this.ParentItem != null) this.ParentItem.RemoveChild(this);
             this.ParentItem = parent;

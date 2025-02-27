@@ -29,7 +29,8 @@ namespace MDM.Views.DataLabeling.Windows
             set
             {
                 _Material = value;
-                this.PreviewSlidePage.DataContext = value.CurrentSlide;
+                this.DataContext = value;
+                //this.PreviewSlidePage.DataContext = value.CurrentSlide;
             }
         }
 

@@ -223,7 +223,6 @@ namespace MDM.Helpers
                     }
                 }
 
-
                 vmItem newItem = new vmItem(item);
                 newItem.SetParent(obj);
             }

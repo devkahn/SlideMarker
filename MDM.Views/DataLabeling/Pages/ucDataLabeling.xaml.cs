@@ -220,7 +220,7 @@ namespace MDM.Views.DataLabeling.Pages
                 if (this.PreviewWindow == null)
                 {
                     this.PreviewWindow = new wndSlidePreview(this);
-                    this.PreviewWindow.PreviewSlidePage.DataContext = this.Material;
+                    this.PreviewWindow.Material = this.Material;
                     this.PreviewWindow.Show();
                 }
 

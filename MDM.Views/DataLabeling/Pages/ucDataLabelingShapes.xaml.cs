@@ -63,11 +63,28 @@ namespace MDM.Views.DataLabeling.Pages
         public ucDataLabelingShapes()
         {
             InitializeComponent();
+            this.BindingItems.CollectionChanged += BindingItems_CollectionChanged;
+        }
+
+        private void BindingItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            this.Material.CurrentSlide.OnPreviewItemsChanged();
         }
 
         public void SetMaterial(vmMaterial material)
         {
             this.Material = material;
+        }
+        public void SetRowIndexs(int index = -1)
+        {
+            if (index < 0)
+            {
+                foreach (vmItem item in this.BindingItems) item.SetRowIndex(this.BindingItems);
+            }
+            else 
+            {
+                for (int i = index; i < this.BindingItems.Count; i++) this.BindingItems[i].SetRowIndex(this.BindingItems);
+            }
         }
         public void BindItems()
         {
@@ -102,6 +119,8 @@ namespace MDM.Views.DataLabeling.Pages
             }
 
             this.BindingItems = output;
+            this.Material.CurrentSlide.OnPreviewItemsChanged();
+            this.BindingItems.CollectionChanged += BindingItems_CollectionChanged;
         }
 
 
@@ -115,6 +134,7 @@ namespace MDM.Views.DataLabeling.Pages
                 vmItem data = btn.DataContext as vmItem;
                 if (data == null) return;
 
+                if (data.Temp.Level == 1) return;
                 if (data.Temp.Level == 1) return;
                 if (data.ParentItem == null) return;
 
@@ -164,81 +184,6 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
-        private void btn_MergeLines_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                string caption = "아이템 병합";
-
-                //var selectedItems = this.Material.CurrentSlide.Items.Where(x => x.IsSelected);
-                var selectedItems  = new List<vmItem>();
-                foreach (var item in this.datagrid_Shapes.SelectedItems)
-                {
-                    selectedItems.Add(item as vmItem);
-                }
-                selectedItems = selectedItems.OrderBy(x=> x.RowIndex).ToList(); 
-                
-                int total = selectedItems.Count();
-                if(total <= 1)
-                {
-                    string eMsg = "병합할 아이템을 2개 이상 선택하세요.";
-                    MessageHelper.ShowErrorMessage(caption, eMsg);
-                    return;
-                }
-
-                bool isAllText = selectedItems.Where(x => x.ItemType == eItemType.Text).Count() == total;
-                if(isAllText)
-                {
-                    List<vmItem> items = selectedItems.ToList();
-                    vmItem firstItem = items[0];
-                    string temp = firstItem.Temp.LineText;
-                    for (int i = 1; i < total; i++)
-                    {
-                        vmItem cItem = items[i];
-                        temp += "\n";
-                        temp += cItem.Temp.LineText;
-                        this.Material.CurrentSlide.RemoveItem(cItem);
-                        this.BindingItems.Remove(cItem);
-                    }
-                    firstItem.SetText(temp);
-                    firstItem.InitializeDisplay();
-                    firstItem.SetRowIndex(this.BindingItems);
-                }
-                else
-                {
-                    if (total == 2)
-                    {
-                        var texts = selectedItems.Where(x => x.ItemType == eItemType.Text);
-                        bool hasTextOne = texts.Count() == 1;
-                        var images = selectedItems.Where(x => x.ItemType == eItemType.Image);
-                        bool hasImageOne = images.Count() == 1;
-                        var tables = selectedItems.Where(x => x.ItemType == eItemType.Table);
-                        bool hasTableOne = tables.Count() == 1;
-                        if(hasTextOne && hasImageOne)
-                        {
-                            vmItem textItem = texts.First();
-                            vmItem imageItem = images.First();
-
-                            imageItem.SetTitle(textItem.Temp.LineText);
-                            imageItem.SetImageText(imageItem.Temp.Title, imageItem.ParentShape.Temp.Text);
-                            this.Material.CurrentSlide.RemoveItem(textItem);
-                            imageItem.SetRowIndex(this.BindingItems);
-                        }
-                    }
-                    else
-                    {
-                        string eMsg = "이종 타입은 병합 할 수 없습니다.";
-                        MessageHelper.ShowErrorMessage("행 병합", eMsg);
-                    }
-                }
-                
-                
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
         private void btn_AlignLines_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -261,31 +206,17 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
-        private void btn_RemoveItem_Click(object sender, RoutedEventArgs e)
+        private void btn_AllFold_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                string caption = "선택 아이템 삭제";
-
-                var selectedItems = this.Material.CurrentSlide.Items.Where(x => x.IsSelected);
-                int total = selectedItems.Count();
-                if (total <= 0)
+                var headers = this.Material.CurrentSlide.Items.Where(x => x.IsHeader);
+                foreach (var item in headers)
                 {
-                    string eMsg = "삭제할 아이템을 1개 이상 선택하세요.";
-                    MessageHelper.ShowErrorMessage(caption, eMsg);
-                    return;
-                }
+                    vmItem header = item as vmItem;
+                    if (header == null) return;
 
-                string msg = string.Format("{0}개의 아이템을 삭제하시겠습니까?", total);
-                System.Windows.Forms.DialogResult result = MessageHelper.ShowYewNoMessage(caption, msg);
-                if (result != System.Windows.Forms.DialogResult.Yes) return;
-
-                if (selectedItems == null) return;
-                foreach (vmItem item in selectedItems.ToList())
-                {
-                    if (item == null) continue;
-                    this.Material.CurrentSlide.RemoveItem(item);
-                    this.BindingItems.Remove(item);
+                    header.IsFolded = true;
                 }
             }
             catch (Exception ee)
@@ -293,138 +224,18 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
-        private void btn_AddItem_Click(object sender, RoutedEventArgs e)
+        private void btn_AllUnFold_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                string caption = "새로운 아이템 추가";
-
-                var selectedItems = this.Material.CurrentSlide.Items.Where(x => x.IsSelected);
-                vmItem lastItem = selectedItems.LastOrDefault();
-                if (lastItem == null) lastItem = this.Material.CurrentSlide.Items.LastOrDefault();
-
-                int index = 0;
-                if (lastItem != null) index = this.Material.CurrentSlide.Items.IndexOf(lastItem) + 1;
-
-                mItem newItem = new mItem();
-                vmItem newVM = new vmItem(newItem);
-                newVM.SetParentItem(lastItem.IsHeader ? lastItem : lastItem.ParentItem, false);
-                this.Material.CurrentSlide.AddItem(newVM, index);// .Items.Insert(index, newVM);
-                this.BindingItems.Insert(index, newVM);
-
-                if (lastItem != null || selectedItems.Count() > 0) newVM.SetParent(lastItem.ParentShape);
-
-                for (int i = index; i < this.BindingItems.Count; i++) this.BindingItems[i].SetRowIndex(this.BindingItems);
-                
-
-                this.datagrid_Shapes.SelectedItem = newVM;
-                this.datagrid_Shapes.ScrollIntoView(this.datagrid_Shapes.SelectedItem);
-                var scrollViewer = ControlHelper.FindVisualChild<ScrollViewer>(this.datagrid_Shapes);
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-        private void btn_ClearLines_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var emptyItems = this.Material.CurrentSlide.Items.Where(x => TextHelper.IsNoText(x.Temp.LineText));
-                foreach (vmItem item in emptyItems.ToList())
+                var headers = this.Material.CurrentSlide.Items.Where(x => x.IsHeader);
+                foreach (var item in headers)
                 {
-                    this.Material.CurrentSlide.RemoveItem(item);
-                    this.BindingItems.Remove(item);
+                    vmItem header = item as vmItem;
+                    if (header == null) return;
+
+                    header.IsFolded = false;
                 }
-                foreach (vmItem item in this.BindingItems) item.SetRowIndex(this.BindingItems);
-                
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-        private void btn_SplitLines_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                string caption = "선택 아이템 행 분할";
-
-                var selectedItems = this.Material.CurrentSlide.Items.Where(x => x.IsSelected);
-                int total = selectedItems.Count();
-                if (total <= 0) return;
-             
-                foreach (vmItem item in selectedItems.ToList())
-                {
-                    string[] lines = TextHelper.SplitText(item.Temp.LineText);
-                    int cnt = lines.Count();
-                    if (cnt <= 1) continue;
-
-                    int index = this.BindingItems.IndexOf(item);
-
-                    vmItem current = item;
-                    while (current != null)
-                    {
-                        for (int i = 1; i < cnt; i++)
-                        {
-                            vmItem newItem = current.Duplicate();
-                            newItem.SetText(lines[i]);
-                            newItem.SetParentItem(current.ParentItem);
-                            this.BindingItems.Insert(index + i, newItem);
-
-                            current = i + 1 == cnt ? null : newItem;
-                        }
-                    }
-                    item.SetText(lines[0]);
-
-                    
-                    for (int i = index; i < this.BindingItems.Count() ; i++) this.BindingItems[i].SetRowIndex(this.BindingItems);
-                    
-                }
-
-
-
-
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-        private void btn_SplitCurrent_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Button btn = sender as Button;
-                if (btn == null) return;
-
-                TextBox tb = btn.Tag as TextBox;
-                if (tb == null) return;
-
-                vmItem currentItem = btn.DataContext as vmItem;
-                if (currentItem == null) return;
-
-                int caretIndex = tb.CaretIndex;
-                string preText = tb.Text.Substring(0, caretIndex).Trim();
-                string nextText = tb.Text.Substring(caretIndex).Trim();
-
-                bool isPreTextEmpty = string.IsNullOrEmpty(preText) || string.IsNullOrWhiteSpace(preText);
-                bool isNextTextEmpty = string.IsNullOrEmpty(nextText) || string.IsNullOrWhiteSpace(nextText);
-
-                int index = currentItem.ParentShape.ParentSlide.Items.IndexOf(currentItem);
-                if (!isPreTextEmpty && !isNextTextEmpty)
-                {
-                    currentItem.SetText(preText);
-                    vmItem newItem = currentItem.Duplicate();
-                    newItem.SetText(nextText);
-                    newItem.SetParentItem(currentItem.ParentItem);
-                    //  newItem.ParentShape.ParentSlide.AddItem(newItem, index+1);
-                    this.BindingItems.Insert(index + 1, newItem);
-                }
-
-                for (int i = index; i < this.BindingItems.Count(); i++) this.BindingItems[i].SetRowIndex(this.BindingItems);
-
-                this.datagrid_Shapes.CommitEdit();
             }
             catch (Exception ee)
             {
@@ -444,7 +255,7 @@ namespace MDM.Views.DataLabeling.Pages
                 switch (data.ItemType)
                 {
                     case eItemType.Image:
-                       if(data.ParentShape != null) data.ParentShape.UndoText();
+                        if (data.ParentShape != null) data.ParentShape.UndoText();
                         data.UndoText();
                         data.SetItemType(eItemType.Table);
                         break;
@@ -462,24 +273,6 @@ namespace MDM.Views.DataLabeling.Pages
                         data.SetItemType(eItemType.Text);
                         break;
                 }
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-        private void btn_DeleteRow_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Button btn = sender as Button;
-                if (btn == null) return;
-
-                vmItem data = btn.DataContext as vmItem;
-                if (data == null) return;
-
-                this.Material.CurrentSlide.RemoveItem(data);
-                this.BindingItems.Remove(data);
             }
             catch (Exception ee)
             {
@@ -521,7 +314,7 @@ namespace MDM.Views.DataLabeling.Pages
                             }
                         }
                         string eMsg = "텍스트 형식이 맞지 않습니다.";
-                        MessageHelper.ShowErrorMessage( "이미지 텍스트 변경", eMsg);
+                        MessageHelper.ShowErrorMessage("이미지 텍스트 변경", eMsg);
                         e.Handled = false;
                         return;
                     case eItemType.Table:
@@ -530,9 +323,9 @@ namespace MDM.Views.DataLabeling.Pages
                         this.datagrid_Shapes.CommitEdit();
                         return;
                 }
-                
 
-                
+
+
             }
             catch (Exception ee)
             {
@@ -559,7 +352,40 @@ namespace MDM.Views.DataLabeling.Pages
                 selectedItem.SetRowIndex(this.BindingItems);
                 upperItem.SetRowIndex(this.BindingItems);
 
-                if (upperItem.IsHeader) selectedItem.SetParentItem(upperItem.ParentItem);
+
+                vmItem selectedUpperHeader = this.Material.CurrentSlide.Items.Where(x => x.RowIndex < selectedItem.RowIndex && x.IsHeader).LastOrDefault();
+                if (selectedItem.ParentItem != selectedUpperHeader) selectedItem.SetParentItem(selectedUpperHeader);
+
+                vmItem upperUppperHeader = this.Material.CurrentSlide.Items.Where(x => x.RowIndex < upperItem.RowIndex && x.IsHeader).LastOrDefault();
+                if (upperItem.ParentItem != upperUppperHeader) upperItem.SetParentItem(upperUppperHeader);
+
+                if (upperItem.IsHeader)
+                {
+                    foreach (vmItem item in this.Material.CurrentSlide.Items.Where(x => upperItem.RowIndex < x.RowIndex))
+                    {
+                        if (item.IsHeader) break;
+                        item.SetParentItem(upperItem);
+                    }
+                }
+
+
+                #region 이전 코드
+                //if (upperItem.IsHeader)
+                //{
+                //    selectedItem.SetParentItem(upperItem.ParentItem);
+                //    if (selectedItem.IsHeader)
+                //    {
+                //        foreach (vmItem child in selectedItem.Children.ToList()) child.SetParentItem(upperItem);
+                //        upperItem.SetParentItem(selectedItem);
+                //    }
+                //}
+                //else
+                //{
+                //    upperItem.SetParentItem(selectedItem);
+                //}
+                #endregion
+
+                this.Material.CurrentSlide.OnPreviewItemsChanged();
             }
             catch (Exception ee)
             {
@@ -579,42 +405,42 @@ namespace MDM.Views.DataLabeling.Pages
                 int index = list.IndexOf(selectedItem);
                 if (index + 1 == list.Count) return;
 
-                vmItem downItem = list[index + 1] as vmItem;
-                if (downItem == null) return;
+                vmItem belowItem = list[index + 1] as vmItem;
+                if (belowItem == null) return;
 
                 list.Move(index, index + 1);
                 selectedItem.SetRowIndex(this.BindingItems);
-                downItem.SetRowIndex(this.BindingItems);
+                belowItem.SetRowIndex(this.BindingItems);
 
-                if (downItem.IsHeader) selectedItem.SetParentItem(downItem);
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
-        private void btn_MergeShapes_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                vmItem selectedItem = this.datagrid_Shapes.SelectedItem as vmItem;
-                if (selectedItem == null) return;
 
-                vmShape parent = selectedItem.ParentShape;
+                vmItem belowUpperHeader = this.Material.CurrentSlide.Items.Where(x => x.RowIndex < belowItem.RowIndex && x.IsHeader).LastOrDefault();
+                if (belowItem.ParentItem != belowUpperHeader) belowItem.SetParentItem(belowUpperHeader);
 
-                var list = parent.Items.ToList();
-                int total = list.Count();
-                vmItem firstItem = list[0];
-                for (int i = 1; i < total; i++)
+                vmItem selectedUppperHeader = this.Material.CurrentSlide.Items.Where(x => x.RowIndex < selectedItem.RowIndex && x.IsHeader).LastOrDefault();
+                if (selectedItem.ParentItem != selectedUppperHeader) selectedItem.SetParentItem(selectedUppperHeader);
+
+                if (selectedItem.IsHeader)
                 {
-                    vmItem cItem = list[i];
-                    firstItem.Merge(cItem);
-                    this.Material.CurrentSlide.RemoveItem(cItem);
-                    this.BindingItems.Remove(cItem);
+                    foreach (vmItem item in this.Material.CurrentSlide.Items.Where(x => selectedItem.RowIndex < x.RowIndex))
+                    {
+                        if (item.IsHeader) break;
+                        item.SetParentItem(selectedItem);
+                    }
                 }
-                firstItem.InitializeDisplay();
-                firstItem.SetRowIndex(this.BindingItems);
 
+
+
+                #region 이전 코드
+                //if (downItem.IsHeader)
+                //{
+                //    foreach (vmItem child in downItem.Children.ToList()) child.SetParentItem(selectedItem);
+                //}
+                //downItem.SetParentItem(selectedItem.ParentItem);
+                //if (downItem.IsHeader) selectedItem.SetParentItem(downItem);
+                #endregion
+
+
+                this.Material.CurrentSlide.OnPreviewItemsChanged();
             }
             catch (Exception ee)
             {
@@ -642,7 +468,7 @@ namespace MDM.Views.DataLabeling.Pages
 
                 string tempDirPath = Path.Combine(this.Material.DirectoryPath, "Temp");
                 if (!Directory.Exists(tempDirPath)) Directory.CreateDirectory(tempDirPath);
-                string pngFullPath = Path.Combine(tempDirPath, string.Format("page_{0}", slideIndex)+".png");
+                string pngFullPath = Path.Combine(tempDirPath, string.Format("page_{0}", slideIndex) + ".png");
                 if (!File.Exists(pngFullPath))
                 {
                     string eMsg = "슬라이드 원본 이미지를 추가하세요.";
@@ -652,7 +478,7 @@ namespace MDM.Views.DataLabeling.Pages
                 }
                 originImage = new Bitmap(pngFullPath);
 
-           
+
                 // 슬라이드 크기 가져오기
                 float slideWidth = this.Material.OriginPresentation.PageSetup.SlideWidth;
                 float slideHeight = this.Material.OriginPresentation.PageSetup.SlideHeight;
@@ -687,7 +513,6 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
-        
         private void btn_CompletedSaveNext_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -698,7 +523,7 @@ namespace MDM.Views.DataLabeling.Pages
                 foreach (vmItem item in this.Material.CurrentSlide.Items) item.SetRowIndex();
 
                 current.SetStatus(ePageStatus.Completed);
-                
+
                 current.Save();
                 (this.Tag as ucDataLabeling).DataLabelingSlides.MoveNext();
             }
@@ -707,18 +532,199 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
-      
-        private void btn_AllFold_Click(object sender, RoutedEventArgs e)
+
+
+
+        private void btn_RemoveItem_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var headers = this.Material.CurrentSlide.Items.Where(x => x.IsHeader);
-                foreach (var item in headers)
-                {
-                    vmItem header = item as vmItem;
-                    if (header == null) return;
+                string caption = "선택 아이템 삭제";
 
-                    header.IsFolded = true;
+                var selectedItems = this.Material.CurrentSlide.Items.Where(x => x.IsSelected);
+                int total = selectedItems.Count();
+                if (total <= 0)
+                {
+                    string eMsg = "삭제할 아이템을 1개 이상 선택하세요.";
+                    MessageHelper.ShowErrorMessage(caption, eMsg);
+                    return;
+                }
+
+                string msg = string.Format("{0}개의 아이템을 삭제하시겠습니까?", total);
+                System.Windows.Forms.DialogResult result = MessageHelper.ShowYewNoMessage(caption, msg);
+                if (result != System.Windows.Forms.DialogResult.Yes) return;
+
+                if (selectedItems == null) return;
+                foreach (vmItem item in selectedItems.ToList())
+                {
+                    if (item == null) continue;
+                    this.Material.CurrentSlide.RemoveItem(item);
+                    this.BindingItems.Remove(item);
+                }
+
+                SetRowIndexs();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_MergeLines_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string caption = "아이템 병합";
+                
+                var selectedItems = new List<vmItem>();
+                foreach (var item in this.datagrid_Shapes.SelectedItems) selectedItems.Add(item as vmItem);
+                selectedItems = selectedItems.OrderBy(x => x.RowIndex).ToList();
+
+                int total = selectedItems.Count();
+                if (total <= 1)
+                {
+                    string eMsg = "병합할 아이템을 2개 이상 선택하세요.";
+                    MessageHelper.ShowErrorMessage(caption, eMsg);
+                    return;
+                }
+
+                bool isAllText = selectedItems.Where(x => x.ItemType == eItemType.Text).Count() == total;
+                if (isAllText)
+                {
+                    List<vmItem> items = selectedItems.ToList();
+                    vmItem firstItem = items[0];
+                    string temp = firstItem.Temp.LineText;
+                    for (int i = 1; i < total; i++)
+                    {
+                        vmItem cItem = items[i];
+                        temp += "\n";
+                        temp += cItem.Temp.LineText;
+                        this.Material.CurrentSlide.RemoveItem(cItem);
+                        this.BindingItems.Remove(cItem);
+                    }
+                    firstItem.SetText(temp);
+                    firstItem.InitializeDisplay();
+                }
+                else
+                {
+                    if (total == 2)
+                    {
+                        var texts = selectedItems.Where(x => x.ItemType == eItemType.Text);
+                        bool hasTextOne = texts.Count() == 1;
+                        var images = selectedItems.Where(x => x.ItemType == eItemType.Image);
+                        bool hasImageOne = images.Count() == 1;
+                        var tables = selectedItems.Where(x => x.ItemType == eItemType.Table);
+                        bool hasTableOne = tables.Count() == 1;
+                        if (hasTextOne && hasImageOne)
+                        {
+                            vmItem textItem = texts.First();
+                            vmItem imageItem = images.First();
+
+                            imageItem.SetTitle(textItem.Temp.LineText);
+                            imageItem.SetImageText(imageItem.Temp.Title, imageItem.ParentShape.Temp.Text);
+                            this.Material.CurrentSlide.RemoveItem(textItem);
+                        }
+                    }
+                    else
+                    {
+                        string eMsg = "이종 타입은 병합 할 수 없습니다.";
+                        MessageHelper.ShowErrorMessage("행 병합", eMsg);
+                        return;
+                    }
+                }
+
+                SetRowIndexs();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_AddItem_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string caption = "새로운 아이템 추가";
+
+                var selectedItems = this.Material.CurrentSlide.Items.Where(x => x.IsSelected);
+                vmItem lastItem = selectedItems.LastOrDefault();
+                if (lastItem == null) lastItem = this.Material.CurrentSlide.Items.LastOrDefault();
+
+                int index = 0;
+                if (lastItem != null) index = this.Material.CurrentSlide.Items.IndexOf(lastItem) + 1;
+
+                mItem newItem = new mItem();
+                vmItem newVM = new vmItem(newItem);
+                newVM.SetParentItem(lastItem.IsHeader ? lastItem : lastItem.ParentItem, false);
+                this.Material.CurrentSlide.AddItem(newVM, index);// .Items.Insert(index, newVM);
+                this.BindingItems.Insert(index, newVM);
+
+                if (lastItem != null || selectedItems.Count() > 0) newVM.SetParent(lastItem.ParentShape);
+
+                SetRowIndexs(index);
+
+                this.datagrid_Shapes.SelectedItem = newVM;
+                this.datagrid_Shapes.ScrollIntoView(this.datagrid_Shapes.SelectedItem);
+                var scrollViewer = ControlHelper.FindVisualChild<ScrollViewer>(this.datagrid_Shapes);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_ClearLines_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var emptyItems = this.Material.CurrentSlide.Items.Where(x => TextHelper.IsNoText(x.Temp.LineText));
+                foreach (vmItem item in emptyItems.ToList())
+                {
+                    this.Material.CurrentSlide.RemoveItem(item);
+                    this.BindingItems.Remove(item);
+                }
+                foreach (vmItem item in this.BindingItems) item.SetRowIndex(this.BindingItems);
+
+                SetRowIndexs();
+                
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_SplitLines_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string caption = "선택 아이템 행 분할";
+
+                var selectedItems = this.Material.CurrentSlide.Items.Where(x => x.IsSelected);
+                int total = selectedItems.Count();
+                if (total <= 0) return;
+             
+                foreach (vmItem item in selectedItems.ToList())
+                {
+                    string[] lines = TextHelper.SplitText(item.Temp.LineText);
+                    int cnt = lines.Count();
+                    if (cnt <= 1) continue;
+
+                    int index = this.BindingItems.IndexOf(item);
+
+                    vmItem current = item;
+                    while (current != null)
+                    {
+                        for (int i = 1; i < cnt; i++)
+                        {
+                            vmItem newItem = current.Duplicate();
+                            newItem.SetText(lines[i]);
+                            newItem.SetParentItem(current.ParentItem);
+                            this.BindingItems.Insert(index + i, newItem);
+
+                            current = i + 1 == cnt ? null : newItem;
+                        }
+                    }
+                    item.SetText(lines[0]);
+                    
+                    SetRowIndexs(index);
                 }
             }
             catch (Exception ee)
@@ -726,24 +732,113 @@ namespace MDM.Views.DataLabeling.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
-        private void btn_AllUnFold_Click(object sender, RoutedEventArgs e)
+        private void btn_SplitCurrent_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var headers = this.Material.CurrentSlide.Items.Where(x => x.IsHeader);
-                foreach (var item in headers)
-                {
-                    vmItem header = item as vmItem;
-                    if (header == null) return;
+                Button btn = sender as Button;
+                if (btn == null) return;
 
-                    header.IsFolded = false;
+                TextBox tb = btn.Tag as TextBox;
+                if (tb == null) return;
+
+                vmItem currentItem = btn.DataContext as vmItem;
+                if (currentItem == null) return;
+
+                int caretIndex = tb.CaretIndex;
+                string preText = tb.Text.Substring(0, caretIndex).Trim();
+                string nextText = tb.Text.Substring(caretIndex).Trim();
+
+                bool isPreTextEmpty = string.IsNullOrEmpty(preText) || string.IsNullOrWhiteSpace(preText);
+                bool isNextTextEmpty = string.IsNullOrEmpty(nextText) || string.IsNullOrWhiteSpace(nextText);
+
+                int index = currentItem.ParentShape.ParentSlide.Items.IndexOf(currentItem);
+                if (!isPreTextEmpty && !isNextTextEmpty)
+                {
+                    currentItem.SetText(preText);
+                    vmItem newItem = currentItem.Duplicate();
+                    newItem.SetText(nextText);
+                    newItem.SetParentItem(currentItem.ParentItem);
+                    
+                    this.BindingItems.Insert(index + 1, newItem);
                 }
+
+                SetRowIndexs(index);
+
+                this.datagrid_Shapes.CommitEdit();
             }
             catch (Exception ee)
             {
                 ErrorHelper.ShowError(ee);
             }
         }
+        private void btn_DeleteRow_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                vmItem data = btn.DataContext as vmItem;
+                if (data == null) return;
+
+                int index = this.BindingItems.IndexOf(data);
+
+                this.Material.CurrentSlide.RemoveItem(data);
+                this.BindingItems.Remove(data);
+
+                SetRowIndexs(index - 1);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_MergeShapes_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                vmItem selectedItem = this.datagrid_Shapes.SelectedItem as vmItem;
+                if (selectedItem == null) return;
+
+                vmShape parent = selectedItem.ParentShape;
+
+                var list = parent.Items.ToList();
+                int total = list.Count();
+                vmItem firstItem = list[0];
+                for (int i = 1; i < total; i++)
+                {
+                    vmItem cItem = list[i];
+                    firstItem.Merge(cItem);
+                    this.Material.CurrentSlide.RemoveItem(cItem);
+                    this.BindingItems.Remove(cItem);
+                }
+                firstItem.InitializeDisplay();
+
+                SetRowIndexs();
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
 
         private void datagrid_Shapes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -873,7 +968,7 @@ namespace MDM.Views.DataLabeling.Pages
                 int index = items.IndexOf(data);
                 
                 var overItems = items.Where(x => items.IndexOf(x) < index && x.ItemType == eItemType.Header);
-                vmItem lastHeader = overItems.Where(x => x.Temp.Level + 1 == data.Temp.Level).LastOrDefault();
+                vmItem lastHeader = overItems.Where(x => x.Temp.Level == data.Temp.Level || x.Temp.Level + 1 == data.Temp.Level).LastOrDefault();
                 data.SetParentItem(lastHeader);
                 
 

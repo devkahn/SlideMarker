@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,12 +28,28 @@ namespace MDM.Views.DataLabeling.Pages
     {
         public Border BottomPanel => this.border_BottomPanel;
 
+        private ObservableCollection<vmItem> _PrevItems = null;
+        public ObservableCollection<vmItem> PrevItems
+        {
+            get => _PrevItems;
+            private set
+            {
+                _PrevItems = value;
+                this.listbox_Preview.ItemsSource = _PrevItems;
+            }
+        }
 
         public ucDataLabelingPreviewSlide()
         {
             InitializeComponent();
+            //this.PrevItems = new ObservableCollection<vmItem>();
+            //this.PrevItems.CollectionChanged += PrevItems_CollectionChanged;
         }
 
+        private void PrevItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            
+        }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
@@ -56,8 +73,8 @@ namespace MDM.Views.DataLabeling.Pages
                 vmSlide currentSlide = current.CurrentSlide;
                 if(currentSlide == null) return;
 
-                this.listbox_Preview.ItemsSource = null;
-                this.listbox_Preview.ItemsSource = currentSlide.Items;
+                //this.listbox_Preview.ItemsSource = null;
+                //this.listbox_Preview.ItemsSource = currentSlide.Items;
             }
             catch (Exception ee)
             {
