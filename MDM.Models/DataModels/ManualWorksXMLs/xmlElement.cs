@@ -53,13 +53,13 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Description("웹 뷰어에서 PDF로 내려받기를 허용하지 않습니다.")]
         public string ExportExclude { get; set; } = string.Empty;
 
-        [xmlElementType(eXMLElementType.Ordered_list)]
+        [xmlElementType(eXMLElementType.ordered_list)]
         [JsonProperty("renumbered")]
-        [Description("웹 뷰어에서 EPUB 내려받기를 허용하지 않습니다.")]
-        [DefaultValue(false)]
-        public bool IsRenumbered { get; set; } = false;
+        [Description("새로 번호를 시작합니다.")]
+        [DefaultValue(true)]
+        public bool IsRenumbered { get; set; } = true;
 
-        [xmlElementType(eXMLElementType.Table)]
+        [xmlElementType(eXMLElementType.table)]
         [JsonProperty("table_layout")]
         [Description("표 레이아웃")]
         [DefaultValue(eXMLElementTableLayout.auto)]
@@ -71,108 +71,108 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         /// 단위로 “%”를 사용할 수 있습니다.
         /// 열 너비를 “?”로 설정하면 해당 열 너비를 자동으로 결정합니다.
         /// </summary>
-        [xmlElementType(eXMLElementType.Table)]
+        [xmlElementType(eXMLElementType.table)]
         [JsonProperty("table_layout_setting")]
         [Description("표 레이아웃이 user일 때만 설정합니다.")]
         public string TableLayoutSetting { get; set; } = string.Empty;
 
-        [xmlElementType(eXMLElementType.Image)]
+        [xmlElementType(eXMLElementType.image)]
         [JsonProperty("mode")]
         [Description("그림 단락 모드")]
         [DefaultValue(eXLMElementMode.file)]
-        public eXLMElementMode Mode { get; set; } = eXLMElementMode.file;
+        public string Mode { get; set; } = eXLMElementMode.file.ToString();
 
 
-        [xmlElementType(eXMLElementType.Image, eXMLElementType.Table)]
+        [xmlElementType(eXMLElementType.image, eXMLElementType.table)]
         [JsonProperty("omit_caption")]
         [Description("제목 생략")]
         [DefaultValue(false)]
         public bool OmitCaption { get; set; } = false;
 
-        [xmlElementType(eXMLElementType.Image)]
+        [xmlElementType(eXMLElementType.image)]
         [JsonProperty("caption")]
         [Description("그림 제목")]
         public string Caption { get; set; } = string.Empty;
 
-        [xmlElementType(eXMLElementType.Image)]
+        [xmlElementType(eXMLElementType.image)]
         [JsonProperty("width")]
         [Description("그림 너비(픽셀 단위)")]
         public int Width { get; set; } = 0;
 
-        [xmlElementType(eXMLElementType.Image)]
+        [xmlElementType(eXMLElementType.image)]
         [JsonProperty("height")]
         [Description("그림 높이(픽셀 단위)")]
         public int Height { get; set; } = 0;
 
-        [xmlElementType(eXMLElementType.Image)]
+        [xmlElementType(eXMLElementType.image)]
         [JsonProperty("image_float")]
         [Description("그림 Float")]
         [DefaultValue(eXMLElemnetImageFloat.NONE)]
         public eXMLElemnetImageFloat ImageFloat { get; set; } = eXMLElemnetImageFloat.NONE;
 
-        [xmlElementType(eXMLElementType.Image)]
+        [xmlElementType(eXMLElementType.image)]
         [JsonProperty("prevent_image_resize")]
         [Description("PDF에서 페이지 전환에 따른 그림 크기 줄이지 않기")]
         public bool? CanPreventImageResize { get; set; } = false;
 
-        [xmlElementType(eXMLElementType.Toc)]
+        [xmlElementType(eXMLElementType.toc)]
         [JsonProperty("toc_level")]
         [Description("표시할 차례 수준")]
         [DefaultValue(eXMLElementLevel.CHAPTER_TITLE)]
         public eXMLElementLevel PresentationLevel { get; set; } = eXMLElementLevel.CHAPTER_TITLE;
 
-        [xmlElementType(eXMLElementType.Glossary)]
+        [xmlElementType(eXMLElementType.glossary)]
         [JsonProperty("glossary")]
         [Description("용어집 UUID")]
         public string DictionaryAddress { get; set; } = string.Empty;
 
-        [xmlElementType(eXMLElementType.Index)]
+        [xmlElementType(eXMLElementType.index)]
         [JsonProperty("index_sort")]
         [Description("찾아보기 정렬 기준")]
         [DefaultValue(eXMLElementSortType.letter_by_letter)]
         public eXMLElementSortType SortType { get; set; } = eXMLElementSortType.letter_by_letter;
 
-        [xmlElementType(eXMLElementType.Space)]
+        [xmlElementType(eXMLElementType.space)]
         [JsonProperty("space_height")]
         [Description("여백 높이")]
         public int SpaceHeight { get; set; } = 0;
 
-        [xmlElementType(eXMLElementType.Layout_page)]
+        [xmlElementType(eXMLElementType.layout_page)]
         [JsonProperty("layout_page")]
         [Description("레이아웃 페이지 유형")]
         [DefaultValue(eXMLElementLayoytType.half_title_page)]
         public eXMLElementLayoytType LayoutType { get; set; } = eXMLElementLayoytType.half_title_page;
 
-        [xmlElementType(eXMLElementType.Include, eXMLElementType.Single_design_page)]
+        [xmlElementType(eXMLElementType.include, eXMLElementType.single_design_page)]
         [JsonProperty("description")]
         [Description("설명")]
         public string Description { get; set; } = string.Empty;
 
-        [xmlElementType(eXMLElementType.Include)]
+        [xmlElementType(eXMLElementType.include)]
         [JsonProperty("heading_adjustment")]
         [Description("제목 수준 조정")]
         [DefaultValue(eXMLElementHeadingAdjustment.Not)]
         public eXMLElementHeadingAdjustment HeadingAdjustment { get; set; } = eXMLElementHeadingAdjustment.Not;
 
-        [xmlElementType(eXMLElementType.Heading1)]
+        [xmlElementType(eXMLElementType.heading1)]
         [JsonProperty("section_view")]
         [Description("절 모습을 설정합니다.")]
         [DefaultValue(eXMLElementSectionView.NONE)]
         public eXMLElementSectionView SectionView { get; set; } = eXMLElementSectionView.NONE;
 
-        [xmlElementType(eXMLElementType.Code)]
+        [xmlElementType(eXMLElementType.code)]
         [JsonProperty("code_language")]
         [Description("소스 코드 언어를 설정합니다.")]
         [DefaultValue(eXMLElementCodeLanguage.NONE)]
         public eXMLElementCodeLanguage CodeLanguage { get; set; } = eXMLElementCodeLanguage.NONE;
 
-        [xmlElementType(eXMLElementType.Code)]
+        [xmlElementType(eXMLElementType.code)]
         [JsonProperty("code_numbering")]
         [Description("소스 코드 번호 매기기")]
         [DefaultValue(false)]
         public bool CanCodeNumbering { get; set; } = false;
 
-        [xmlElementType(eXMLElementType.Normal, eXMLElementType.note, eXMLElementType.Tip, eXMLElementType.Caution)]
+        [xmlElementType(eXMLElementType.normal, eXMLElementType.note, eXMLElementType.tip, eXMLElementType.caution)]
         [JsonProperty("ignore_step_indent")]
         [Description("단계 단락 이후 들여쓰기를 하지 않습니다.")]
         [DefaultValue(false)]
@@ -185,79 +185,79 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         NONE=-1,
 
         [Description("보통")]
-        Normal,
+        normal,
         [Description("제목 1")]
-        Heading1,
+        heading1,
         [Description("제목 2")]
-        Heading2,
+        heading2,
         [Description("제목 3")]
-        Heading3,
+        heading3,
         [Description("제목 4")]
-        Heading4,
+        heading4,
         [Description("제목 5")]
-        Heading5,
+        heading5,
         [Description("헤드라인")]
-        Headline,
+        headline,
         [Description("코드")]
-        Code,
+        code,
         [Description("명령어")]
-        Command,
+        command,
         [Description("줄 바꿈 유지")]
-        Pre,
+        pre,
         [Description("블럭 인용구")]
-        Blockquote,
+        blockquote,
         [Description("권두 명구")]
-        Epigraph,
+        epigraph,
         [Description("순서 목록")]
-        Ordered_list,
+        ordered_list,
         [Description("비순서 목록")]
-        Unordered_list,
+        unordered_list,
         [Description("정의 목록")]
-        Definition_list,
+        definition_list,
         [Description("콜아웃 목록")]
-        Callout_list,
+        callout_list,
         [Description("단계")]
-        Step1,
+        step1,
         [Description("노트")]
         note,
         [Description("팁")]
-        Tip,
+        tip,
         [Description("주의")]
-        Caution,
+        caution,
         [Description("교정")]
-        Proofreading,
+        proofreading,
         [Description("그림 단락")]
-        Image,
+        image,
         [Description("표 단락")]
-        Table,
+        table,
         [Description("차례")]
-        Toc,
+        toc,
         [Description("그림 차례")]
-        List_of_figures,
+        list_of_figures,
         [Description("표 차례")]
-        List_of_tables,
+        list_of_tables,
         [Description("코드 차례")]
-        List_of_codes,
+        list_of_codes,
         [Description("용어집")]
-        Glossary,
+        glossary,
         [Description("찾아보기")]
-        Index,
+        index,
         [Description("자동 페이지 나누기")]
-        Page_break,
+        page_break,
         [Description("빈 페이지")]
-        Blank_page,
+        blank_page,
         [Description("여백")]
-        Space,
+        space,
         [Description("수평선")]
-        Horizontal_line,
+        horizontal_line,
         [Description("Float 하지 않기")]
-        Clear_float,
+        clear_float,
         [Description("레이아웃 페이지")]
-        Layout_page,
+        layout_page,
         [Description("디자인 페이지")]
-        Single_design_page,
+        single_design_page,
         [Description("다른 단락 포함하기")]
-        Include
+        include
     }
     public enum eXMLElementTableLayout
     {

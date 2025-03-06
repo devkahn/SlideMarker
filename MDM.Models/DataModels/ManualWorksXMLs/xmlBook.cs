@@ -147,7 +147,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
 
         [JsonProperty("support_comment")]
         [Description("댓글을 지원합니다.")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool IsSupportComment { get; set; } = false;
 
         [JsonProperty("support_feedback")]

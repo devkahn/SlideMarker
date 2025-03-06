@@ -185,6 +185,18 @@
     <Compile Include="MarkChecker\Pages\ucMarkCheckerContensByHeading.xaml.cs">
       <DependentUpon>ucMarkCheckerContensByHeading.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MarkChecker\Pages\ucMarkCheckerContentsChecking.xaml.cs">
+      <DependentUpon>ucMarkCheckerContentsChecking.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\ucMarkCheckerContentsCheckingImage.xaml.cs">
+      <DependentUpon>ucMarkCheckerContentsCheckingImage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\ucMarkCheckerContentsCheckingTable.xaml.cs">
+      <DependentUpon>ucMarkCheckerContentsCheckingTable.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Pages\ucMarkCheckerContentsCheckingText.xaml.cs">
+      <DependentUpon>ucMarkCheckerContentsCheckingText.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MarkChecker\Pages\ucMarkCheckerMain.xaml.cs">
       <DependentUpon>ucMarkCheckerMain.xaml</DependentUpon>
     </Compile>
@@ -381,6 +393,22 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MarkChecker\Pages\ucMarkCheckerContensByHeading.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\ucMarkCheckerContentsChecking.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\ucMarkCheckerContentsCheckingImage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\ucMarkCheckerContentsCheckingTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\ucMarkCheckerContentsCheckingText.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

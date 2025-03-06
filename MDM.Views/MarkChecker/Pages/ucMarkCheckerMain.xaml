@@ -71,8 +71,11 @@
             <TabItem Header="깨꿍">
                 <local:ucMarkCheckerOriginExcel x:Name="mcExcelView"/>
             </TabItem>
-            <TabItem Header="Contents By Heading">
+            <TabItem Header="제목 검토">
                 <local:ucMarkCheckerContensByHeading x:Name="mcContentsByHeading"/>
+            </TabItem>
+            <TabItem Header="본문 검토">
+                <local:ucMarkCheckerContentsChecking x:Name="mcContentChecking"/>
             </TabItem>
             <TabItem Header="Contents By Slide">
                 <smPages:ucDataLabeling x:Name="smDataLabeling"/>

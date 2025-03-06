@@ -27,7 +27,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlSubProperty("size")]
         [Nullable(false)]
         [Description("byte를 단위로 하는 파일 크기")]
-        public int Size { get; set; }
+        public long Size { get; set; }
 
         [XmlIgnore]
         [xmlSubProperty("content_type")]
@@ -35,6 +35,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Description("그림 파일 유형으로 image/png, image/jpeg, image/gif 만을 지원합니다.")]
         public string ContentType { get; set; } = "image/png";
 
-
+        [XmlIgnore]
+        public string FilePath { get; set; } = string.Empty;
     }
 }

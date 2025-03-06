@@ -27,7 +27,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
     /// </summary>
     public partial class ucXMLSettingContentsImages : UserControl
     {
-        public eXMLElementType ContentType => eXMLElementType.Image;
+        public eXMLElementType ContentType => eXMLElementType.image;
         public vmMaterial Material { get; set; }
 
         public ucXMLSettingContentsImages(vmMaterial material)

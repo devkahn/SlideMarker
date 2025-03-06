@@ -100,6 +100,21 @@ namespace MDM.Helpers
             string pattern = @"^!\[([^\]]+)\]\(([\w-]+)\.png\)";
             return Regex.Match(input, pattern);
         }
+        public static string GetImageFileNameFromMarkdown(string input)
+        {
+            string pattern = @"\(([^)]+)\)";
+            Match match = Regex.Match(input, pattern);
+
+            if (match.Success) return match.Groups[1].Value; // 첫 번째 캡처 그룹
+
+            return null;
+        }
+            
+        public static bool IsFirstNumericListMark(string input)
+        {
+            string pattern = @"^\d+\.\s";
+            return Regex.IsMatch(input, pattern);
+        }
 
         public static string Preprocessing(this string originText)
         {
@@ -156,6 +171,23 @@ namespace MDM.Helpers
 
                 output += newLine;
                 if (line != textSplits.Last()) output += "\n";
+            }
+
+            return output;
+        }
+
+        public static string RemoveZeroWidthSpace(string value)
+        {
+            string output = string.Empty;
+
+            foreach (char c in value)
+            {
+                //(char)8203
+                if (c == '\u200B')
+                {
+                    continue;
+                }
+                output += c;
             }
 
             return output;

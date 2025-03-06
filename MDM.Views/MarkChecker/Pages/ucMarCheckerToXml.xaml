@@ -108,7 +108,8 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button Content="추출" Click="btn_Export_Click"/>
+                    <Button Grid.Column="0" Content="추출" Click="btn_Export_Click"/>
+                    <Button Grid.Column="1" Content="UUID" Click="btn_UUID_Click"/>
                 </Grid>
             </Border>
 

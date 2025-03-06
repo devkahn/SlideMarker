@@ -7,6 +7,26 @@ using System.Threading.Tasks;
 
 namespace MDM.Commons.Enum
 {
+    public enum eContentType
+    {
+        [Description("-")]
+        None = -1,
+
+        [Description("전체")]
+        All = 0,
+        
+        [Description("일반")]
+        NormalText = 2211,
+        [Description("순서")]
+        OrderList = 2212,
+        [Description("비 순서")]
+        UnOrderList = 2213,
+
+        [Description("그림")]
+        Image = 222,
+        [Description("표")]
+        Table = 223,
+    }
     public enum eItemType
     {
         [Description("-")]

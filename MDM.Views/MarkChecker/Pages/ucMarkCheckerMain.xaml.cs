@@ -33,6 +33,7 @@ namespace MDM.Views.MarkChecker.Pages
                 this.mcContentsByHeading.Material = value;
                 this.smDataLabeling.SetMaterial(value);
                 this.ucMarCheckerToXml.Material = value;
+                this.mcContentChecking.Material = value;
             }
         }
 

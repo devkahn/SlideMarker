@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 using MDM.Commons.Enum;
 using MDM.Models.DataModels;
 
@@ -24,6 +26,8 @@ namespace MDM.Models.ViewModels
         private vmHeading _Heading8 = null;
         private vmHeading _Heading9 = null;
         private vmHeading _Heading10 = null;
+
+        private Brush _Display_Background = Brushes.White;
 
         private object _Display_SlideNum = null;
         private object _Display_Heading1 = null;
@@ -102,6 +106,7 @@ namespace MDM.Models.ViewModels
                 }
             }
         }
+        public eContentType ContentType { get; set; } = eContentType.None;
 
 
         public vmHeading Heading1
@@ -205,6 +210,17 @@ namespace MDM.Models.ViewModels
             }
         }
 
+
+        public Brush Display_Background
+        {
+            get => _Display_Background;
+            private set
+            {
+                _Display_Background = value;
+                OnPropertyChanged(nameof(this.Display_Background));
+            }
+        }
+
         public object Display_SlideNum
         {
             get => _Display_SlideNum;
@@ -284,7 +300,21 @@ namespace MDM.Models.ViewModels
                 heading.AddContent(this);
             }
         }
-
+        public void SetBackground(Brush color)
+        {
+            this.Display_Background = color;
+        }
+        public void SetBackground(bool? isTrue)
+        {
+            if(isTrue.HasValue)
+            {
+                this.Display_Background = isTrue.Value ? Brushes.Cyan : Brushes.LightPink;
+            }
+            else
+            {
+                this.Display_Background = Brushes.White;
+            }
+        }
         public override object UpdateOriginData()
         {
             return this.Temp;

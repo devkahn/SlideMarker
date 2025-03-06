@@ -27,7 +27,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
     /// </summary>
     public partial class ucXMLSettingHeading3 : UserControl
     {
-        public eXMLElementType ContentType => eXMLElementType.Heading3;
+        public eXMLElementType ContentType => eXMLElementType.heading3;
         public vmMaterial Material { get; set; }
         public ucXMLSettingHeading3(vmMaterial material)
         {
@@ -89,7 +89,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
 
         public void SetProperty()
         {
-            xmlElement option = this.Material.XMLSets.Heading2Element;
+            xmlElement option = this.Material.XMLSets.Heading3Element;
 
             foreach (vmXMLProperty propItem in this.propertyList.Items)
             {

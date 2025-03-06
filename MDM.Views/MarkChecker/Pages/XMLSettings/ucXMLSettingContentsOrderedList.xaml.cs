@@ -27,7 +27,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
     /// </summary>
     public partial class ucXMLSettingContentsOrderedList : UserControl
     {
-        public eXMLElementType ContentType => eXMLElementType.Ordered_list;
+        public eXMLElementType ContentType => eXMLElementType.ordered_list;
         public vmMaterial Material { get; set; }
 
         public ucXMLSettingContentsOrderedList(vmMaterial material)
