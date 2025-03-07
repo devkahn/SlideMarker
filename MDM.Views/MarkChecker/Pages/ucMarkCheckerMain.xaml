@@ -68,7 +68,7 @@
             <TabControl.Resources>
                 <Style TargetType="TabItem" BasedOn="{StaticResource baseStyle_Common_TabItem}"/>
             </TabControl.Resources>
-            <TabItem Header="깨꿍">
+            <TabItem Header="컨텐츠 리스트">
                 <local:ucMarkCheckerOriginExcel x:Name="mcExcelView"/>
             </TabItem>
             <TabItem Header="제목 검토">
@@ -77,10 +77,10 @@
             <TabItem Header="본문 검토">
                 <local:ucMarkCheckerContentsChecking x:Name="mcContentChecking"/>
             </TabItem>
-            <TabItem Header="Contents By Slide">
+            <TabItem Header="Contents By Slide" Visibility="Visible">
                 <smPages:ucDataLabeling x:Name="smDataLabeling"/>
             </TabItem>
-            <TabItem Header="Export To XML">
+            <TabItem Header="XML 설정">
                 <local:ucMarCheckerToXml x:Name="ucMarCheckerToXml"/>
             </TabItem>
         </TabControl>

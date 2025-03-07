@@ -136,6 +136,16 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
                         case 10: item.Display_TargetName = item.Display_TargetName.ToString().TrimStart(); break;
                         case 20: item.Display_TargetName = item.Display_TargetName.ToString().TrimEnd(); break;
                         case 100: item.Display_TargetName = TextHelper.RemoveEmtpy(item.Display_TargetName.ToString()); break;
+                        case 101:
+                            string output = string.Empty;
+                            string[] lines = TextHelper.SplitText(item.Display_TargetName.ToString());
+                            foreach (string ln in lines)
+                            {
+                                if(TextHelper.IsNoText(ln)) continue;
+                                output += string.Format(" {0}", ln.Trim());
+                            }
+                            item.Display_TargetName = output;
+                            break;
                         default: break;
                     }
                 }

@@ -16,14 +16,13 @@
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" MaxWidth="500"/>
-            <ColumnDefinition Width="0" MaxWidth="300"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="0"/>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="2.5*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
 
-        <Grid>
+        <Grid Visibility="Collapsed"> 
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition/>
@@ -112,32 +111,9 @@
                     <Button Grid.Column="1" Content="UUID" Click="btn_UUID_Click"/>
                 </Grid>
             </Border>
+        </Grid>
 
-        </Grid>
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition/>
-                <RowDefinition MinHeight="30" Height="auto"/>
-            </Grid.RowDefinitions>
-            <ListBox Grid.Row="1" ItemsSource="{Binding SelectedItem.Contents, ElementName=treeview_Header}" DisplayMemberPath="{Binding Display_Content}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="5" BorderBrush="{StaticResource color_Gray2}">
-                            <Grid HorizontalAlignment="Stretch">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="30"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="{Binding Display_ContentType}"/>
-                                <TextBlock Grid.Row="1" Text="{Binding Display_Content}"/>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </Grid>
-        <TabControl Grid.Column="2">
+        <TabControl Grid.Column="1">
             <TabItem Header="일괄 설정">
                 <local:ucMarCheckerToXmlAllSetting x:Name="ucMarCheckerToXmlAllSetting" />
             </TabItem>
@@ -145,6 +121,94 @@
                 <local:ucMarCheckerToXmlUnitSetting x:Name="ucMarCheckerToXmlUnitSetting"/> 
             </TabItem>
         </TabControl>
+        <Grid Grid.Column="2">
+            <Grid.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}"/>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="{StaticResource color_Primary}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="추출" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="10,0,10,0"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Grid.Column="1" Content="  일괄 설정  " Margin="5" Click="btn_AllSetting_Click"/>
+                    </StackPanel>
+                    
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1">
+                <ListBox>
+                    <ListBox.Style>
+                        <Style TargetType="ListBox">
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Margin" Value="0,5,0,5"/>
+                        </Style>
+                    </ListBox.Style>
+                    <ListBox.Resources>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Height" Value="35"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource color_Gray2}"/>
+                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="35"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Grid.ColumnSpan="20" x:Name="background"/>
+                                                <Border Grid.Column="0" Margin="5" Background="Red">
+                                                    <TextBlock Text="○" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <Grid Grid.Column="1">
+                                                    <TextBlock Text="{TemplateBinding Content}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.Resources>
+                    <ListBoxItem Content="설정1"/>
+                    <ListBoxItem Content="설정2"/>
+                    <ListBoxItem Content="설정3"/>
+                    <ListBoxItem Content="설정4"/>
+                    <ListBoxItem Content="설정5"/>
+
+                </ListBox>
+            </Grid>
+            <Border Grid.Row="2" Background="{StaticResource color_Gray2}">
+                <Grid>
+    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <CheckBox x:Name="checkbox_IncludeZip" Content="압축파일 만들기" VerticalAlignment="Center" IsChecked="True"/>
+                        <Button Grid.Column="1" Content="추출!!" Margin="5" Width="100" Click="btn_Export_Click" Tag="{Binding ElementName=checkbox_IncludeZip}"/>
+                    </StackPanel>
+
+
+                    
+                    
+                </Grid>
+            </Border>
+           
+        </Grid>
 
     </Grid>
 </UserControl>

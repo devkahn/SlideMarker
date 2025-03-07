@@ -53,7 +53,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlSubProperty("keywords")]
         [Nullable(true)]
         [Description("키워드")]
-        public string[] Keywords { get; set; } = null;
+        public string Keywords { get; set; } = null;
 
         [XmlIgnore]
         [xmlSubProperty("type")]
@@ -73,7 +73,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlSubProperty("tags")]
         [Nullable(true)]
         [Description("라벨을 입력합니다.")]
-        public string[] Tags { get; set; } = null;
+        public string Tags { get; set; } = null;
 
 
         

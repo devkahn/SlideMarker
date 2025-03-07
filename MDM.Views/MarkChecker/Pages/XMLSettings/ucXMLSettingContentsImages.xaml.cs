@@ -91,44 +91,36 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
 
         public void SetProperty()
         {
-            xmlElement imageOption = this.Material.XMLSets.ImageElement;
+            xmlElement newImageElement = new xmlElement();
 
-            foreach (vmXMLProperty propItem in this.propertyList.Items)
+            foreach (vmXMLProperty property in this.propertyList.Items)
             {
 
-                PropertyInfo pInfo = propItem.Origin;
-                if (pInfo == null) continue;
-
-                var value = propItem.ValuePanel.GetType().GetProperty("Value").GetValue(propItem.ValuePanel, null);
-                pInfo.SetValue(imageOption, value);
+                var value = property.ValuePanel.GetType().GetProperty("Value").GetValue(property.ValuePanel, null);
+                newImageElement.GetType().GetProperty(property.Origin.Name).SetValue(newImageElement, value);
             }
 
-
-            foreach (vmXMLProperty configItem in this.conFigureList.Items)
+            xmlBookConfig newConfig = new xmlBookConfig();
+            foreach (vmXMLProperty config in this.conFigureList.Items)
             {
-                PropertyInfo pInfo = configItem.Origin;
-                if (pInfo == null) continue;
-
-                var value = configItem.ValuePanel.GetType().GetProperty("Value").GetValue(configItem.ValuePanel, null);
-                pInfo.SetValue(imageOption.Config, value);
+                var value = config.ValuePanel.GetType().GetProperty("Value").GetValue(config.ValuePanel, null);
+                newImageElement.Config.GetType().GetProperty(config.Origin.Name).SetValue(newImageElement.Config, value);
             }
 
-            this.Material.XMLSets.ImageElement = imageOption;
+            this.Material.XMLSets.ImageElement = newImageElement;
         }
 
-        private string ArrayValueSerialize(object value)
+
+        private void btn_SettingCompleted_Click(object sender, RoutedEventArgs e)
         {
-            string output = string.Empty;
-
-            string[] arrayValue = value as string[];
-            foreach (var item in arrayValue)
+            try
             {
-                output += item;
-                if (arrayValue.Last() != item) output += ",";
+                SetProperty();
             }
-
-            return output;
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
-
     }
 }

@@ -22,15 +22,16 @@ namespace MDM.Views.Controls.XMLProperyValues
     /// </summary>
     public partial class ucXMLPropValueAddableList : UserControl
     {
-        public string[] Value
+        public string Value
         {
             get
             {
-                string[] output = { };
+                string output = string.Empty;
 
                 foreach (ListBoxItem item in this.list.Items)
                 {
-                    output.Append(item.Uid);
+                    if (!string.IsNullOrEmpty(output)) output += ",";
+                    output += item.Uid;
                 }
 
                 return output;

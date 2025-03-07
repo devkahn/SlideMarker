@@ -16,7 +16,7 @@
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="400"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
@@ -93,6 +93,7 @@
                     <RadioButton Uid="225" Content="비순서 목록 속성 설정"/>
                     <RadioButton Uid="222" Content="그림 속성 설정"/>
                     <RadioButton Uid="223" Content="표 속성 설정"/>
+                    <RadioButton Uid="231" Content="노트 속성 설정"/>
                 </StackPanel>
             </StackPanel>
         </Grid>

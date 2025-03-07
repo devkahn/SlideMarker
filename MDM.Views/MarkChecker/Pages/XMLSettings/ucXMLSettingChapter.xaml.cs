@@ -71,34 +71,37 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
                 this.conFigureList.Items.Add(newProp);
             }
         }
-
         public void SetProperty()
         {
-            xmlChapter chapterOption = this.Material.XMLSets.Chapter;
+            xmlChapter newChapterElement = new xmlChapter();
 
-            foreach (vmXMLProperty propItem in this.propertyList.Items)
+            foreach (vmXMLProperty property in this.propertyList.Items)
             {
-                PropertyInfo pInfo = propItem.Origin;
-                if (pInfo == null) continue;
 
-                var value = propItem.ValuePanel.GetType().GetProperty("Value").GetValue(propItem.ValuePanel, null);
-                pInfo.SetValue(chapterOption, value);
+                var value = property.ValuePanel.GetType().GetProperty("Value").GetValue(property.ValuePanel, null);
+                newChapterElement.GetType().GetProperty(property.Origin.Name).SetValue(newChapterElement, value);
             }
 
-
-            foreach (vmXMLProperty configItem in this.conFigureList.Items)
+            xmlBookConfig newConfig = new xmlBookConfig();
+            foreach (vmXMLProperty config in this.conFigureList.Items)
             {
-                PropertyInfo pInfo = configItem.Origin;
-                if (pInfo == null) continue;
-
-                var value = configItem.ValuePanel.GetType().GetProperty("Value").GetValue(configItem.ValuePanel, null);
-                pInfo.SetValue(chapterOption.Config, value);
+                var value = config.ValuePanel.GetType().GetProperty("Value").GetValue(config.ValuePanel, null);
+                newChapterElement.Config.GetType().GetProperty(config.Origin.Name).SetValue(newChapterElement.Config, value);
             }
 
-            this.Material.XMLSets.Chapter = chapterOption;
+            this.Material.XMLSets.Chapter = newChapterElement;
         }
 
-
-        
+        private void btn_SettingCompleted_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SetProperty();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
     }
 }

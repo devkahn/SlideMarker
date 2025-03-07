@@ -89,29 +89,35 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
 
         public void SetProperty()
         {
-            xmlElement option = this.Material.XMLSets.Heading5Element;
+            xmlElement option = new xmlElement();
 
-            foreach (vmXMLProperty propItem in this.propertyList.Items)
+            foreach (vmXMLProperty property in this.propertyList.Items)
             {
 
-                PropertyInfo pInfo = propItem.Origin;
-                if (pInfo == null) continue;
-
-                var value = propItem.ValuePanel.GetType().GetProperty("Value").GetValue(propItem.ValuePanel, null);
-                pInfo.SetValue(option, value);
+                var value = property.ValuePanel.GetType().GetProperty("Value").GetValue(property.ValuePanel, null);
+                option.GetType().GetProperty(property.Origin.Name).SetValue(option, value);
             }
 
-
-            foreach (vmXMLProperty configItem in this.conFigureList.Items)
+            xmlBookConfig newConfig = new xmlBookConfig();
+            foreach (vmXMLProperty config in this.conFigureList.Items)
             {
-                PropertyInfo pInfo = configItem.Origin;
-                if (pInfo == null) continue;
-
-                var value = configItem.ValuePanel.GetType().GetProperty("Value").GetValue(configItem.ValuePanel, null);
-                pInfo.SetValue(option.Config, value);
+                var value = config.ValuePanel.GetType().GetProperty("Value").GetValue(config.ValuePanel, null);
+                option.Config.GetType().GetProperty(config.Origin.Name).SetValue(option.Config, value);
             }
 
             this.Material.XMLSets.Heading5Element = option;
+        }
+
+        private void btn_SettingCompleted_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SetProperty();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
     }
 }

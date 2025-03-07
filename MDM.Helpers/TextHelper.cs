@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -100,9 +101,22 @@ namespace MDM.Helpers
             string pattern = @"^!\[([^\]]+)\]\(([\w-]+)\.png\)";
             return Regex.Match(input, pattern);
         }
+        public static bool IsEnClosedNumbers(char input)
+        {
+            return '\u2460' <= input && input <= '\u2471';
+        }
         public static string GetImageFileNameFromMarkdown(string input)
         {
-            string pattern = @"\(([^)]+)\)";
+            string pattern = @"\(([^)]+)\)[^\(]*$";
+            Match match = Regex.Match(input, pattern);
+
+            if (match.Success) return match.Groups[1].Value; // 첫 번째 캡처 그룹
+
+            return null;
+        }
+        public static string GetImageTitleFromMarkdown(string input)
+        {
+            string pattern = @"\[(.*?)\]";
             Match match = Regex.Match(input, pattern);
 
             if (match.Success) return match.Groups[1].Value; // 첫 번째 캡처 그룹

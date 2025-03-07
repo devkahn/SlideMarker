@@ -80,28 +80,23 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
 
         public void SetProperty()
         {
-            xmlBook bookOption = this.Material.XMLSets.Book;
+            xmlBook newBookElement = new xmlBook();
 
-            foreach (vmXMLProperty propItem in this.propertyList.Items)
+            foreach (vmXMLProperty property in this.propertyList.Items)
             {
-                PropertyInfo pInfo = propItem.Origin;
-                if(pInfo == null) continue;
 
-                var value = propItem.ValuePanel.GetType().GetProperty("Value").GetValue(propItem.ValuePanel, null);
-                pInfo.SetValue(bookOption, value);
+                var value = property.ValuePanel.GetType().GetProperty("Value").GetValue(property.ValuePanel, null);
+                newBookElement.GetType().GetProperty(property.Origin.Name).SetValue(newBookElement, value);
             }
 
-
-            foreach (vmXMLProperty configItem in this.conFigureList.Items)
+            xmlBookConfig newConfig = new xmlBookConfig();
+            foreach (vmXMLProperty config in this.conFigureList.Items)
             {
-                PropertyInfo pInfo = configItem.Origin;
-                if (pInfo == null) continue;
-
-                var value = configItem.ValuePanel.GetType().GetProperty("Value").GetValue(configItem.ValuePanel, null);
-                pInfo.SetValue(bookOption.Config, value);
+                var value = config.ValuePanel.GetType().GetProperty("Value").GetValue(config.ValuePanel, null);
+                newBookElement.Config.GetType().GetProperty(config.Origin.Name).SetValue(newBookElement.Config, value);
             }
 
-            this.Material.XMLSets.Book = bookOption;
+            this.Material.XMLSets.Book = newBookElement;
         }
 
         private void propertyList_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -126,18 +121,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
         {
             try
             {
-                xmlBook newBookElement = new xmlBook();
-
-                foreach (vmXMLProperty property in this.propertyList.Items)
-                {
-                    
-                }
-
-                xmlBookConfig newConfig = new xmlBookConfig();
-                foreach (vmXMLConfigure config in this.conFigureList.Items)
-                {
-
-                }
+                SetProperty();
             }
             catch (Exception ee)
             {

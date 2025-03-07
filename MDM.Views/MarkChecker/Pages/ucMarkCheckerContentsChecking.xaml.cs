@@ -265,40 +265,105 @@ namespace MDM.Views.MarkChecker.Pages
         {
             try
             {
-                var selectedItems = this.listbox_unorderedText.SelectedItems;
-                for (int i = 0; i < selectedItems.Count; i++)
-                {
-                    vmContent item = selectedItems[i] as vmContent;
-                    if (item == null) continue;
-
-                    if (!this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Add(item);
-                    if (this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Remove(item);
-                }
+                Button btn = sender as Button;
+                if (btn == null) return;
+                string uid = btn.Uid;
                 
+                if (uid == "Normal")
+                {
+                    var selectedItems = this.listbox_normalText.SelectedItems;
+                    for (int i = 0; i < selectedItems.Count; i++)
+                    {
+                        vmContent item = selectedItems[i] as vmContent;
+                        if (item == null) continue;
+
+                        if (!this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Add(item);
+                        if (this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Remove(item);
+                    }
+                }
+                else if(uid == "Unorder")
+                {
+                    var selectedItems = this.listbox_unorderedText.SelectedItems;
+                    for (int i = 0; i < selectedItems.Count; i++)
+                    {
+                        vmContent item = selectedItems[i] as vmContent;
+                        if (item == null) continue;
+
+                        if (!this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Add(item);
+                        if (this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Remove(item);
+                    }
+                }
             }
             catch (Exception ee)
             {
                 ErrorHelper.ShowError(ee);
             }
         }
-
         private void btn_ToNormalList_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var selectedItems = this.listbox_unorderedText.SelectedItems;
-                for (int i = 0; i < selectedItems.Count; i++)
+                Button btn = sender as Button;
+                if (btn == null) return;
+                string uid = btn.Uid;
+                if (uid == "Order")
                 {
-                    vmContent item = selectedItems[i] as vmContent;
-                    if (item == null) continue;
+                    var selectedItems = this.listbox_orderedText.SelectedItems;
+                    for (int i = 0; i < selectedItems.Count; i++)
+                    {
+                        vmContent item = selectedItems[i] as vmContent;
+                        if (item == null) continue;
 
-                    if (!this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Add(item);
-                    if (this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Remove(item);
+                        if (!this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Add(item);
+                        if (this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Remove(item);
+                    }
+                }
+                else if( uid == "Unorder")
+                {
+                    var selectedItems = this.listbox_unorderedText.SelectedItems;
+                    for (int i = 0; i < selectedItems.Count; i++)
+                    {
+                        vmContent item = selectedItems[i] as vmContent;
+                        if (item == null) continue;
+
+                        if (!this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Add(item);
+                        if (this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Remove(item);
+                    }
                 }
             }
             catch (Exception ee)
             {
                 ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_ToUnorder_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn == null) return;
+            string uid = btn.Uid;
+            if (uid == "Normal")
+            {
+                var selectedItems = this.listbox_normalText.SelectedItems;
+                for (int i = 0; i < selectedItems.Count; i++)
+                {
+                    vmContent item = selectedItems[i] as vmContent;
+                    if (item == null) continue;
+
+                    if (!this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Add(item);
+                    if (this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Remove(item);
+                }
+            }
+            else if (uid == "Order")
+            {
+                var selectedItems = this.listbox_orderedText.SelectedItems;
+                for (int i = 0; i < selectedItems.Count; i++)
+                {
+                    vmContent item = selectedItems[i] as vmContent;
+                    if (item == null) continue;
+
+                    if (!this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Add(item);
+                    if (this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Remove(item);
+                }
             }
         }
 
@@ -539,7 +604,7 @@ namespace MDM.Views.MarkChecker.Pages
                     string[] lines = TextHelper.SplitText(content.Temp.Temp.LineText);
                     for (int i = 0; i < lines.Length; i++)
                     {
-                        string ln = lines[i];
+                        string ln = TextHelper.RemoveZeroWidthSpace(lines[i]);
                         if (TextHelper.IsNoText(ln)) continue;
 
                         tempDic.Add(i, ln);
@@ -564,11 +629,12 @@ namespace MDM.Views.MarkChecker.Pages
 
                         foreach (int key in tempDic.Keys.ToList())
                         {
-                            
-                            string ln = tempDic[key];
+                            string ln = TextHelper.RemoveZeroWidthSpace(tempDic[key]);
+
+                            if (TextHelper.IsNoText(ln)) continue;
                             if (ln.First() == '#' || ln.First() == '*') continue;
                             if (char.IsWhiteSpace(ln.First())) continue;
-                            if (TextHelper.IsNoText(ln)) continue;
+                            
 
                             string markingChar = string.Empty;
                             if (TextHelper.IsFirstNumericListMark(ln))
@@ -579,13 +645,14 @@ namespace MDM.Views.MarkChecker.Pages
                             else
                             {
                                 char first = ln.First();
-                                if(char.IsDigit(first))
+                                if(char.IsDigit(first) || TextHelper.IsEnClosedNumbers(first))
                                 {
+                                    if(TextHelper.IsEnClosedNumbers(first)) ln = ln.Substring(1);
                                     markingChar = "#";
                                 }
                                 else
                                 {
-                                    ln = ln.Substring(1);
+                                    if(!char.IsLetter(first)) ln = ln.Substring(1);
                                     markingChar = "*";
                                 }
                             }
@@ -734,5 +801,7 @@ namespace MDM.Views.MarkChecker.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
+
+
     }
 }

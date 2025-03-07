@@ -74,7 +74,7 @@
                     <DataGrid Grid.Row="1" x:Name="propertyList" >
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Width="35"/>
-                            <DataGridTemplateColumn >
+                            <DataGridTemplateColumn Width="auto">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5">
@@ -163,7 +163,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="설정 완료" Width="100"/>
+                    <Button Content="설정 완료" Width="100" Click="btn_SettingCompleted_Click"/>
                 </StackPanel>
             </Grid>
         </Border>

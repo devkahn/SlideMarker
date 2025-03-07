@@ -4,9 +4,11 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -70,14 +72,14 @@ namespace MDM.Views.MarkChecker.Pages
         {
             try
             {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
                 ImageList = new List<xmlImage>();
                 this.ucMarCheckerToXmlAllSetting.UpdaetOptions();
                 xmlSet option = this.Material.XMLSets;
-
-
                 
                 XmlDocument xmlDoc = new XmlDocument();
-
                 XmlDeclaration xmlDecl = xmlDoc.CreateXmlDeclaration("1.0", "UTF-8", null);
                 xmlDoc.AppendChild(xmlDecl);
 
@@ -112,7 +114,7 @@ namespace MDM.Views.MarkChecker.Pages
                 //string xmlString = ConvertToXML(bookElement);
                 #endregion
 
-                string folderName = DateTime.Now.ToString("yyyyMMddhhmmss");
+                string folderName = DateTime.Now.ToString("yyyyMMddHHmmss");
                 string folderPath = Path.Combine(this.Material.DirectoryPath, string.Format("{0}_{1}", "book", folderName));
                 if(!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
 
@@ -135,7 +137,7 @@ namespace MDM.Views.MarkChecker.Pages
                 foreach (xmlImage image in this.ImageList)
                 {
                     XmlElement imageElement = imageDoc.CreateElement("image");
-                    imageElement.SetAttribute("id", image.Name);
+                    imageElement.SetAttribute("id", image.FileName);
                     imagesElement.AppendChild(imageElement);    
 
                     XmlElement prorps = imageDoc.CreateElement("properties");
@@ -170,7 +172,7 @@ namespace MDM.Views.MarkChecker.Pages
                         prorps.AppendChild(xmlProp);
                     }
 
-                    string targetFileName = Path.Combine(imageFolderPath, image.Name);
+                    string targetFileName = Path.Combine(imageFolderPath, image.FileName);
                     File.Copy(image.FilePath, targetFileName);
                 }
 
@@ -178,6 +180,13 @@ namespace MDM.Views.MarkChecker.Pages
                 string imageTargetPath = Path.Combine(imageFolderPath, imageFileName);
                 using (StreamWriter writer = new StreamWriter(imageTargetPath, false, Encoding.UTF8)) imageDoc.Save(writer);
 
+                CheckBox cb = btn.Tag as CheckBox;
+                if (cb != null && cb.IsChecked.HasValue && cb.IsChecked.Value)
+                {
+                    string targetName = string.Format("{0}_{1}.zip", "book", folderName);
+                    string targetPath = Path.Combine(this.Material.DirectoryPath, targetName);
+                    ZipFile.CreateFromDirectory(folderPath, targetPath);
+                }
 
                 Debug.WriteLine("XML Export!!!!!!");
             }
@@ -187,24 +196,7 @@ namespace MDM.Views.MarkChecker.Pages
             }
         }
 
-        private void ReFiningXMLFile(string targetPath)
-        {
-            string xmlString = File.ReadAllText(targetPath);
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(xmlString);
 
-            var aa = doc.SelectNodes("//element/content/node()[1]");
-            foreach (XmlNode item in aa)
-            {
-
-                string cDataContent = item.Value;
-                cDataContent = cDataContent.Trim();
-                item.Value = cDataContent;
-                char last = cDataContent.Last();
-            }
-       
-   
-        }
 
         private void SetXmlElement(vmHeading heading, XmlDocument xmlDoc, XmlElement chapterElement, xmlSet option)
         {
@@ -248,21 +240,27 @@ namespace MDM.Views.MarkChecker.Pages
 
                 SetContentProperties(xmlDoc, contentElement, optionElement);
 
-                if (con.ContentType == Commons.Enum.eContentType.Image) SetImageElementOption(con, contentElement, optionElement);
+                xmlImage image = null;
+                if (con.ContentType == Commons.Enum.eContentType.Image) image = SetImageElementOption(con, contentElement, optionElement);
+                if (image != null) this.ImageList.Add(image);
 
                 //Config
                 {
                     XmlElement xmlProp = xmlDoc.CreateElement("property");
                     xmlProp.SetAttribute("name", "config");
                     xmlProp.SetAttribute("value", JsonHelper.ToJsonString(optionElement.Config));
-                     contentElement.GetElementsByTagName("prorperties")[0].AppendChild(xmlProp);
+                    contentElement.GetElementsByTagName("properties")[0].AppendChild(xmlProp);
                 }
 
                 XmlElement content = xmlDoc.CreateElement("content");
                 contentElement.AppendChild(content);
                 string contentString = TextHelper.RemoveZeroWidthSpace(con.Temp.Temp.LineText); //con.Temp.Temp.LineText.Remove((char)8203);
+                if (con.ContentType == Commons.Enum.eContentType.Image) contentString = image.FileName;
                 XmlCDataSection section = xmlDoc.CreateCDataSection(contentString);
                 content.AppendChild(section);
+
+
+     
             }
 
 
@@ -272,7 +270,7 @@ namespace MDM.Views.MarkChecker.Pages
             }
         }
 
-        private void SetImageElementOption(vmContent con, XmlElement imageElement , xmlElement optionElement)
+        private xmlImage SetImageElementOption(vmContent con, XmlElement imageElement , xmlElement optionElement)
         {
             string lineString = con.Temp.Temp.LineText;
             string fileName = TextHelper.GetImageFileNameFromMarkdown(lineString);
@@ -286,15 +284,17 @@ namespace MDM.Views.MarkChecker.Pages
 
                 optionElement.Config.Height = height;
                 optionElement.Config.Width = width;
+                optionElement.Config.Caption = string.IsNullOrEmpty(con.Temp.Temp.Title) ? TextHelper.GetImageTitleFromMarkdown(con.Temp.Temp.LineText) : con.Temp.Temp.Title;
             }
 
             xmlImage newImage = new xmlImage();
-            newImage.Name = imageElement.GetAttribute("id");
-            newImage.FileName = fileName;
+            newImage.Name = fileName;
+            newImage.FileName = XMLHelper.GenerateUUId(8);
             newImage.FilePath = imagePath;
             newImage.Size = new FileInfo(imagePath).Length;
 
-            ImageList.Add(newImage);
+            return newImage;
+
         }
 
         private void SetBasicProperty(XmlDocument rootDoc, XmlElement parentProps)
@@ -1007,6 +1007,11 @@ namespace MDM.Views.MarkChecker.Pages
 
                 
             }
+        }
+
+        private void btn_AllSetting_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

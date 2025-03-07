@@ -163,7 +163,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="설정 완료" Width="100"/>
+                    <Button Content="설정 완료" Width="100" Click="btn_SettingCompleted_Click"/>
                 </StackPanel>
             </Grid>
         </Border>

@@ -105,6 +105,7 @@
                 <Button Uid="20" Content="뒤 공백 제거" />
                 <Button Uid="0" Content="앞뒤 공백 제거"/>
                 <Button Uid="100" Content="모든 공백 제거"/>
+                <Button Uid="101" Content="한줄로"/>
             </StackPanel>
             <Border Height="2" Background="{StaticResource color_Gray2}" Margin="5"/>
             <StackPanel Style="{StaticResource subStyle_Fuction_StackPanel}">
