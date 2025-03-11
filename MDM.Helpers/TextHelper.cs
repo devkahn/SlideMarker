@@ -94,13 +94,63 @@ namespace MDM.Helpers
 
         public static bool IsNoText(string input)
         {
-            return string.IsNullOrEmpty(input) || string.IsNullOrWhiteSpace(input);
+            foreach (char c in input)
+            {
+                if (c == '\u200B') continue;
+                if (!char.IsWhiteSpace(c)) return false;
+            }
+
+            return true;
         }
         public static Match IsImageMarkdown(string input)
         {
             string pattern = @"^!\[([^\]]+)\]\(([\w-]+)\.png\)";
             return Regex.Match(input, pattern);
         }
+        public static bool IsTableMarkdownValid(string input)
+        {
+            string[] lines = SplitText(input);
+
+            // Divider가 있는지 여부?
+            string divider = lines.Where(x => IsTableDivider(x)).FirstOrDefault();
+            if (string.IsNullOrEmpty(divider)) return false;
+
+            int columnCnt = GetCellValueInRowString(divider.Replace("+", "|")).Length;
+            foreach (string ln in lines)
+            {
+                if (ln == divider) continue;
+                int cnt = GetCellValueInRowString(ln).Length;
+                if (columnCnt != cnt) return false;
+            }
+
+            return true;
+        }
+        public static bool IsTableDivider(string input)
+        {
+            string pattern = @"^(\|[-]+|\+[-]+)+\|$";
+            return Regex.IsMatch(RemoveEmtpy(input), pattern);
+        }
+        public static string[] GetCellValueInRowString(string input)
+        {
+            string[] parts = RemoveZeroWidthSpace(input).Split('|', (char)StringSplitOptions.RemoveEmptyEntries);
+            if(string.IsNullOrEmpty(parts.First())) parts = parts.Skip(1).ToArray();
+            if(string.IsNullOrEmpty(parts.Last())) parts = parts.Take(parts.Length - 1).ToArray();
+
+            return parts;
+        }
+        public static int GetRowHeaderCount(string divider)
+        {
+            int output = 0;
+
+            foreach (char c in divider)
+            {
+                if (c == '|') output++;
+                else if (c == '+') return output;
+            }
+
+            return 0;
+        }
+        
         public static bool IsEnClosedNumbers(char input)
         {
             return '\u2460' <= input && input <= '\u2471';

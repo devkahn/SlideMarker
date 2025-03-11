@@ -242,8 +242,35 @@ namespace MDM.Views.DataLabeling.Pages
         {
             try
             {
-                string text = this.txtbox_OriginText.Text;
-                this.txtbox_OriginText.Text = TextHelper.Preprocessing(text);
+                string output = string.Empty;
+                string[] lines = TextHelper.SplitText(this.txtbox_OriginText.Text);
+
+                char[] mark = { '-', '>', '*', '▷', '▣' };
+                foreach (string ln in lines)
+                {
+                    string newLine = ln;
+                    if (mark.Contains(newLine.First()))
+                    {
+                        newLine = newLine.Substring(1);
+                    }
+                    else if(newLine.StartsWith("\t"))
+                    {
+                        string indent = string.Empty;
+                        while (newLine.First() == '\t')
+                        {
+                            newLine = newLine.Substring(1);
+                            indent += "  ";
+                        }
+                        if (mark.Contains(newLine.First())) newLine = newLine.Substring(1);
+
+                        newLine = newLine.Insert(0, indent);
+                    }
+
+                    output += newLine;
+                    if (ln != lines.Last()) output += "\n";
+                }
+                this.txtbox_OriginText.Text = output;
+               
             }
             catch (Exception ee)
             {

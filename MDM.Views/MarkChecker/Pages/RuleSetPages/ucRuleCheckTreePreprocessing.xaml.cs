@@ -148,6 +148,11 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
                     parent.RemoveChild(selectedItem);
                 }
 
+                foreach (var item in this.Material.Headings)
+                {
+                    item.InitializeDisplay();
+                }
+
                 BindTree();
             }
             catch (Exception ee)

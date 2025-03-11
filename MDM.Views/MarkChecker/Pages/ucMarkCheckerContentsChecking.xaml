@@ -52,6 +52,7 @@
                             
                         </Style>
                     </StackPanel.Resources>
+                    <Button Content="새로고침" Click="btn_Refresh_Click" />
                     <Button Content="분류 시작" Click="btn_Classification_Click" />
                 </StackPanel>
             </Grid>
@@ -604,6 +605,122 @@
                         </StackPanel>
                     </StackPanel>
                 </TabItem.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="500"/>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <TabControl Grid.Column="0">
+                        <TabItem Header="일괄">
+                            <Grid>
+                                <Grid.Resources>
+                                    <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                                        <Setter Property="Margin" Value="5,3,5,3"/>
+                                    </Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Orientation" Value="Horizontal"></Setter>
+                                        <Setter Property="VerticalAlignment" Value="Top"/>
+                                        <Setter Property="Margin" Value="10,10,5,10"/>
+                                    </Style>
+                                    <Style x:Key="subStyle_SubTitle_Textblock" TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Foreground" Value="{StaticResource color_Black}"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="Margin" Value="5,5,20,5"/>
+                                    </Style>
+                                </Grid.Resources>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition MinHeight="35" Height="auto"/>
+                                    <RowDefinition MinHeight="35" Height="auto"/>
+                                    <RowDefinition MinHeight="35" Height="auto"/>
+                                    <RowDefinition MinHeight="35" Height="auto"/>
+                                    <RowDefinition MinHeight="35" Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="5,10,5,10">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="일괄 적용" Style="{StaticResource subStyle_SubTitle_Textblock}"/>
+                                </StackPanel>
+                                <WrapPanel Grid.Row="0" Grid.Column="1">
+                                    <Button Content="일괄 검토" HorizontalAlignment="Stretch" Click="btn_AllTableCheck_Click"/>
+                                </WrapPanel>
+                                <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="20" Background="{StaticResource color_Gray2}" Height="1"  VerticalAlignment="Bottom"/>
+
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="개별" IsEnabled="False"/>
+                    </TabControl>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource color_Primary}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="표 리스트 " Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="5"/>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource baseStyle_PanelTitle_Textblock}"/>
+                                    </StackPanel.Resources>
+                                    <TextBlock Text="("/>
+                                    <TextBlock Text="{Binding Items.Count, ElementName=listbox_ImageList}" Margin="3,0,3,0"/>
+                                    <TextBlock Text=")"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <ListBox Grid.Row="1" Grid.Column="0" x:Name="listbox_TableList">
+                            <ListBox.Resources>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Background" Value="{Binding Display_Background}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource color_Gray3}"/>
+                                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                    <Setter Property="Margin" Value="5,1,5,1"/>
+                                    <Setter Property="MinHeight" Value="40"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Grid>
+                                                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                                        <Grid>
+                                                            <Border Background="{TemplateBinding Background}" Opacity="0.3"/>
+                                                            <TextBlock Grid.Column="1" Text="{Binding Display_Content}" TextTrimming="WordEllipsis" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource color_Gray2}"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                            <Setter Property="BorderBrush" Value="{StaticResource color_Primary}"/>
+                                            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+
+                            </ListBox.Resources>
+                        </ListBox>
+                    </Grid>
+                    <Grid Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource color_Primary}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="미리보기 " Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="5"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                </Grid>
             </TabItem>
         </TabControl>
         

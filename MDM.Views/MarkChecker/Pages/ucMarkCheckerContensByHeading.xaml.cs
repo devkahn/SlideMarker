@@ -172,5 +172,18 @@ namespace MDM.Views.MarkChecker.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
+
+        private void btn_Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+                
+            }
+        }
     }
 }

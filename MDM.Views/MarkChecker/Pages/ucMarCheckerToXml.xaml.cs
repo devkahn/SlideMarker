@@ -176,7 +176,7 @@ namespace MDM.Views.MarkChecker.Pages
                     File.Copy(image.FilePath, targetFileName);
                 }
 
-                string imageFileName = string.Format("{0}.xml", "image");
+                string imageFileName = string.Format("{0}.xml", "images");
                 string imageTargetPath = Path.Combine(imageFolderPath, imageFileName);
                 using (StreamWriter writer = new StreamWriter(imageTargetPath, false, Encoding.UTF8)) imageDoc.Save(writer);
 

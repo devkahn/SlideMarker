@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using MDM.Commons.Enum;
 using MDM.Helpers;
 using MDM.Models.ViewModels;
+using Microsoft.Office.Interop.PowerPoint;
 
 namespace MDM.Views.MarkChecker.Pages
 {
@@ -71,6 +72,7 @@ namespace MDM.Views.MarkChecker.Pages
             this.listbox_unorderedText.ItemsSource = this.UnOrderedTextContentList;
 
             this.listbox_ImageList.ItemsSource = this.ImageContentList;
+            this.listbox_TableList.ItemsSource = this.TableCotnentList;
         }
 
         private void BindAllContents()
@@ -731,7 +733,7 @@ namespace MDM.Views.MarkChecker.Pages
                                 int total = 0;
                                 foreach (string item in temp.Values)
                                 {
-                                    if (string.IsNullOrEmpty(item)) continue;
+                                    if (TextHelper.IsNoText(item)) continue;
                                     char firstChar = item.First();
                                     if (char.IsWhiteSpace(firstChar)) firstChar = item[1];
                                     if (char.IsWhiteSpace(firstChar)) continue;
@@ -788,6 +790,9 @@ namespace MDM.Views.MarkChecker.Pages
                     string imagePath = Path.Combine(this.Material.DirectoryPath, fileName);
                     if(File.Exists(imagePath))
                     {
+
+
+
                         item.SetBackground(true);
                     }
                     else
@@ -802,6 +807,98 @@ namespace MDM.Views.MarkChecker.Pages
             }
         }
 
+        private void btn_AllTableCheck_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                foreach (vmContent item in this.TableCotnentList)
+                {
 
+                    string lineString = item.Temp.Temp.LineText;
+                    if (lineString.StartsWith("<table>")) continue;
+
+                    bool isValid = TextHelper.IsTableMarkdownValid(lineString);
+                    if(isValid)
+                    {
+                        string[] lines = TextHelper.SplitText(lineString);
+
+
+                        StringBuilder tableHtml = new StringBuilder();
+                        tableHtml.Append("<table>\n");
+                        tableHtml.Append("<thead>\n");
+
+                        int rowHeaderCnt = 0;
+                        bool isHeader = true;
+                        foreach (string ln in lines)
+                        {
+                            if(TextHelper.IsTableDivider(ln))
+                            {
+                                rowHeaderCnt = TextHelper.GetRowHeaderCount(ln);
+                                isHeader = false;
+                                tableHtml.Append("</thead>\n");
+                                tableHtml.Append("<tbody>\n");
+                            }
+                            else
+                            {
+                                tableHtml.Append("<tr>\n");
+                                string[] cells = TextHelper.GetCellValueInRowString(ln);
+                                if (isHeader)
+                                {
+                                    foreach (string cell in cells)
+                                    {
+                                        string cellHtml = string.Format("<th><div>{0}</div></th>", cell.Trim());
+                                        tableHtml.Append(cellHtml);
+                                    }
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < cells.Length; i++)
+                                    {
+                                        string cellType = i < rowHeaderCnt ? "th" : "td";
+                                        string cellHtml = string.Format("<{0}><div>{1}</div></{0}>", cellType, cells[i].Trim());
+                                        tableHtml.Append(cellHtml);
+                                    }
+                                }
+                                tableHtml.Append("</tr>\n");
+                            }
+                        }
+                        
+                        tableHtml.Append("</tbody>\n");
+                        tableHtml.Append("</table>");
+
+                        item.Temp.SetText(tableHtml.ToString());
+                        item.InitializeDisplay();
+                        item.SetBackground(true);
+                    }
+                    else
+                    {
+                        item.SetBackground(false);
+                    }
+
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+
+        private void btn_Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                foreach (var item in this.AllContentsList) item.InitializeDisplay();
+                foreach (var item in this.NormalTextContentList) item.InitializeDisplay();
+                foreach (var item in this.OrderedTextContentList) item.InitializeDisplay();
+                foreach (var item in this.UnOrderedTextContentList) item.InitializeDisplay();
+                foreach (var item in this.ImageContentList) item.InitializeDisplay();
+                foreach (var item in this.TableCotnentList) item.InitializeDisplay();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
     }
 }

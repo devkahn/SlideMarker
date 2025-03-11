@@ -47,6 +47,7 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="3,0,3,0">
                             <!--<Button Uid="1" x:Name="btn_AddRoot" Content="루트 추가" Click="btn_AddRoot_Click"/>
                             <Button Uid="0" x:Name="btn_AddChild" Content="하위 추가" Click="btn_AddChild_Click"/>-->
+                            <Button x:Name="btn_Refresh" Click="btn_Refresh_Click"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
