@@ -150,6 +150,7 @@ namespace MDM.Views.MarkChecker.Pages
                         case "1": uc = new ucRuleCheckTreePreprocessing(); break;
                         case "101": uc = new ucRuleCheckContentsSync(); break;
                         case "102": uc = new ucRuleCheckSameNameFinder(); break;
+                        case "998": uc = new ucRuleCheckHeaderProperty(); break;
                         case "999": uc = new ucRuleCheckUserModify(); break;
                         default: break;
                     }

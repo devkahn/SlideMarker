@@ -10,7 +10,7 @@ namespace MDM.Models.DataModels
     {
         public int MaterialIdx { get; set; } = -1;
 
-        
+        public int HeadintTypeCode { get; set; } = 0;
         public int Level { get; set; } = -1;
         public string Name { get; set; } = string.Empty;
 

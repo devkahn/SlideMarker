@@ -132,7 +132,7 @@ namespace MDM.Helpers
         }
         public static string[] GetCellValueInRowString(string input)
         {
-            string[] parts = RemoveZeroWidthSpace(input).Split('|', (char)StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = CleansingForXML(input).Split('|', (char)StringSplitOptions.RemoveEmptyEntries);
             if(string.IsNullOrEmpty(parts.First())) parts = parts.Skip(1).ToArray();
             if(string.IsNullOrEmpty(parts.Last())) parts = parts.Take(parts.Length - 1).ToArray();
 
@@ -240,6 +240,9 @@ namespace MDM.Helpers
             return output;
         }
 
+        private static bool IsCharZeroWidthSpace(this char c) => c == '\u200B';
+        private static bool IsCharHorizontalTab(this char c) => c == '\u000B';
+
         public static string RemoveZeroWidthSpace(string value)
         {
             string output = string.Empty;
@@ -247,10 +250,37 @@ namespace MDM.Helpers
             foreach (char c in value)
             {
                 //(char)8203
-                if (c == '\u200B')
-                {
-                    continue;
-                }
+                if (c.IsCharZeroWidthSpace()) continue;
+                
+                output += c;
+            }
+
+            return output;
+        }
+        public static string RemoveHorizontalTab(string value)
+        {
+            string output = string.Empty;
+
+            foreach (char c in value)
+            {
+                //(char)8203
+                if (c.IsCharHorizontalTab()) continue;
+                
+                output += c;
+            }
+
+            return output;
+        }
+
+        public static string CleansingForXML(string value)
+        {
+            string output = string.Empty;
+
+            foreach (char c in value)
+            {
+                if (c.IsCharZeroWidthSpace()) continue;
+                if (c.IsCharHorizontalTab()) continue;
+
                 output += c;
             }
 

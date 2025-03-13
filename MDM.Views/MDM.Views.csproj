@@ -165,6 +165,9 @@
     <Compile Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckContentsSync.xaml.cs">
       <DependentUpon>ucRuleCheckContentsSync.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckHeaderProperty.xaml.cs">
+      <DependentUpon>ucRuleCheckHeaderProperty.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckSameNameFinder.xaml.cs">
       <DependentUpon>ucRuleCheckSameNameFinder.xaml</DependentUpon>
     </Compile>
@@ -366,6 +369,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckContentsSync.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\RuleSetPages\ucRuleCheckHeaderProperty.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

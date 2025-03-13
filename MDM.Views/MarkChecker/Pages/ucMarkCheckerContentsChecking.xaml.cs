@@ -606,7 +606,7 @@ namespace MDM.Views.MarkChecker.Pages
                     string[] lines = TextHelper.SplitText(content.Temp.Temp.LineText);
                     for (int i = 0; i < lines.Length; i++)
                     {
-                        string ln = TextHelper.RemoveZeroWidthSpace(lines[i]);
+                        string ln = TextHelper.CleansingForXML(lines[i]);
                         if (TextHelper.IsNoText(ln)) continue;
 
                         tempDic.Add(i, ln);
@@ -631,7 +631,7 @@ namespace MDM.Views.MarkChecker.Pages
 
                         foreach (int key in tempDic.Keys.ToList())
                         {
-                            string ln = TextHelper.RemoveZeroWidthSpace(tempDic[key]);
+                            string ln = TextHelper.CleansingForXML(tempDic[key]);
 
                             if (TextHelper.IsNoText(ln)) continue;
                             if (ln.First() == '#' || ln.First() == '*') continue;

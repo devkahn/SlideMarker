@@ -219,7 +219,7 @@ namespace MDM.Views.MarkChecker.Pages
 
             XmlElement headling1Name = xmlDoc.CreateElement("content");
             headingElement.AppendChild(headling1Name);
-            string headingString = TextHelper.RemoveZeroWidthSpace(heading.Temp.Name);
+            string headingString = TextHelper.CleansingForXML(heading.Temp.Name);
             XmlCDataSection headingNameSection = xmlDoc.CreateCDataSection(headingString);
             headling1Name.AppendChild(headingNameSection);
 
@@ -254,7 +254,7 @@ namespace MDM.Views.MarkChecker.Pages
 
                 XmlElement content = xmlDoc.CreateElement("content");
                 contentElement.AppendChild(content);
-                string contentString = TextHelper.RemoveZeroWidthSpace(con.Temp.Temp.LineText); //con.Temp.Temp.LineText.Remove((char)8203);
+                string contentString = TextHelper.CleansingForXML(con.Temp.Temp.LineText); //con.Temp.Temp.LineText.Remove((char)8203);
                 if (con.ContentType == Commons.Enum.eContentType.Image) contentString = image.FileName;
                 XmlCDataSection section = xmlDoc.CreateCDataSection(contentString);
                 content.AppendChild(section);

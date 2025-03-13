@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using MDM.Commons.Enum;
 using MDM.Models.DataModels;
 
 namespace MDM.Models.ViewModels
@@ -16,7 +17,7 @@ namespace MDM.Models.ViewModels
 
         private bool _IsTreeExpanded = true;
         private object _Display_Name = null;
-
+        private eHeadingType _HeadingType = eHeadingType.Normal;
 
     }
 
@@ -48,6 +49,15 @@ namespace MDM.Models.ViewModels
         internal ObservableCollection<vmHeading> OriginChildren { get; set; }
         private ObservableCollection<vmContent> OriginContents { get; set; }
 
+        public eHeadingType HeadingType
+        {
+            get => _HeadingType;
+            private set
+            {
+                _HeadingType = value;
+                OnPropertyChanged(nameof(this.HeadingType));
+            }
+        }
 
         public bool IsTreeExpanded
         {
@@ -91,6 +101,7 @@ namespace MDM.Models.ViewModels
         }
         public override void InitializeDisplay()
         {
+            this.HeadingType = (eHeadingType)this.Temp.HeadintTypeCode;
             this.Display_Name = this.Temp.Name;
         }
         public void Move(bool toFoward, int gap = 1)
@@ -165,6 +176,11 @@ namespace MDM.Models.ViewModels
             }
             SetChildrenLevel();
         }
+        public void SetHeadintType(eHeadingType type)
+        {
+            this.HeadingType = type;
+            this.Temp.HeadintTypeCode = type.GetHashCode();
+        }
         public override object UpdateOriginData()
         {
             this.Origin.Children.Clear();
@@ -211,6 +227,7 @@ namespace MDM.Models.ViewModels
             this.Origin.MaterialIdx = this.Temp.MaterialIdx;
             this.Origin.ParentUid = this.Temp.ParentUid;
 
+            this.Origin.HeadintTypeCode = this.Temp.HeadintTypeCode;
             this.Origin.Level = this.Temp.Level;
             this.Origin.Name = this.Temp.Name;
             return this.Origin;

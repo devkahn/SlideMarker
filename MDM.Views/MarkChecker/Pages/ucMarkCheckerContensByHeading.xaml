@@ -159,6 +159,7 @@
                 <ListBoxItem Uid="1" Content="목차 전처리"/>
                 <ListBoxItem Uid="101" Content="목차 동기화 검토"/>
                 <ListBoxItem Uid="102" Content="동일 제목 검토"/>
+                <ListBoxItem Uid="998" Content="개별 수정"/>
                 <ListBoxItem Uid="999" Content="일괄 수정"/>
 
             </ListBox>

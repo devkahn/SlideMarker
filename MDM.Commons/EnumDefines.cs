@@ -64,6 +64,19 @@ namespace MDM.Commons.Enum
         Table = 223,
     }
 
+
+    public enum eHeadingType
+    {
+        [Description("-")]
+        NONE = -1,
+
+        [Description("일반")]
+        Normal = 0,
+
+        [Description("전문가 노트")]
+        ExportNote = 100,
+    }
+
     public enum ePageStatus
     {
         [Description("미완성")]
