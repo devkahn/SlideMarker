@@ -10,6 +10,7 @@ using System.Windows;
 using MDM.Commons.Enum;
 using MDM.Models.DataModels;
 using Microsoft.Office.Interop.PowerPoint;
+using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
 
 namespace MDM.Helpers
 {
@@ -165,31 +166,48 @@ namespace MDM.Helpers
             string rowText = string.Empty;
             foreach (DataRow item in dt.Rows)
             {
-                Dictionary<int, string> rowDic = new Dictionary<int, string>();
+                #region 이전 코드
+                //Dictionary<int, string> rowDic = new Dictionary<int, string>();
+                //int cNum = 1;
+                //foreach (var cell in item.ItemArray)
+                //{
+                //    string value = cell.ToString();
+                //    string[] lines = TextHelper.SplitText(value);
 
-                int cNum = 1;
+                //    for (int r = 0; r < lines.Count(); r++)
+                //    {
+                //        if (!rowDic.ContainsKey(r)) rowDic.Add(r, "|");
+                //        int barCount = rowDic[r].Count(x => x.Equals('|'));
+                //        for (int e = 0; e < (cNum) - barCount; e++) rowDic[r] += "\t|";
+
+                //        rowDic[r] += lines[r];
+                //        rowDic[r] += "|";
+                //    }
+
+                //    cNum++;
+                //}
+                //foreach (string rowstring in rowDic.Values)
+                //{
+                //    rowText += rowstring;
+                //    if (rowDic.Values.LastOrDefault() != rowstring) rowText += "\n";
+                //}
+                #endregion
+                rowText += "|";
                 foreach (var cell in item.ItemArray)
                 {
                     string value = cell.ToString();
+                    if (TextHelper.IsNoText(value)) value = "{NULL}";
                     string[] lines = TextHelper.SplitText(value);
 
+                    string cellString = string.Empty;
                     for (int r = 0; r < lines.Count(); r++)
                     {
-                        if (!rowDic.ContainsKey(r)) rowDic.Add(r, "|");
-                        int barCount = rowDic[r].Count(x => x.Equals('|'));
-                        for (int e = 0; e < (cNum) - barCount; e++) rowDic[r] += "\t|";
-
-                        rowDic[r] += lines[r];
-                        rowDic[r] += "|";
+                        cellString += lines[r];
+                        if(r != lines.Count() - 1) cellString += "\n";  
                     }
 
-                    cNum++;
-                }
-
-                foreach (string rowstring in rowDic.Values)
-                {
-                    rowText += rowstring;
-                    if (rowDic.Values.LastOrDefault() != rowstring) rowText += "\n";
+                    rowText += cellString;
+                    rowText += "\t|";
                 }
 
                 rowText += "\n";
@@ -208,6 +226,202 @@ namespace MDM.Helpers
 
             return newTable;
         }
+        public static mShape GetTableShapeInCludedMergeCell(Shape shape)
+        {
+            Table table = shape.Table;
+            mShape newTable = new mShape(eShapeType.Table);
+            PowerpointHelper.SetShapeBaseData(newTable, shape);
+            List<mCell> cells = new List<mCell>();
+
+            string tableString = string.Empty;
+            for (int row = 1; row <= table.Rows.Count; row++)
+            {
+                for (int col = 1; col < table.Columns.Count; col++)
+                {
+                    Cell currentCell = table.Cell(row, col);
+                    int columSpan = GetColumnSpan(currentCell, table, col);
+
+                    float cellHeight = currentCell.Shape.Height;
+                    int rowSpan = GetRowSpan(currentCell, table, row);
+
+                    string cellText = currentCell.Shape.TextFrame.TextRange.Text;
+
+
+                    
+                }
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            //Row row = table.Rows[1];
+            //for (int colH = 1; colH <= row.Cells.Count; colH++)
+            //{
+            //    string headerText = row.Cells[colH].Shape.TextFrame.TextRange.Text;
+            //    string columnHeader = string.Format("Col_{0}_{1}", colH.ToString("000"), headerText);
+            //    //columnHeader = headerText;
+            //    dt.Columns.Add(columnHeader);
+            //}
+            //for (int rowNum = 2; rowNum <= table.Rows.Count; rowNum++)
+            //{
+            //    DataRow addedRow = dt.NewRow();
+            //    for (int col = 1; col <= table.Columns.Count; col++)
+            //    {
+            //        string cellText = table.Rows[rowNum].Cells[col].Shape.TextFrame.TextRange.Text;
+            //        addedRow[col - 1] = cellText;
+            //    }
+            //    dt.Rows.Add(addedRow);
+            //}
+
+            //string tableString = string.Empty;
+
+            //string divText = "|";
+            //Dictionary<int, string> headerDic = new Dictionary<int, string>();
+            //for (int c = 0; c < dt.Columns.Count; c++)
+            //{
+            //    string value = dt.Columns[c].ColumnName.Substring(8);
+            //    string[] lines = TextHelper.SplitText(value);
+
+            //    for (int r = 0; r < lines.Count(); r++)
+            //    {
+            //        if (!headerDic.ContainsKey(r)) headerDic.Add(r, "|");
+            //        int barCount = headerDic[r].Count(x => x.Equals('|'));
+            //        for (int e = 0; e < (c) - barCount; e++) headerDic[r] += "\t|";
+
+            //        headerDic[r] += lines[r];
+            //        headerDic[r] += "|";
+            //    }
+
+            //    divText += " --- |";
+            //}
+
+            //foreach (string item in headerDic.Values)
+            //{
+            //    tableString += item;
+            //    tableString += "\n";
+            //}
+
+            //tableString += divText;
+            //tableString += "\n";
+
+
+            //string rowText = string.Empty;
+            //foreach (DataRow item in dt.Rows)
+            //{
+            //    #region 이전 코드
+            //    //Dictionary<int, string> rowDic = new Dictionary<int, string>();
+            //    //int cNum = 1;
+            //    //foreach (var cell in item.ItemArray)
+            //    //{
+            //    //    string value = cell.ToString();
+            //    //    string[] lines = TextHelper.SplitText(value);
+
+            //    //    for (int r = 0; r < lines.Count(); r++)
+            //    //    {
+            //    //        if (!rowDic.ContainsKey(r)) rowDic.Add(r, "|");
+            //    //        int barCount = rowDic[r].Count(x => x.Equals('|'));
+            //    //        for (int e = 0; e < (cNum) - barCount; e++) rowDic[r] += "\t|";
+
+            //    //        rowDic[r] += lines[r];
+            //    //        rowDic[r] += "|";
+            //    //    }
+
+            //    //    cNum++;
+            //    //}
+            //    //foreach (string rowstring in rowDic.Values)
+            //    //{
+            //    //    rowText += rowstring;
+            //    //    if (rowDic.Values.LastOrDefault() != rowstring) rowText += "\n";
+            //    //}
+            //    #endregion
+            //    rowText += "|";
+            //    foreach (var cell in item.ItemArray)
+            //    {
+            //        string value = cell.ToString();
+            //        if (TextHelper.IsNoText(value)) value = "{NULL}";
+            //        string[] lines = TextHelper.SplitText(value);
+
+            //        string cellString = string.Empty;
+            //        for (int r = 0; r < lines.Count(); r++)
+            //        {
+            //            cellString += lines[r];
+            //            if (r != lines.Count() - 1) cellString += "\n";
+            //        }
+
+            //        rowText += cellString;
+            //        rowText += "\t|";
+            //    }
+
+            //    rowText += "\n";
+            //}
+            //tableString += rowText;
+
+
+            //newTable.Text = tableString.Trim();
+            //newTable.DataTable = JsonHelper.ToJsonString(dt);
+
+            //mItem newItem = new mItem();
+            //newItem.Title = newTable.Title;
+            //newItem.LineText = newTable.Text;
+            //newItem.ItemType = newTable.ShapeType;
+            //newTable.Lines.Add(newItem);
+
+            return newTable;
+        }
+
+        private static int GetColumnSpan(Cell currentCell, Table table, int col)
+        {
+            int output = 1;
+
+            float cellWidth = currentCell.Shape.Width;
+            float columnWidth = table.Columns[col].Width;
+            while ( columnWidth < cellWidth)
+            {
+                columnWidth += table.Columns[col + output].Width;
+                output++;
+            }
+
+            return output;
+        }
+        private static int GetRowSpan(Cell currentCell, Table table, int row)
+        {
+            int output = 1;
+            float cellHeight = currentCell.Shape.Height;
+            float rowHeight = table.Rows[row].Height;
+            while (rowHeight < cellHeight)
+            {
+                rowHeight += table.Rows[row + output].Height;
+                output++;
+            }
+            return output;
+        }
+
+
         public static List<mShape> OrderByOriginPoint(this List<mShape> shapes)
         {
             List<mShape> output = shapes.OrderBy(x => x.Top).ThenBy(x => x.DistanceFromOrigin).ToList();
