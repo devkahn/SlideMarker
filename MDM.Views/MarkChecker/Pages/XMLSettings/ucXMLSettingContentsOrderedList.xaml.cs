@@ -68,7 +68,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
         }
         private void BindConFigureList()
         {
-            PropertyInfo[] pInfos = this.Material.XMLSets.OrderedListElement.Config.GetType().GetProperties();
+            PropertyInfo[] pInfos = new xmlOrderListConfig().GetType().GetProperties(); //this.Material.XMLSets.OrderedListElement.Config.GetType().GetProperties();
 
             this.conFigureList.Items.Clear();
             foreach (PropertyInfo pInfo in pInfos)
@@ -90,6 +90,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
         public void SetProperty()
         {
             xmlElement option = new xmlElement();
+            
 
             foreach (vmXMLProperty property in this.propertyList.Items)
             {
@@ -98,13 +99,14 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
                 option.GetType().GetProperty(property.Origin.Name).SetValue(option, value);
             }
 
-            xmlBookConfig newConfig = new xmlBookConfig();
+            xmlOrderListConfig newConfig = new xmlOrderListConfig();
             foreach (vmXMLProperty config in this.conFigureList.Items)
             {
                 var value = config.ValuePanel.GetType().GetProperty("Value").GetValue(config.ValuePanel, null);
-                option.Config.GetType().GetProperty(config.Origin.Name).SetValue(option.Config, value);
+                newConfig.GetType().GetProperty(config.Origin.Name).SetValue(newConfig, value);
             }
 
+            option.Config = newConfig;
             this.Material.XMLSets.OrderedListElement = option;
         }
 

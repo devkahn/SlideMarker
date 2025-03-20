@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
@@ -10,12 +11,14 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Documents.DocumentStructures;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -28,13 +31,21 @@ using Markdig;
 using Markdig.Helpers;
 using MDM.Helpers;
 using MDM.Models.Attributes;
+using MDM.Models.DataModels;
 using MDM.Models.DataModels.ManualWorksXMLs;
 using MDM.Models.ViewModels;
 using MDM.Views.MarkChecker.Pages.XMLSettings;
 using Microsoft.Office.Core;
+using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.PowerPoint;
 using OfficeOpenXml;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Windows.Forms.LinkLabel;
+using Button = System.Windows.Controls.Button;
+using CheckBox = System.Windows.Controls.CheckBox;
+using Clipboard = System.Windows.Clipboard;
 using Path = System.IO.Path;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace MDM.Views.MarkChecker.Pages
 {
@@ -203,78 +214,208 @@ namespace MDM.Views.MarkChecker.Pages
             XmlElement headingElement = xmlDoc.CreateElement("element");
             chapterElement.AppendChild(headingElement);
 
-            xmlElement headingOption = null;
-            switch (heading.Temp.Level)
+            if(heading.HeadingType == Commons.Enum.eHeadingType.ExportNote)
             {
-                case 1: headingOption = option.Heading1Element; break;
-                case 2: headingOption = option.Heading2Element; break;
-                case 3: headingOption = option.Heading3Element; break;
-                case 4: headingOption = option.Heading4Element; break;
-                case 5: headingOption = option.Heading5Element; break;
-                default: headingOption = option.TextElement; break;
-            }
-
-
-            SetHeadingProperties(xmlDoc, headingElement, headingOption);
-
-            XmlElement headling1Name = xmlDoc.CreateElement("content");
-            headingElement.AppendChild(headling1Name);
-            string headingString = TextHelper.CleansingForXML(heading.Temp.Name);
-            XmlCDataSection headingNameSection = xmlDoc.CreateCDataSection(headingString);
-            headling1Name.AppendChild(headingNameSection);
-
-            foreach (vmContent con in heading.Contents)
-            {
-                XmlElement contentElement = xmlDoc.CreateElement("element");
-                chapterElement.AppendChild(contentElement);
-                xmlElement optionElement = null;
-                switch (con.ContentType)
-                {
-                    case Commons.Enum.eContentType.NormalText: optionElement = option.TextElement; break;
-                    case Commons.Enum.eContentType.OrderList: optionElement = option.OrderedListElement; break;
-                    case Commons.Enum.eContentType.UnOrderList: optionElement = option.UnorderedListElement; break;
-                    case Commons.Enum.eContentType.Image: optionElement = option.ImageElement; break;
-                    case Commons.Enum.eContentType.Table: optionElement = option.TableElement; break;
-                    default: optionElement = option.TextElement; break;
-                }
-
-                SetContentProperties(xmlDoc, contentElement, optionElement);
-
-                xmlImage image = null;
-                if (con.ContentType == Commons.Enum.eContentType.Image) image = SetImageElementOption(con, contentElement, optionElement);
-                if (image != null) this.ImageList.Add(image);
+                SetContentProperties(xmlDoc, headingElement, option.NoteElement);
 
                 //Config
                 {
                     XmlElement xmlProp = xmlDoc.CreateElement("property");
                     xmlProp.SetAttribute("name", "config");
-                    xmlProp.SetAttribute("value", JsonHelper.ToJsonString(optionElement.Config));
-                    contentElement.GetElementsByTagName("properties")[0].AppendChild(xmlProp);
+                    xmlProp.SetAttribute("value", JsonHelper.ToJsonString(option.NoteElement.Config));
+                    headingElement.GetElementsByTagName("properties")[0].AppendChild(xmlProp);
                 }
 
                 XmlElement content = xmlDoc.CreateElement("content");
-                contentElement.AppendChild(content);
-                string contentString = TextHelper.CleansingForXML(con.Temp.Temp.LineText); //con.Temp.Temp.LineText.Remove((char)8203);
-                if (con.ContentType == Commons.Enum.eContentType.Image) contentString = image.FileName;
+                headingElement.AppendChild(content);
+                
+                string contentString = string.Format("<p><strong>{0}</strong></p>", heading.Temp.Name);
+
+                foreach (vmHeading subHeading in heading.Children)
+                {
+                    string output = "<div>";
+
+                    output += string.Format("<p>{0}</p>", subHeading.Temp.Name);
+                    foreach (vmContent subCon in subHeading.Contents)
+                    {
+                        string contentDiv = "<div>";
+                        switch (subCon.ContentType)
+                        {
+                            case Commons.Enum.eContentType.NormalText:
+                                contentDiv += string.Format("<p>{0}</P>", subCon.Temp.Temp.LineText);
+                                break;
+                            case Commons.Enum.eContentType.OrderList:
+                                contentDiv +=  ConvertListTextToHtml(subCon.Temp.Temp.LineText);
+                                break;
+                            case Commons.Enum.eContentType.UnOrderList:
+                                contentDiv += ConvertListTextToHtml(subCon.Temp.Temp.LineText);
+                                break;
+                            case Commons.Enum.eContentType.Image:
+                                xmlImage image = null;
+                                if (subCon.ContentType == Commons.Enum.eContentType.Image) image = SetImageElementOption(subCon, option.ImageElement);
+                                if (image != null) this.ImageList.Add(image);
+                                string img = string.Format("<img src=\"/r/image/get/{0}\" width=\"{1}\" height=\"{2}\"/>", image.FileName, image.Width >720? 720 : image.Width, "auto");
+                                contentDiv += img;
+                                break;
+                            case Commons.Enum.eContentType.Table:
+                                break;
+                            default:
+                                break;
+                        }
+                        contentDiv += "</div>";
+                        output += contentDiv;
+                    }
+
+                    output += "</div>";
+
+                    //contentString += "\n";
+                    contentString += output;
+                }
+
+                foreach (vmContent subCon in heading.Contents)
+                {
+                    string contentDiv = "<div>";
+                    switch (subCon.ContentType)
+                    {
+                        case Commons.Enum.eContentType.NormalText:
+                            contentDiv += string.Format("<p>{0}</P>", subCon.Temp.Temp.LineText);
+                            break;
+                        case Commons.Enum.eContentType.OrderList:
+                            contentDiv += ConvertListTextToHtml(subCon.Temp.Temp.LineText);
+                            break;
+                        case Commons.Enum.eContentType.UnOrderList:
+                            contentDiv += ConvertListTextToHtml(subCon.Temp.Temp.LineText);
+                            break;
+                        case Commons.Enum.eContentType.Image:
+                            string img = string.Format("<img src=\"/r/image/get/{0}\"/>", subCon.Temp.Temp.LineText);
+                            contentDiv += img;
+                            break;
+                        case Commons.Enum.eContentType.Table:
+                            break;
+                        default:
+                            break;
+                    }
+                    contentDiv += "</div>";
+                    contentString += contentDiv;
+                }
+
+
                 XmlCDataSection section = xmlDoc.CreateCDataSection(contentString);
                 content.AppendChild(section);
-
-
-     
             }
-
-
-            foreach (vmHeading item in heading.Children)
+            else
             {
-                SetXmlElement(item, xmlDoc, chapterElement, option);
+                xmlElement headingOption = null;
+                switch (heading.Temp.Level)
+                {
+                    case 1: headingOption = option.Heading1Element; break;
+                    case 2: headingOption = option.Heading2Element; break;
+                    case 3: headingOption = option.Heading3Element; break;
+                    case 4: headingOption = option.Heading4Element; break;
+                    case 5: headingOption = option.Heading5Element; break;
+                    default: headingOption = option.TextElement; break;
+                }
+
+
+                SetHeadingProperties(xmlDoc, headingElement, headingOption);
+
+                XmlElement headling1Name = xmlDoc.CreateElement("content");
+                headingElement.AppendChild(headling1Name);
+                string headingString = TextHelper.CleansingForXML(heading.Temp.Name);
+                XmlCDataSection headingNameSection = xmlDoc.CreateCDataSection(headingString);
+                headling1Name.AppendChild(headingNameSection);
+
+                foreach (vmContent con in heading.Contents)
+                {
+                    XmlElement contentElement = xmlDoc.CreateElement("element");
+                    chapterElement.AppendChild(contentElement);
+                    xmlElement optionElement = null;
+                    switch (con.ContentType)
+                    {
+                        case Commons.Enum.eContentType.NormalText: optionElement = option.TextElement; break;
+                        case Commons.Enum.eContentType.OrderList: optionElement = option.OrderedListElement; break;
+                        case Commons.Enum.eContentType.UnOrderList: optionElement = option.UnorderedListElement; break;
+                        case Commons.Enum.eContentType.Image: optionElement = option.ImageElement; break;
+                        case Commons.Enum.eContentType.Table: optionElement = option.TableElement; break;
+                        default: optionElement = option.TextElement; break;
+                    }
+
+                    SetContentProperties(xmlDoc, contentElement, optionElement);
+
+
+                    // image
+                    xmlImage image = null;
+                    if (con.ContentType == Commons.Enum.eContentType.Image) image = SetImageElementOption(con, optionElement);
+                    if (image != null) this.ImageList.Add(image);
+
+                    // table
+          
+
+                    //Config
+                    {
+                        XmlElement xmlProp = xmlDoc.CreateElement("property");
+                        xmlProp.SetAttribute("name", "config");
+                        xmlProp.SetAttribute("value", JsonHelper.ToJsonString(optionElement.Config));
+                        contentElement.GetElementsByTagName("properties")[0].AppendChild(xmlProp);
+                    }
+
+                    XmlElement content = xmlDoc.CreateElement("content");
+                    contentElement.AppendChild(content);
+                    string contentString = TextHelper.CleansingForXML(con.Temp.Temp.LineText); //con.Temp.Temp.LineText.Remove((char)8203);
+                    if (con.ContentType == Commons.Enum.eContentType.Image) contentString = image.FileName;
+                    if (con.ContentType == Commons.Enum.eContentType.Table)
+                    {
+                        string pattern = @"!\[\]\((.*?)\)";
+                        MatchCollection matches = Regex.Matches(contentString, pattern);
+
+                        foreach (Match match in matches)
+                        {
+                            string fileName = match.Groups[1].Value;
+                            string imagePath = Path.Combine(this.Material.DirectoryPath, fileName);
+                            xmlImage imgInTable = new xmlImage();
+
+                            using (Bitmap bitmap = new Bitmap(imagePath))
+                            {
+                                int width = bitmap.Width;   // 가로 크기
+                                int height = bitmap.Height; // 세로 크기
+
+                                imgInTable.Height = (option.ImageElement.Config as xmlImageConfig).Height = height;
+                                imgInTable.Width = (option.ImageElement.Config as xmlImageConfig).Width = width;
+                                (option.ImageElement.Config as xmlImageConfig).Caption = string.IsNullOrEmpty(con.Temp.Temp.Title) ? TextHelper.GetImageTitleFromMarkdown(con.Temp.Temp.LineText) : con.Temp.Temp.Title;
+                            }
+
+                            imgInTable.Name = fileName;
+                            imgInTable.FileName = XMLHelper.GenerateUUId(8);
+                            imgInTable.FilePath = imagePath;
+                            imgInTable.Size = new FileInfo(imagePath).Length;
+
+
+                            string imgHtml = string.Format("<img src=\"/r/image/get/{0}\" width=\"100%\" height=\"auto\"/>", imgInTable.FileName);
+                            contentString = contentString.Replace(match.Value, imgHtml);
+
+                            this.ImageList.Add(imgInTable);
+                        }
+                    }
+                    XmlCDataSection section = xmlDoc.CreateCDataSection(contentString);
+                    content.AppendChild(section);
+                }
+
+                foreach (vmHeading item in heading.Children)
+                {
+                    SetXmlElement(item, xmlDoc, chapterElement, option);
+                }
             }
+
+            
         }
 
-        private xmlImage SetImageElementOption(vmContent con, XmlElement imageElement , xmlElement optionElement)
+        private xmlImage SetImageElementOption(vmContent con, xmlElement optionElement)
         {
             string lineString = con.Temp.Temp.LineText;
             string fileName = TextHelper.GetImageFileNameFromMarkdown(lineString);
             if (!fileName.ToLower().EndsWith(".png")) fileName += ".png";
+
+            xmlImage newImage = new xmlImage();
 
             string imagePath = Path.Combine(this.Material.DirectoryPath, fileName);
             using (Bitmap bitmap = new Bitmap(imagePath))
@@ -282,16 +423,17 @@ namespace MDM.Views.MarkChecker.Pages
                 int width = bitmap.Width;   // 가로 크기
                 int height = bitmap.Height; // 세로 크기
 
-                optionElement.Config.Height = height;
-                optionElement.Config.Width = width;
-                optionElement.Config.Caption = string.IsNullOrEmpty(con.Temp.Temp.Title) ? TextHelper.GetImageTitleFromMarkdown(con.Temp.Temp.LineText) : con.Temp.Temp.Title;
+                newImage.Height = (optionElement.Config as xmlImageConfig).Height = height;
+                newImage.Width = (optionElement.Config as xmlImageConfig).Width = width;
+                (optionElement.Config as xmlImageConfig).Caption = string.IsNullOrEmpty(con.Temp.Temp.Title) ? TextHelper.GetImageTitleFromMarkdown(con.Temp.Temp.LineText) : con.Temp.Temp.Title;
             }
 
-            xmlImage newImage = new xmlImage();
+            
             newImage.Name = fileName;
             newImage.FileName = XMLHelper.GenerateUUId(8);
             newImage.FilePath = imagePath;
             newImage.Size = new FileInfo(imagePath).Length;
+           
 
             return newImage;
 
@@ -389,7 +531,6 @@ namespace MDM.Views.MarkChecker.Pages
 
             SetBasicProperty(rootDoc, props);
         }
-
         private void SetHeadingProperties(XmlDocument rootDoc, XmlElement element, xmlElement heading1Option)
         {
             string id = XMLHelper.GenerateUUId(8);
@@ -422,7 +563,6 @@ namespace MDM.Views.MarkChecker.Pages
 
             SetBasicProperty(rootDoc, props);
         }
-
         private void SetContentProperties(XmlDocument rootDoc, XmlElement element, xmlElement contentOption)
         {
             string id = XMLHelper.GenerateUUId(8);
@@ -450,33 +590,85 @@ namespace MDM.Views.MarkChecker.Pages
 
             SetBasicProperty(rootDoc, props);
         }
+        private void SetNoteContentProperties(XmlDocument rootDoc, XmlElement element, xmlElement noteOption)
+        {
+            string id = XMLHelper.GenerateUUId(8);
+            element.SetAttribute("id", id);
+            XmlElement props = rootDoc.CreateElement("properties");
+            element.AppendChild(props);
+
+
+            PropertyInfo[] pInfos = noteOption.GetType().GetProperties();
+            foreach (PropertyInfo p in pInfos)
+            {
+                xmlSubPropertyAttribute subPropAtt = p.GetCustomAttribute(typeof(xmlSubPropertyAttribute)) as xmlSubPropertyAttribute;
+                if (subPropAtt == null) continue;
+
+                var value = p.GetValue(noteOption, null);
+                string valueString = ConvertToString(value);//.ToLower();
+
+                XmlElement xmlProp = rootDoc.CreateElement("property");
+                xmlProp.SetAttribute("name", subPropAtt.Prorperty.Name);
+                xmlProp.SetAttribute("value", valueString);
+                props.AppendChild(xmlProp);
+            }
+
+
+
+            SetBasicProperty(rootDoc, props);
+        }
 
 
 
 
+        public string ConvertListTextToHtml(string input)
+        {
+            string[] lines = TextHelper.SplitText(input);
+
+            // Track the depth of ordered and unordered lists
+            int orderedListDepth = 0;
+            int unorderedListDepth = 0;
 
 
+            List<mListLine> listLines = new List<mListLine>();
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                mListLine newLine = new mListLine(line, i);
+                if (newLine.Depth == 1)
+                {
+                    listLines.Add(newLine);
+                }
+                else
+                {
+                    mListLine parentLine = listLines.Where(x => x.Depth < newLine.Depth).OrderBy(x => x.Num).LastOrDefault();
+                    if(parentLine != null)
+                    {
+                        parentLine.Children.Add(newLine);
+                    }
+                }
+            }
 
+            
+            string html  = GetHtmlList(listLines);
+            return html;
+        }
 
+        private string GetHtmlList(List<mListLine> listLines)
+        {
+            string html = string.Empty;
+            if (listLines == null || listLines.Count() == 0) return string.Empty;
 
+            html += listLines.First().IsOrderedList ? "<ol>" : "<ul>";
+            foreach (mListLine item in listLines)
+            {
+                html += $"<li>{item.LineString.Trim()}</li>";
+                html += GetHtmlList(item.Children);
+            }
+            html+= listLines.First().IsOrderedList ? "</ol>" : "</ul>";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            return html;
+        }
 
         private string ConvertTableStringToHTML(string lineText)
         {

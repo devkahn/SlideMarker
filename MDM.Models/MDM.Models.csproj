@@ -76,6 +76,7 @@
     <Compile Include="DataModels\mSlide.cs" />
     <Compile Include="DataModels\mItem.cs" />
     <Compile Include="Intefaces\IViewModel.cs" />
+    <Compile Include="DataModels\mListLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\vmContent.cs" />
     <Compile Include="ViewModels\vmHeading.cs" />

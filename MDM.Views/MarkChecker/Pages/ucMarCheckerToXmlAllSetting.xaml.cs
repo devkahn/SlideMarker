@@ -86,6 +86,8 @@ namespace MDM.Views.MarkChecker.Pages
                         case 223: page = new ucXMLSettingContentsTable(this.Material); break;
                         case 224: page = new ucXMLSettingContentsOrderedList(this.Material); break;
                         case 225: page = new ucXMLSettingContentsUnorderedList(this.Material); break;
+
+                        case 231: page = new ucXMLSettingContentsNote(this.Material); break;
                         default:
                             break;
                     }
@@ -120,6 +122,8 @@ namespace MDM.Views.MarkChecker.Pages
                     case 223: (this.SettingPages[code] as ucXMLSettingContentsTable).SetProperty(); break;
                     case 224: (this.SettingPages[code] as ucXMLSettingContentsOrderedList).SetProperty(); break;
                     case 225: (this.SettingPages[code] as ucXMLSettingContentsUnorderedList).SetProperty(); break;
+
+                    case 231: (this.SettingPages[code] as ucXMLSettingContentsNote).SetProperty(); break;
                     default:
                         break;
                 }

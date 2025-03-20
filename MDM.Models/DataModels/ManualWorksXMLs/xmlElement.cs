@@ -69,7 +69,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [DefaultValue(eXMLElementSectionView.NONE)]
         public eXMLElementSectionView SectionView { get; set; } = eXMLElementSectionView.NONE;
     }
-    public class xmlNormalTextConfig
+    public class xmlNormalTextConfig : xmlElementConfig
     {
         [xmlElementType(eXMLElementType.normal, eXMLElementType.note, eXMLElementType.tip, eXMLElementType.caution)]
         [JsonProperty("ignore_step_indent")]
@@ -86,7 +86,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [DefaultValue(true)]
         public bool IsRenumbered { get; set; } = true;
     }
-    public class xmlUnOrderListConfig
+    public class xmlUnOrderListConfig :xmlElementConfig
     { 
 
     }
@@ -95,8 +95,8 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlElementType(eXMLElementType.table)]
         [JsonProperty("table_layout")]
         [Description("표 레이아웃")]
-        [DefaultValue(eXMLElementTableLayout.auto)]
-        public eXMLElementTableLayout TableLayout { get; set; } = eXMLElementTableLayout.auto;
+        [DefaultValue(eXMLElementTableLayout.fix)]
+        public eXMLElementTableLayout TableLayout { get; set; } = eXMLElementTableLayout.fix;
 
         /// <summary>
         /// 쉼표로 구분하여 각 열의 너비를 설정합니다. 예) 30%, 200, ?
@@ -157,7 +157,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Description("PDF에서 페이지 전환에 따른 그림 크기 줄이지 않기")]
         public bool? CanPreventImageResize { get; set; } = false;
     }
-    public class xmlNoteCongif
+    public class xmlNoteCongif : xmlElementConfig
     {
         [xmlElementType(eXMLElementType.normal, eXMLElementType.note, eXMLElementType.tip, eXMLElementType.caution)]
         [JsonProperty("ignore_step_indent")]

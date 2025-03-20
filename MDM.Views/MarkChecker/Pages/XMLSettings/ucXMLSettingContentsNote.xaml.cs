@@ -23,13 +23,14 @@ using System.Windows.Shapes;
 namespace MDM.Views.MarkChecker.Pages.XMLSettings
 {
     /// <summary>
-    /// ucXMLSettingContentsUnorderedList.xaml에 대한 상호 작용 논리
+    /// ucXMLSettingContentsNote.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class ucXMLSettingContentsUnorderedList : UserControl
+    public partial class ucXMLSettingContentsNote : UserControl
     {
-        public eXMLElementType ContentType => eXMLElementType.unordered_list;
+        public eXMLElementType ContentType => eXMLElementType.note;
         public vmMaterial Material { get; set; }
-        public ucXMLSettingContentsUnorderedList(vmMaterial material)
+
+        public ucXMLSettingContentsNote(vmMaterial material)
         {
             this.Material = material;
             InitializeComponent();
@@ -39,7 +40,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
 
         private void BindPropertyList()
         {
-            PropertyInfo[] pInfos = this.Material.XMLSets.UnorderedListElement.GetType().GetProperties();
+            PropertyInfo[] pInfos = this.Material.XMLSets.NoteElement.GetType().GetProperties();
 
             this.propertyList.Items.Clear();
             foreach (PropertyInfo pInfo in pInfos)
@@ -67,7 +68,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
         }
         private void BindConFigureList()
         {
-            PropertyInfo[] pInfos = new xmlUnOrderListConfig().GetType().GetProperties();// this.Material.XMLSets.UnorderedListElement.Config.GetType().GetProperties();
+            PropertyInfo[] pInfos = new xmlNoteCongif().GetType().GetProperties(); //this.Material.XMLSets.OrderedListElement.Config.GetType().GetProperties();
 
             this.conFigureList.Items.Clear();
             foreach (PropertyInfo pInfo in pInfos)
@@ -89,7 +90,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
         public void SetProperty()
         {
             xmlElement option = new xmlElement();
-            
+
 
             foreach (vmXMLProperty property in this.propertyList.Items)
             {
@@ -98,15 +99,15 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
                 option.GetType().GetProperty(property.Origin.Name).SetValue(option, value);
             }
 
-            xmlUnOrderListConfig newConfig = new xmlUnOrderListConfig();
+            xmlNoteCongif newConfig = new xmlNoteCongif();
             foreach (vmXMLProperty config in this.conFigureList.Items)
             {
                 var value = config.ValuePanel.GetType().GetProperty("Value").GetValue(config.ValuePanel, null);
                 newConfig.GetType().GetProperty(config.Origin.Name).SetValue(newConfig, value);
             }
 
-            option.Config = new xmlUnOrderListConfig();
-            this.Material.XMLSets.UnorderedListElement = option;
+            option.Config = newConfig;
+            this.Material.XMLSets.NoteElement = option;
         }
 
         private void btn_SettingCompleted_Click(object sender, RoutedEventArgs e)

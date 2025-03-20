@@ -212,10 +212,13 @@ namespace MDM.Views.DataLabeling.Pages
                 string output = string.Empty;
                 foreach (string ln in lines)
                 {
-                    output += ln.Trim();
-                    output += "\n";
+                    string newLine = ln;
+                    if (char.IsWhiteSpace(ln.First())) newLine = newLine.Substring(1);
+
+                    output += newLine;
+                    if (ln != lines.Last()) output += "\n";
                 }
-                this.txtbox_OriginText.Text = output.Trim();
+                this.txtbox_OriginText.Text = output;
             }
             catch (Exception ee)
             {
@@ -249,6 +252,8 @@ namespace MDM.Views.DataLabeling.Pages
                 foreach (string ln in lines)
                 {
                     string newLine = ln;
+                    if (TextHelper.IsNoText(newLine)) continue;
+
                     if (mark.Contains(newLine.First()))
                     {
                         newLine = newLine.Substring(1);

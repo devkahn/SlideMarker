@@ -216,6 +216,9 @@
     <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingContentsImages.xaml.cs">
       <DependentUpon>ucXMLSettingContentsImages.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingContentsNote.xaml.cs">
+      <DependentUpon>ucXMLSettingContentsNote.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingContentsOrderedList.xaml.cs">
       <DependentUpon>ucXMLSettingContentsOrderedList.xaml</DependentUpon>
     </Compile>
@@ -437,6 +440,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingContentsImages.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingContentsNote.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -70,7 +70,8 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
         }
         private void BindConFigureList()
         {
-            PropertyInfo[] pInfos = this.Material.XMLSets.ImageElement.Config.GetType().GetProperties();
+            //PropertyInfo[] pInfos = this.Material.XMLSets.ImageElement.Config.GetType().GetProperties();
+            PropertyInfo[] pInfos = new xmlImageConfig().GetType().GetProperties();// this.Material.XMLSets.ImageElement.Config.GetType().GetProperties();
 
             this.conFigureList.Items.Clear();
             foreach (PropertyInfo pInfo in pInfos)
@@ -92,6 +93,7 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
         public void SetProperty()
         {
             xmlElement newImageElement = new xmlElement();
+            
 
             foreach (vmXMLProperty property in this.propertyList.Items)
             {
@@ -100,13 +102,14 @@ namespace MDM.Views.MarkChecker.Pages.XMLSettings
                 newImageElement.GetType().GetProperty(property.Origin.Name).SetValue(newImageElement, value);
             }
 
-            xmlBookConfig newConfig = new xmlBookConfig();
+            xmlImageConfig newConfig = new xmlImageConfig();
             foreach (vmXMLProperty config in this.conFigureList.Items)
             {
                 var value = config.ValuePanel.GetType().GetProperty("Value").GetValue(config.ValuePanel, null);
-                newImageElement.Config.GetType().GetProperty(config.Origin.Name).SetValue(newImageElement.Config, value);
+                newConfig.GetType().GetProperty(config.Origin.Name).SetValue(newConfig, value);
             }
 
+            newImageElement.Config = newConfig;
             this.Material.XMLSets.ImageElement = newImageElement;
         }
 

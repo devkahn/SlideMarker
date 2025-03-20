@@ -824,8 +824,8 @@ namespace MDM.Views.MarkChecker.Pages
 
 
                         StringBuilder tableHtml = new StringBuilder();
-                        tableHtml.Append("<table>\n");
-                        tableHtml.Append("<thead>\n");
+                        tableHtml.Append("<table>");
+                        tableHtml.Append("<thead>");
 
                         int rowHeaderCnt = 0;
                         bool isHeader = true;
@@ -835,12 +835,12 @@ namespace MDM.Views.MarkChecker.Pages
                             {
                                 rowHeaderCnt = TextHelper.GetRowHeaderCount(ln);
                                 isHeader = false;
-                                tableHtml.Append("</thead>\n");
-                                tableHtml.Append("<tbody>\n");
+                                tableHtml.Append("</thead>");
+                                tableHtml.Append("<tbody>");
                             }
                             else
                             {
-                                tableHtml.Append("<tr>\n");
+                                tableHtml.Append("<tr>");
                                 string[] cells = TextHelper.GetCellValueInRowString(ln);
                                 if (isHeader)
                                 {
@@ -854,16 +854,36 @@ namespace MDM.Views.MarkChecker.Pages
                                 {
                                     for (int i = 0; i < cells.Length; i++)
                                     {
+                                        string cellValue = cells[i];
+                                        if(cellValue.Contains("\\n")) cellValue = cellValue.Replace("\\n", "\n");
+                                        string[] cellLines = TextHelper.SplitText(cellValue);    
+                                        if(cellLines.Length != 1)
+                                        {
+                                            cellValue = "<ul>";
+
+                                            foreach (string cellLine in cellLines)
+                                            {
+                                                string lineValue = cellLine;
+                                                if(lineValue.First() == '-') lineValue = lineValue.Substring(1);
+                                                cellValue += string.Format("<li>{0}</li>", lineValue.Trim());
+                                            }
+
+
+                                            cellValue += "</ul>";
+                                        }
+
+
+
                                         string cellType = i < rowHeaderCnt ? "th" : "td";
-                                        string cellHtml = string.Format("<{0}><div>{1}</div></{0}>", cellType, cells[i].Trim());
+                                        string cellHtml = string.Format("<{0}><div>{1}</div></{0}>", cellType, cellValue.Trim());
                                         tableHtml.Append(cellHtml);
                                     }
                                 }
-                                tableHtml.Append("</tr>\n");
+                                tableHtml.Append("</tr>");
                             }
                         }
                         
-                        tableHtml.Append("</tbody>\n");
+                        tableHtml.Append("</tbody>");
                         tableHtml.Append("</table>");
 
                         item.Temp.SetText(tableHtml.ToString());

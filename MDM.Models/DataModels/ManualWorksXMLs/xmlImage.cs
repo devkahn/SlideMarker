@@ -29,6 +29,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Description("byte를 단위로 하는 파일 크기")]
         public long Size { get; set; }
 
+
         [XmlIgnore]
         [xmlSubProperty("content_type")]
         [Nullable(false)]
@@ -37,5 +38,8 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
 
         [XmlIgnore]
         public string FilePath { get; set; } = string.Empty;
+
+        public int Width { get; set; } = 0;
+        public int Height { get; set; } = 0;
     }
 }
