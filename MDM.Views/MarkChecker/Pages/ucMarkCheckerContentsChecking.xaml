@@ -126,7 +126,26 @@
                 </Grid>
             </Grid>
         </Grid>
-        <TabControl Grid.Column="2">
+
+        <TabControl Grid.Column="2" Visibility="Visible">
+            <TabItem Header="글">
+                <Grid>
+                    <local:ucMarkCheckerContentsCheckingText x:Name="ucMarkCheckerCheckingText"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="이미지">
+                <local:ucMarkCheckerContentsCheckingImage x:Name="ucMarkCheckerCheckingImage"/>
+            </TabItem>
+            <TabItem Header="표">
+                <local:ucMarkCheckerContentsCheckingTable x:Name="ucmarkcheckerCheckingTable"/>
+            </TabItem>
+        </TabControl>
+        
+        
+        
+        
+        
+        <TabControl Grid.Column="2" Visibility="Collapsed">
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">

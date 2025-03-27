@@ -119,6 +119,7 @@ namespace MDM.Helpers
             foreach (string ln in lines)
             {
                 if (ln == divider) continue;
+                if (IsNoText(ln)) continue;
                 int cnt = GetCellValueInRowString(ln).Length;
                 if (columnCnt != cnt) return false;
             }

@@ -35,6 +35,12 @@ namespace MDM.Views.MarkChecker.Pages
                 _Material = value;
                 this.DataContext = value;
 
+
+                this.ucMarkCheckerCheckingText.Material = value;
+                this.ucMarkCheckerCheckingImage.Material = value;
+                this.ucmarkcheckerCheckingTable.Material = value;
+
+
                 this.AllContentsList.Clear();
                 this.NormalTextContentList.Clear();
                 this.OrderedTextContentList.Clear();
@@ -549,7 +555,19 @@ namespace MDM.Views.MarkChecker.Pages
                     while (hasNoMark)
                     {
                         cnt++;
-                        bool hasTarget = tempDic.Values.Any(x => x.First() != '*' && !char.IsWhiteSpace(x.First())); 
+                        bool hasTarget = true;
+                        foreach (string ln in tempDic.Values)
+                        {
+                            string line = TextHelper.RemoveZeroWidthSpace(ln);
+                            if (line.First() == '*') continue;
+
+                            if(char.IsWhiteSpace(line.First()))
+                            {
+                                hasTarget = false;
+                                break;
+                            }
+                        }
+
                         while(!hasTarget)
                         {
                             foreach (int key in tempDic.Keys.ToList())
@@ -557,7 +575,19 @@ namespace MDM.Views.MarkChecker.Pages
                                 string ln = tempDic[key];
                                 if(char.IsWhiteSpace(ln.First())) tempDic[key] = ln.Substring(1);
                             }
-                            hasTarget = tempDic.Values.Any(x => x.First() != '*' && !char.IsWhiteSpace(x.First()));
+                            //hasTarget = tempDic.Values.Any(x => x.First() != '*' && !char.IsWhiteSpace(x.First()));
+                            hasTarget = true;
+                            foreach (string ln in tempDic.Values)
+                            {
+                                string line = TextHelper.RemoveZeroWidthSpace(ln);
+                                if (line.First() == '*') continue;
+
+                                if (char.IsWhiteSpace(line.First()))
+                                {
+                                    hasTarget = false;
+                                    break;
+                                }
+                            }
                         }
 
                         foreach (int key in tempDic.Keys.ToList())
@@ -831,6 +861,8 @@ namespace MDM.Views.MarkChecker.Pages
                         bool isHeader = true;
                         foreach (string ln in lines)
                         {
+                            if (TextHelper.IsNoText(ln)) continue;
+
                             if(TextHelper.IsTableDivider(ln))
                             {
                                 rowHeaderCnt = TextHelper.GetRowHeaderCount(ln);

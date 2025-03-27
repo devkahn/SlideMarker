@@ -46,6 +46,9 @@ namespace MDM.Models.ViewModels
         private object _Display_Message = null;
 
 
+        private string _Temp_Content = string.Empty;
+
+
     }
     public partial class vmContent :vmViewModelbase
     {
@@ -221,6 +224,16 @@ namespace MDM.Models.ViewModels
             }
         }
 
+        public string Temp_Content
+        {
+            get => _Temp_Content;
+            set
+            {
+                _Temp_Content = value;
+                OnPropertyChanged(nameof(this.Temp_Content));
+            }
+        }
+
         public object Display_SlideNum
         {
             get => _Display_SlideNum;
@@ -276,6 +289,7 @@ namespace MDM.Models.ViewModels
 
             this.Display_ContentType = this.Temp.ItemType.ToString();
             this.Display_Content = this.Temp.Display_Text;
+            this.Temp_Content = this.Temp.Display_Text.ToString();
         }
         public override void SetInitialData()
         {
@@ -314,6 +328,21 @@ namespace MDM.Models.ViewModels
             {
                 this.Display_Background = Brushes.White;
             }
+        }
+        public void SetNewContent()
+        {
+            this.Temp.SetText(this.Temp_Content);
+            InitializeDisplay();
+        }
+        public void SetNewContent(string newContent)
+        {
+            this.Temp.SetText(newContent);
+            InitializeDisplay();
+        }
+        public void SetContentType(eContentType type)
+        {
+            this.ContentType = type;
+            OnPropertyChanged(nameof(this.ContentType));
         }
         public override object UpdateOriginData()
         {

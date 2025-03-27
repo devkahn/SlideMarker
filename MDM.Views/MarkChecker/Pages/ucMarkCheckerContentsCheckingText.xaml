@@ -15,34 +15,491 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Background="{StaticResource color_Gray1}">
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Border Background="{StaticResource color_White}" BorderBrush="{StaticResource color_Gray4}" BorderThickness="1" Margin="5,0,5,5">
-            <TextBlock Text="{Binding Display_Content}" TextTrimming="WordEllipsis" Background="{StaticResource color_White}" Margin="5"/>
-        </Border>
-        <Grid Grid.Row="1">
-            <Grid.Resources>
-                <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}"/>
-            </Grid.Resources>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="35"/>
+                <RowDefinition Height=" 35"/>
+                <RowDefinition />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="10">
+            <Border Grid.Row="0" Background="{StaticResource color_Primary2}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <TextBlock Grid.Column="0" Text="글 리스트" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="10,0,10,0" HorizontalAlignment="Left"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource baseStyle_PanelTitle_Textblock}"/>
+                            </StackPanel.Resources>
+                            <TextBlock Text="("/>
+                            <TextBlock Text="{Binding Items.Count, ElementName=listbox_headers}" Margin="3,0,3,0"/>
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedItems.Count, ElementName=listbox_headers}" Value="0">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <TextBlock Text=" ," />
+                                <TextBlock Text="선택 : " Margin="3,0,3,0" Foreground="{StaticResource color_Yellow}"/>
+                                <TextBlock Text="{Binding SelectedItems.Count, ElementName=listbox_headers}" Foreground="{StaticResource color_Yellow}"/>
+                            </StackPanel>
+                            <TextBlock Text=")"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+
+                <Grid Grid.Row="0">
+                    <Grid.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}"/>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition MinHeight="35"/>
+                        <RowDefinition MinHeight="35"/>
+                        <RowDefinition MinHeight="35"/>
+                    </Grid.RowDefinitions>
+                    
+                    
+                    <Border Grid.Row="0" BorderBrush="{StaticResource color_Gray2}" BorderThickness="0,0,0,2" Margin="3,2,3,2">
+                        <Grid Grid.Row="2" Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="검색어 :" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" x:Name="txtbox_SearchKeyword" Margin="5,0,5,0" KeyUp="txtbox_SearchKeyword_KeyUp">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <Button Grid.Column="2" Uid="byKeyword" Content="검색" Click="btn_Search_Click"/>
+                        </Grid>
+                    </Border>
+                    <Border Grid.Row="1" BorderBrush="{StaticResource color_Gray2}" BorderThickness="0,0,0,2" Margin="3,2,3,2">
+                        <Grid  Margin="5,1,5,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                            <RadioButton Grid.Column="0" GroupName="textType" x:Name="rBtn_All" Uid="0"    Content="전체" Style="{StaticResource baseStyle_LeftEnd_RadioButton}" Checked="RadioButton_Checked"/>
+                            <RadioButton Grid.Column="1" GroupName="textType" Uid="2211" Content="단일" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="RadioButton_Checked"/>
+                            <RadioButton Grid.Column="2" GroupName="textType" Uid="2212" Content="순서" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="RadioButton_Checked"/>
+                            <RadioButton Grid.Column="3" GroupName="textType" Uid="2213" Content="비 순서" Style="{StaticResource baseStyle_RightEnd_RadioButton}" Checked="RadioButton_Checked"/>
+
+                            <Grid Grid.Column="4" Margin="20,0,5,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Page : " Style="{StaticResource baseStyle_PanelTitle_Textblock}" Foreground="Black"/>
+                                <ComboBox Grid.Column="1" x:Name="combo_Page" SelectionChanged="combo_Page_SelectionChanged">
+                                    <ComboBox.Style>
+                                        <Style TargetType="ComboBox">
+                                            <Setter Property="Background" Value="white"/>
+                                            <Setter Property="IsReadOnly" Value="False"/>
+                                            <Setter Property="IsTextSearchEnabled" Value="True"/>
+                                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        </Style>
+                                    </ComboBox.Style>
+                                </ComboBox>
+                            </Grid>
+                            
+                            
+                        </Grid>
+                    </Border>
+
+
+                    <Border Grid.Row="2" BorderBrush="{StaticResource color_Gray2}" BorderThickness="0,0,0,2" Margin="3,2,3,2">
+                        <Grid Grid.Row="0" Margin="5">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <Button Uid="1" Content="전체 선택" Click="btn_AllSelect_Click"/>
+                                <Button Uid="0" Content="전체 해제" Click="btn_AllSelect_Click" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+                <ListBox Grid.Row="1" x:Name="listbox_headers"  Visibility="Visible">
+                    <ListBox.Style>
+                        <Style TargetType="ListBox">
+                            <Setter Property="SelectionMode" Value="Multiple"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                        </Style>
+                    </ListBox.Style>
+                    <ListBox.Resources>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="MinHeight" Value="35"/>
+                            <Setter Property="MaxHeight" Value="65"/>
+                            <Setter Property="Margin" Value="0,2,0,3"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="35"/>
+                                                <ColumnDefinition Width="35"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Grid.ColumnSpan="10" x:Name="bg" Opacity="0.2"/>
+                                            <CheckBox Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{TemplateBinding IsSelected}"/>
+                                            <Border Grid.Column="0" Background="{StaticResource color_White}" Opacity="0.001"/>
+                                            <Border Grid.Column="1" BorderBrush="{StaticResource color_Gray2}" BorderThickness="1,0,1,0" Margin="0,3,0,3">
+                                                <TextBlock Grid.Column="1" Text="{Binding Display_SlideNum}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock Grid.Column="2" Text="{Binding Display_Content}"  HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="10,2,10,3"/>
+                                            <Border Grid.Column="0" Grid.ColumnSpan="10" BorderBrush="{StaticResource color_Gray2}" BorderThickness="0,0,0,1" VerticalAlignment="Bottom"/>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="bg" Property="Background" Value="SkyBlue"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.Resources>
+
+                </ListBox>
+                <Grid Grid.Row="2" Height="35">
+                    <Grid.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                            <Setter Property="Margin" Value="3,5,3,5"/>
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Button Content="검토" Click="btn_ConvertToXML_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+
+
+        </Grid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height=" 35"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="{StaticResource color_Primary5}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="10,0,10,0">
+                        <StackPanel.Resources>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource baseStyle_PanelTitle_Textblock}">
+
+                            </Style>
+                        </StackPanel.Resources>
+                        <TextBlock Text="["/>
+                        <TextBlock Text="{Binding SelectedItem.Display_Contents, ElementName=listbox_headers}" Margin="3,0,3,0" Foreground="{StaticResource color_Yellow}" MaxWidth="150" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Text="]"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,3,3,0">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedItems.Count, ElementName=listbox_headers}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource baseStyle_PanelTitle_Textblock}">
+                                    <Setter Property="FontSize" Value="13"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <TextBlock Text=" 등"/>
+                            <TextBlock Text="{Binding SelectedItems.Count, ElementName=listbox_headers}" Margin="3,0,3,0" Foreground="{StaticResource color_Yellow}"/>
+                            <TextBlock Text="개 항목"/>
+                        </StackPanel>
+
+                        <TextBlock Grid.Column="0" Text="수정하기" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1" >
+                <Grid.Resources>
+                    <Style x:Key="subStyle_Title_Textlbock" TargetType="TextBlock">
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                        <Setter Property="VerticalAlignment" Value="top"/>
+                        <Setter Property="Margin" Value="10"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                    </Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                        <Setter Property="Margin" Value="5"/>
+                        <Setter Property="MinHeight" Value="40"/>
+                        <Setter Property="MaxHeight" Value="80"/>
+                        <Setter Property="MaxWidth" Value="{Binding Width, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=ListBox}}"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource color_Gray2}"/>
+                        <Setter Property="AcceptsTab" Value="True"/>
+                        <Setter Property="AcceptsReturn" Value="True"/>
+                        <!--<Setter Property="TextWrapping" Value="Wrap"/>-->
+                        <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+                    </Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                        <Setter Property="Margin" Value="0,0,5,0"/>
+                    </Style>
+                </Grid.Resources>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="순서"/>
-                <Button Grid.Column="1" Content="비순서"/>
-                <Button Grid.Column="2" Content="일반"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition MinHeight="35" Height="auto"/>
+                    <RowDefinition MinHeight="35"/>
+                </Grid.RowDefinitions>
+
+
+                <TextBlock Grid.Row="0" Grid.Column="0"  Text="도구" Style="{StaticResource subStyle_Title_Textlbock}"/>
+                <Border Grid.Row="0" Grid.Column="1" >
+                    <StackPanel VerticalAlignment="Top">
+                        <StackPanel MinHeight="35" Orientation="Horizontal">
+                            <TextBlock Grid.Row="0" Grid.Column="0"  Text="줄 설정" Style="{StaticResource subStyle_Title_Textlbock}"/>
+                            <WrapPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="5">
+                                <Button Uid="toOne" Content="한줄로" Click="btn_LineControl_Click"/>
+                                <Button Uid="removeEmpty" Content="빈 줄 제거" Click="btn_LineControl_Click"/>
+                            </WrapPanel>
+                        </StackPanel>
+                        <StackPanel MinHeight="35" Orientation="Horizontal">
+                            <TextBlock Grid.Row="0" Grid.Column="0"  Text="공백 설정" Style="{StaticResource subStyle_Title_Textlbock}"/>
+                            <WrapPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="5">
+                                <Button Uid="start" Content="앞 공백 제거" Click="btn_RemovewEmpty_Click"/>
+                                <Button Uid="end" Content="뒤 공백 제거"  Click="btn_RemovewEmpty_Click"/>
+                                <Button Uid="startend" Content="앞,뒤 공백 제거"  Click="btn_RemovewEmpty_Click"/>
+                                <Button Uid="all" Content="모든 공백 제거"  Click="btn_RemovewEmpty_Click"/>
+                            </WrapPanel>
+                        </StackPanel>
+                        <StackPanel MinHeight="35" Orientation="Horizontal">
+                            <TextBlock Grid.Row="0" Grid.Column="0"  Text="글자 제거" Style="{StaticResource subStyle_Title_Textlbock}"/>
+                            <WrapPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="5">
+                                <Button Content="첫 글자 제거" Click="btn_RemoveFirst_Click"/>
+                                <Button Content="끝 글자 제거" Click="btn_RemoveLast_Click"/>
+                                <StackPanel Orientation="Horizontal" Margin="20,0,10,0" Height="30">
+                                    <TextBlock Text="키워드 제거" VerticalAlignment="Center"/>
+                                    <TextBox x:Name="txtbox_RemoveKeyword" Width="200" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                                    <Button Content="제거" Click="btn_KeywordRemove_Click"/>
+                                </StackPanel>
+
+                            </WrapPanel>
+                        </StackPanel>
+                        <StackPanel MinHeight="35" Orientation="Horizontal">
+                            <TextBlock Grid.Row="0" Grid.Column="0"  Text="글머리 설정" Style="{StaticResource subStyle_Title_Textlbock}"/>
+                            <WrapPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="5">
+                                <Button Content="글 머리 달기" Click="btn_AddMark_Click"/>
+                                <Button Content="글 머리 제거" Click="btn_RemoveMark_Click"/>
+                            </WrapPanel>
+                        </StackPanel>
+                        <StackPanel MinHeight="35" Orientation="Horizontal">
+                            <TextBlock Grid.Row="0" Grid.Column="0"  Text="글 유형 설정" Style="{StaticResource subStyle_Title_Textlbock}"/>
+                            <WrapPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="5">
+                                <RadioButton GroupName="textType" Uid="2211" Content="단일" Style="{StaticResource baseStyle_LeftEnd_RadioButton}" Checked="rBtn_SelectType"/>
+                                <RadioButton GroupName="textType" Uid='2212' Content="순서" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="rBtn_SelectType"/>
+                                <RadioButton GroupName="textType" Uid="2213" Content="비 순서" Style="{StaticResource baseStyle_RightEnd_RadioButton}" Checked="rBtn_SelectType"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10"  Height="1" Background="{StaticResource color_Gray1}" VerticalAlignment="Bottom"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0"  Text="선택" Style="{StaticResource subStyle_Title_Textlbock}"/>
+                <Border Grid.Row="1" Grid.Column="1" >
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="35"/>
+                        </Grid.RowDefinitions>
+
+                        <ListBox ItemsSource="{Binding SelectedItems, ElementName=listbox_headers}">
+                            <ListBox.Style>
+                                <Style TargetType="ListBox">
+                                    <Setter Property="BorderBrush" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="auto"/>
+                                </Style>
+                            </ListBox.Style>
+                            <ListBox.Resources>
+                                <Style TargetType="ListBoxItem">
+                                    <!--<Setter Property="HorizontalAlignment" Value="Left"/>-->
+                                    <Setter Property="MaxWidth" Value="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=ListBox}}" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Grid MaxWidth="{TemplateBinding MaxWidth}">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="45"/>
+                                                        <ColumnDefinition Width="130"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0" Margin="10" Text="{Binding Display_SlideNum}" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10" HorizontalAlignment="Center" Height="25">
+                                                        <RadioButton GroupName="{Binding Temp.Temp.Uid}" Uid="2211" Content="단일" Checked="RadioButton_Single_Checked">
+                                                            <RadioButton.Style>
+                                                                <Style TargetType="RadioButton" BasedOn="{StaticResource baseStyle_LeftEnd_RadioButton}">
+                                                                    <Setter Property="IsChecked" Value="False"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding ContentType}" Value="NormalText">
+                                                                            <Setter Property="IsChecked" Value="True"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </RadioButton.Style>
+                                                        </RadioButton>
+                                                        <RadioButton GroupName="{Binding Temp.Temp.Uid}" Uid="2212" Content="순서"  Checked="RadioButton_Single_Checked">
+                                                            <RadioButton.Style>
+                                                                <Style TargetType="RadioButton" BasedOn="{StaticResource baseStyle_Center_RadioButton}">
+                                                                    <Setter Property="IsChecked" Value="False"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding ContentType}" Value="OrderList">
+                                                                            <Setter Property="IsChecked" Value="True"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </RadioButton.Style>
+                                                        </RadioButton>
+                                                        <RadioButton GroupName="{Binding Temp.Temp.Uid}" Uid="2213" Content="비순서"  Checked="RadioButton_Single_Checked">
+                                                            <RadioButton.Style>
+                                                                <Style TargetType="RadioButton" BasedOn="{StaticResource baseStyle_RightEnd_RadioButton}">
+                                                                    <Setter Property="IsChecked" Value="False"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding ContentType}" Value="UnOrderList">
+                                                                            <Setter Property="IsChecked" Value="True"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </RadioButton.Style>
+                                                        </RadioButton>
+                                                    </StackPanel>
+                                                    <TextBox Grid.Column="2" Margin="5" Text="{Binding Temp_Content}" 
+                                                             HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                                                             LostFocus="TextBox_LostFocus" PreviewGotKeyboardFocus="TextBox_PreviewGotKeyboardFocus" TextChanged="TextBox_TextChanged" />
+                                                    <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="10,10,25,10" Height="25">
+                                                        <StackPanel.Style>
+                                                            <Style TargetType="StackPanel">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=ListBoxItem}}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=ListBoxItem}}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </StackPanel.Style>
+                                                        <StackPanel.Resources>
+                                                            <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                                                                <Setter Property="IsEnabled" Value="True"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsChecked, ElementName=check_ModifySync}" Value="True">
+                                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </StackPanel.Resources>
+                                                        <Button Content="되돌리기" Click="btn_ResetSingle_Click"/>
+                                                        <Button Content="적용" Click="btn_ApplySingle_Click"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.Resources>
+                        </ListBox>
+                        <Border Grid.Row="1" Background="{StaticResource color_Gray2}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,3,5,3">
+                                    <Button Content="선택 삭제" Click="btn_RemoveContent_Click"/>
+                                    
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,3,5,3">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                                            <Setter Property="IsEnabled" Value="True"></Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsChecked, ElementName=check_ModifySync}" Value="True">
+                                                    <Setter Property="IsEnabled" Value="False"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <CheckBox x:Name="check_ModifySync" Content="수정 시 바로 적용" VerticalAlignment="Center" Margin="0,0,10,0">
+                                        <CheckBox.Style>
+                                            <Style TargetType="CheckBox">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsChecked" Value="True">
+                                                        <Setter Property="FontSize" Value="14"/>
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </CheckBox.Style>
+                                    </CheckBox>
+                                    <Button Content="모두 되돌리기" Click="btn_AllReSet_Click" Margin="0,0,10,0"/>
+                                    <Button Content="모두 적용" Width="200" Click="btn_AllApply_Click"/>
+                                </StackPanel>
+
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    
+
+                </Border>
+                <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="10"  Height="1" Background="{StaticResource color_Gray1}" VerticalAlignment="Bottom"/>
+
+
+
+
+
+
             </Grid>
         </Grid>
-        
 
     </Grid>
 </UserControl>
