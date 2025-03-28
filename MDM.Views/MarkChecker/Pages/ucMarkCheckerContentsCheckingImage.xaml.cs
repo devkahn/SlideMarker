@@ -4,18 +4,14 @@ using MDM.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 
 namespace MDM.Views.MarkChecker.Pages
 {
@@ -84,7 +80,7 @@ namespace MDM.Views.MarkChecker.Pages
             {
                 if(this.ImageStatus.HasValue)
                 {
-                   // if (this.ImageStatus.Value) continue;
+                    if (con.IsContentsValid != this.ImageStatus.Value) continue;
                 }
 
 
@@ -131,8 +127,103 @@ namespace MDM.Views.MarkChecker.Pages
             this.combo_Page.ItemsSource = items;
             this.combo_Page.SelectedIndex = 0;
         }
+        private string ChangeNameToOne(string input)
+        {
+            string output = string.Empty;
 
+            string[] lines = TextHelper.SplitText(input);
+            foreach (string ln in lines)
+            {
+                output += ln;
+            }
 
+            return output;
+        }
+        private string RemoveNoTextLine(string input)
+        {
+            string output = string.Empty;
+
+            string[] lines = TextHelper.SplitText(input);
+            foreach (string ln in lines)
+            {
+                if (TextHelper.IsNoText(ln)) continue;
+                if (ln != lines.First()) output += "\n";
+                output += ln;
+
+            }
+
+            return output;
+        }
+        private string RemoveAllEmpty(string input)
+        {
+            string output = string.Empty;
+
+            //output = input.TrimStart();
+
+            string[] lines = TextHelper.SplitText(input);
+            foreach (string ln in lines)
+            {
+                string line = ln;
+                line = ln.RemoveEmtpy();
+
+                if (ln != lines.First()) output += "\n";
+                output += line;
+            }
+
+            return output;
+        }
+        private string RemoveTrim(string input)
+        {
+            string output = string.Empty;
+
+            string[] lines = TextHelper.SplitText(input);
+            foreach (string ln in lines)
+            {
+                string line = ln;
+                if (TextHelper.IsNoText(line)) continue;
+                if (char.IsWhiteSpace(ln.First())) line = line.Substring(1);
+                if (char.IsWhiteSpace(ln.Last())) line = line.TrimEnd();
+
+                if (ln != lines.First()) output += "\n";
+                output += line;
+            }
+
+            return output;
+        }
+        private string RemoveEndTrim(string input)
+        {
+            string output = string.Empty;
+
+            string[] lines = TextHelper.SplitText(input);
+            foreach (string ln in lines)
+            {
+                string line = ln;
+                if (TextHelper.IsNoText(line)) continue;
+                if (char.IsWhiteSpace(ln.Last())) line = line.TrimEnd();
+
+                if (ln != lines.First()) output += "\n";
+                output += line;
+            }
+
+            return output;
+        }
+        private string RemoveStartTrim(string input)
+        {
+            string output = string.Empty;
+
+            string[] lines = TextHelper.SplitText(input);
+            foreach (string ln in lines)
+            {
+                string line = ln;
+                if (TextHelper.IsNoText(line)) continue;
+                if (char.IsWhiteSpace(ln.First())) line = line.Substring(1);
+
+                if (ln != lines.First()) output += "\n";
+                output += line;
+            }
+
+            return output;
+        }
 
 
 
@@ -241,7 +332,32 @@ namespace MDM.Views.MarkChecker.Pages
 
         private void btn_LineControl_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
 
+                string uid = btn.Uid;
+                foreach (vmContent item in this.listbox_headers.SelectedItems)
+                {
+                    if (item == null) continue;
+
+                    string output = string.Empty;
+                    switch (uid)
+                    {
+                        case "toOne": output = ChangeNameToOne(item.Temp_Title); break;
+                        case "removeEmpty": output = RemoveNoTextLine(item.Temp_Title); break;
+                        default: output = item.Temp_Content; break;
+                    }
+                    item.Temp_Content = output;
+                    if (this.check_ModifySync.IsChecked == true) item.SetNewContent();
+                }
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void btn_RemovewEmpty_Click(object sender, RoutedEventArgs e)
@@ -318,11 +434,6 @@ namespace MDM.Views.MarkChecker.Pages
 
         }
 
-        private void RadioButton_Single_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void btn_RemoveLast_Click(object sender, RoutedEventArgs e)
         {
 
@@ -349,6 +460,88 @@ namespace MDM.Views.MarkChecker.Pages
             {
                 this.SearchKeyword = this.txtbox_SearchKeyword.Text = string.Empty;
                 BindList();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_AllCheck_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                foreach (vmContent item in this.Origin)
+                {
+                    string pathString = this.Material.DirectoryPath;
+                    string fileName = TextHelper.GetImageFileNameFromMarkdown(item.Temp.Temp.LineText);
+
+                    string fullPath = Path.Combine(pathString, fileName);
+                    if (File.Exists(fullPath)) 
+                    {
+                        item.IsContentsValid = true;
+                        item.ImagePath = fullPath;
+                    }
+                    else
+                    {
+                        item.SetBackground(System.Windows.Media.Brushes.LightPink);
+                        item.IsContentsValid = false;
+                    }
+                    
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+                
+            }
+        }
+
+        private void btn_ImageChange_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                 vmContent data = btn.DataContext as vmContent;
+                if (data == null) return;
+
+                FileInfo fInfo = FileHelper.GetOpenFileInfo();
+                if (fInfo == null) return;
+
+                string fullPath = fInfo.FullName;
+
+                string newFileName = Guid.NewGuid().ToString() ;
+                string originImagePath = Path.Combine(this.Material.DirectoryPath, newFileName + ".png");
+            
+
+                data.ImagePath = string.Empty;
+                File.Copy(fullPath, originImagePath, true);
+                data.ImagePath = originImagePath;
+                data.Temp.SetImageText(data.Temp.Temp.Title, newFileName);
+                data.InitializeDisplay();
+                data.IsContentsValid = true;
+                data.SetBackground(System.Windows.Media.Brushes.White);
+
+
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_ShowDirectory_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string directory = this.Material.DirectoryPath;
+                if(Directory.Exists(directory))
+                {
+                    Process.Start(directory);
+                }
             }
             catch (Exception ee)
             {

@@ -47,7 +47,9 @@ namespace MDM.Models.ViewModels
 
 
         private string _Temp_Content = string.Empty;
-
+        private string _Temp_Title = string.Empty;
+        private string _ImagePath = string.Empty;
+        private bool? _IsContentsValid = null;
 
     }
     public partial class vmContent :vmViewModelbase
@@ -111,6 +113,25 @@ namespace MDM.Models.ViewModels
         }
         public eContentType ContentType { get; set; } = eContentType.None;
 
+        
+        public string ImagePath
+        {
+            get => _ImagePath;
+            set
+            {
+                _ImagePath = value;
+                OnPropertyChanged(nameof(ImagePath));
+            }
+        }
+        public bool? IsContentsValid
+        {
+            get => _IsContentsValid;
+            set
+            {
+                _IsContentsValid = value;
+                OnPropertyChanged(nameof(IsContentsValid));
+            }
+        }
 
         public vmHeading Heading1
         {
@@ -224,6 +245,7 @@ namespace MDM.Models.ViewModels
             }
         }
 
+        
         public string Temp_Content
         {
             get => _Temp_Content;
@@ -233,6 +255,17 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(this.Temp_Content));
             }
         }
+        public string Temp_Title
+        {
+            get => _Temp_Title;
+            set
+            {
+                _Temp_Title = value;
+                OnPropertyChanged(nameof(this.Temp_Title));
+            }
+        }
+
+
 
         public object Display_SlideNum
         {
@@ -290,6 +323,9 @@ namespace MDM.Models.ViewModels
             this.Display_ContentType = this.Temp.ItemType.ToString();
             this.Display_Content = this.Temp.Display_Text;
             this.Temp_Content = this.Temp.Display_Text.ToString();
+            this.Temp_Title = this.Temp.Display_Title.ToString();
+
+
         }
         public override void SetInitialData()
         {
@@ -331,7 +367,15 @@ namespace MDM.Models.ViewModels
         }
         public void SetNewContent()
         {
-            this.Temp.SetText(this.Temp_Content);
+            if(this.ContentType == eContentType.Image)
+            {
+                this.Temp.SetTitle(this.Temp_Title);
+            }
+            else
+            {
+                this.Temp.SetText(this.Temp_Content);
+            }
+            
             InitializeDisplay();
         }
         public void SetNewContent(string newContent)

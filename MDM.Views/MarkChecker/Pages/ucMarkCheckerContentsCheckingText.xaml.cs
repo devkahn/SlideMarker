@@ -720,5 +720,17 @@ namespace MDM.Views.MarkChecker.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
+
+        private void btn_AllTextChecked_clicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
     }
 }

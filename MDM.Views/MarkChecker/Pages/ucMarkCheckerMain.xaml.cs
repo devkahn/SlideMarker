@@ -1,18 +1,13 @@
-﻿using System;
+﻿using MDM.Commons.Enum;
+using MDM.Helpers;
+using MDM.Models.DataModels;
+using MDM.Models.ViewModels;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using MDM.Commons.Enum;
-using MDM.Helpers;
-using MDM.Models.DataModels;
-//using MDM.Models.DataModels.ManualWorksXMLs;
-using MDM.Models.ViewModels;
-using Microsoft.Office.Interop.PowerPoint;
-using static OfficeOpenXml.ExcelErrorValue;
 
 namespace MDM.Views.MarkChecker.Pages
 {
@@ -155,6 +150,7 @@ namespace MDM.Views.MarkChecker.Pages
                             conItem.ItemType = content.ContentsType;
                             conItem.Level = GetContentLevel(content);
                             conItem.LineText = content.Contents;
+                            if(conItem.ItemType == eItemType.Image.GetHashCode()) conItem.Title = TextHelper.GetImageTitleFromMarkdown(conItem.LineText);
                             items.Add(conItem);
                         }
 

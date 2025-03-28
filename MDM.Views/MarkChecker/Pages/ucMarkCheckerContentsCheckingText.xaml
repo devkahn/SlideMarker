@@ -140,10 +140,17 @@
 
                     <Border Grid.Row="2" BorderBrush="{StaticResource color_Gray2}" BorderThickness="0,0,0,2" Margin="3,2,3,2">
                         <Grid Grid.Row="0" Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                 <Button Uid="1" Content="전체 선택" Click="btn_AllSelect_Click"/>
                                 <Button Uid="0" Content="전체 해제" Click="btn_AllSelect_Click" />
                             </StackPanel>
+                            <Grid Grid.Column="1" Margin="10,0,5,0">
+                                <Button Content="전체 검토" Click="btn_AllTextChecked_clicked"/>
+                            </Grid>
                         </Grid>
                     </Border>
                 </Grid>
@@ -367,7 +374,7 @@
                                                 <Grid MaxWidth="{TemplateBinding MaxWidth}">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="45"/>
-                                                        <ColumnDefinition Width="130"/>
+                                                        <ColumnDefinition Width="auto"/>
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="auto"/>
                                                     </Grid.ColumnDefinitions>
