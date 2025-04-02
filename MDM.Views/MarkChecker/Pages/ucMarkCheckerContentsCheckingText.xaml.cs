@@ -33,59 +33,7 @@ namespace MDM.Views.MarkChecker.Pages
             set
             {
                 _Material = value;
-                this.Origin.Clear();
-                if (value != null)
-                {
-                    foreach (vmContent con in value.Contents)
-                    {
-                        bool hasSame= this.Origin.Any(x => x.Temp.Temp.Uid == con.Temp.Temp.Uid);
-                        if (hasSame) continue;
-
-                        switch (con.Temp.ItemType)
-                        {
-                            case eItemType.Text:
-
-                                string text = con.Temp.Temp.LineText;
-                                string[] lines = TextHelper.SplitText(text);
-                                if (lines.Length == 1)
-                                {
-                                    con.ContentType = eContentType.NormalText;
-                                }
-                                else
-                                {
-                                    int length = lines.Length;
-                                    Dictionary<int, string> temp = new Dictionary<int, string>();
-                                    for (int i = 0; i < length; i++) temp.Add(i, lines[i]);
-
-                                    int digitCnt = 0;
-                                    int total = 0;
-                                    foreach (string item in temp.Values)
-                                    {
-                                        if (TextHelper.IsNoText(item)) continue;
-                                        char firstChar = item.First();
-                                        if (char.IsWhiteSpace(firstChar)) firstChar = item[1];
-                                        if (char.IsWhiteSpace(firstChar)) continue;
-
-                                        if (char.IsDigit(item.First())) digitCnt++;
-                                        total++;
-                                    }
-
-                                    if (total / 2 < digitCnt)
-                                    {
-                                        con.ContentType = eContentType.OrderList;
-                                    }
-                                    else
-                                    {
-                                        con.ContentType = eContentType.UnOrderList;
-                                    }
-                                }
-
-                                this.Origin.Add(con);
-                                continue;
-                            default: continue;
-                        }
-                    }
-                }
+                SetOriginList();
 
                 this.txtbox_SearchKeyword.Text = string.Empty;
                 this.rBtn_All.IsChecked = true;
@@ -94,7 +42,7 @@ namespace MDM.Views.MarkChecker.Pages
             }
         }
 
-
+       
 
         public ObservableCollection<vmContent> Origin { get; set; } = new ObservableCollection<vmContent>();
 
@@ -112,6 +60,62 @@ namespace MDM.Views.MarkChecker.Pages
         }
 
 
+        public void SetOriginList()
+        {
+            if (this.Material != null)
+            {
+                this.Origin.Clear();
+                foreach (vmContent con in this.Material.Contents)
+                {
+                    bool hasSame = this.Origin.Any(x => x.Temp.Temp.Uid == con.Temp.Temp.Uid);
+                    if (hasSame) continue;
+
+                    switch (con.Temp.ItemType)
+                    {
+                        case eItemType.Text:
+
+                            string text = con.Temp.Temp.LineText;
+                            string[] lines = TextHelper.SplitText(text);
+                            if (lines.Length == 1)
+                            {
+                                con.ContentType = eContentType.NormalText;
+                            }
+                            else
+                            {
+                                int length = lines.Length;
+                                Dictionary<int, string> temp = new Dictionary<int, string>();
+                                for (int i = 0; i < length; i++) temp.Add(i, lines[i]);
+
+                                int digitCnt = 0;
+                                int total = 0;
+                                foreach (string item in temp.Values)
+                                {
+                                    if (TextHelper.IsNoText(item)) continue;
+                                    char firstChar = item.First();
+                                    if (char.IsWhiteSpace(firstChar)) firstChar = item[1];
+                                    if (char.IsWhiteSpace(firstChar)) continue;
+
+                                    if (char.IsDigit(item.First())) digitCnt++;
+                                    total++;
+                                }
+
+                                if (total / 2 < digitCnt)
+                                {
+                                    con.ContentType = eContentType.OrderList;
+                                }
+                                else
+                                {
+                                    con.ContentType = eContentType.UnOrderList;
+                                }
+                            }
+
+                            this.Origin.Add(con);
+                            continue;
+                        default: continue;
+                    }
+                }
+            }
+        }
         public void BindList(string keyword = "", int page = -1)
         {
             ObservableCollection<vmContent> list = new ObservableCollection<vmContent>();

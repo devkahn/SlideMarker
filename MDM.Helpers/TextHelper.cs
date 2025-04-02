@@ -168,9 +168,9 @@ namespace MDM.Helpers
         public static string GetImageTitleFromMarkdown(string input)
         {
             string pattern = @"\[(.*?)\]";
-            Match match = Regex.Match(input, pattern);
+            Match match = Regex.Match(input, pattern, RegexOptions.Singleline); // 여기 추가됨
 
-            if (match.Success) return match.Groups[1].Value; // 첫 번째 캡처 그룹
+            if (match.Success) return match.Groups[1].Value;
 
             return null;
         }

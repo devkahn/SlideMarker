@@ -53,6 +53,11 @@ namespace MDM.Views.MarkChecker.Pages
             }
         }
 
+
+        public ucMarkCheckerContentsCheckingImage CheckingImagePage =>  this.ucMarkCheckerCheckingImage;
+        public ucMarkCheckerContentsCheckingText CheckingTextPage => this.ucMarkCheckerCheckingText;
+        public ucMarkCheckerContentsCheckingTable CheckingTablePage => this.ucmarkcheckerCheckingTable;
+
         public int ContentTypeCode { get; set; } = 0;
 
         public ObservableCollection<vmContent> AllContentsList { get; } = new ObservableCollection<vmContent>();
@@ -72,13 +77,13 @@ namespace MDM.Views.MarkChecker.Pages
         {
             InitializeComponent();
 
-            this.listbox_Contents.ItemsSource = this.AllContentsList;
-            this.listbox_normalText.ItemsSource = this.NormalTextContentList;
-            this.listbox_orderedText.ItemsSource = this.OrderedTextContentList;
-            this.listbox_unorderedText.ItemsSource = this.UnOrderedTextContentList;
+            //this.listbox_Contents.ItemsSource = this.AllContentsList;
+            //this.listbox_normalText.ItemsSource = this.NormalTextContentList;
+            //this.listbox_orderedText.ItemsSource = this.OrderedTextContentList;
+            //this.listbox_unorderedText.ItemsSource = this.UnOrderedTextContentList;
 
-            this.listbox_ImageList.ItemsSource = this.ImageContentList;
-            this.listbox_TableList.ItemsSource = this.TableCotnentList;
+            //this.listbox_ImageList.ItemsSource = this.ImageContentList;
+            //this.listbox_TableList.ItemsSource = this.TableCotnentList;
         }
 
         private void BindAllContents()
@@ -113,24 +118,24 @@ namespace MDM.Views.MarkChecker.Pages
         {
             try
             {
-                if (this.contentPresenter_Content == null) return;
+                //if (this.contentPresenter_Content == null) return;
 
-                foreach (vmContent item in e.AddedItems)
-                {
-                    if (item == null) continue;
+                //foreach (vmContent item in e.AddedItems)
+                //{
+                //    if (item == null) continue;
 
-                    UserControl uc = null;
-                    switch (item.Temp.ItemType)
-                    {
-                        case Commons.Enum.eItemType.Text: uc = new ucMarkCheckerContentsCheckingText(); break;
-                        case Commons.Enum.eItemType.Image: uc = new ucMarkCheckerContentsCheckingImage(); break;
-                        case Commons.Enum.eItemType.Table: uc = new ucMarkCheckerContentsCheckingTable(); break;
-                    }
+                //    UserControl uc = null;
+                //    switch (item.Temp.ItemType)
+                //    {
+                //        case Commons.Enum.eItemType.Text: uc = new ucMarkCheckerContentsCheckingText(); break;
+                //        case Commons.Enum.eItemType.Image: uc = new ucMarkCheckerContentsCheckingImage(); break;
+                //        case Commons.Enum.eItemType.Table: uc = new ucMarkCheckerContentsCheckingTable(); break;
+                //    }
 
-                    uc.DataContext = item;
+                //    uc.DataContext = item;
 
-                    this.contentPresenter_Content.Content = uc;
-                }
+                //    this.contentPresenter_Content.Content = uc;
+                //}
                  
             }
             catch (Exception ee)
@@ -273,34 +278,34 @@ namespace MDM.Views.MarkChecker.Pages
         {
             try
             {
-                Button btn = sender as Button;
-                if (btn == null) return;
-                string uid = btn.Uid;
+                //Button btn = sender as Button;
+                //if (btn == null) return;
+                //string uid = btn.Uid;
                 
-                if (uid == "Normal")
-                {
-                    var selectedItems = this.listbox_normalText.SelectedItems;
-                    for (int i = 0; i < selectedItems.Count; i++)
-                    {
-                        vmContent item = selectedItems[i] as vmContent;
-                        if (item == null) continue;
+                //if (uid == "Normal")
+                //{
+                //    var selectedItems = this.listbox_normalText.SelectedItems;
+                //    for (int i = 0; i < selectedItems.Count; i++)
+                //    {
+                //        vmContent item = selectedItems[i] as vmContent;
+                //        if (item == null) continue;
 
-                        if (!this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Add(item);
-                        if (this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Remove(item);
-                    }
-                }
-                else if(uid == "Unorder")
-                {
-                    var selectedItems = this.listbox_unorderedText.SelectedItems;
-                    for (int i = 0; i < selectedItems.Count; i++)
-                    {
-                        vmContent item = selectedItems[i] as vmContent;
-                        if (item == null) continue;
+                //        if (!this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Add(item);
+                //        if (this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Remove(item);
+                //    }
+                //}
+                //else if(uid == "Unorder")
+                //{
+                //    var selectedItems = this.listbox_unorderedText.SelectedItems;
+                //    for (int i = 0; i < selectedItems.Count; i++)
+                //    {
+                //        vmContent item = selectedItems[i] as vmContent;
+                //        if (item == null) continue;
 
-                        if (!this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Add(item);
-                        if (this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Remove(item);
-                    }
-                }
+                //        if (!this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Add(item);
+                //        if (this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Remove(item);
+                //    }
+                //}
             }
             catch (Exception ee)
             {
@@ -311,33 +316,33 @@ namespace MDM.Views.MarkChecker.Pages
         {
             try
             {
-                Button btn = sender as Button;
-                if (btn == null) return;
-                string uid = btn.Uid;
-                if (uid == "Order")
-                {
-                    var selectedItems = this.listbox_orderedText.SelectedItems;
-                    for (int i = 0; i < selectedItems.Count; i++)
-                    {
-                        vmContent item = selectedItems[i] as vmContent;
-                        if (item == null) continue;
+                //Button btn = sender as Button;
+                //if (btn == null) return;
+                //string uid = btn.Uid;
+                //if (uid == "Order")
+                //{
+                //    var selectedItems = this.listbox_orderedText.SelectedItems;
+                //    for (int i = 0; i < selectedItems.Count; i++)
+                //    {
+                //        vmContent item = selectedItems[i] as vmContent;
+                //        if (item == null) continue;
 
-                        if (!this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Add(item);
-                        if (this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Remove(item);
-                    }
-                }
-                else if( uid == "Unorder")
-                {
-                    var selectedItems = this.listbox_unorderedText.SelectedItems;
-                    for (int i = 0; i < selectedItems.Count; i++)
-                    {
-                        vmContent item = selectedItems[i] as vmContent;
-                        if (item == null) continue;
+                //        if (!this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Add(item);
+                //        if (this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Remove(item);
+                //    }
+                //}
+                //else if( uid == "Unorder")
+                //{
+                //    var selectedItems = this.listbox_unorderedText.SelectedItems;
+                //    for (int i = 0; i < selectedItems.Count; i++)
+                //    {
+                //        vmContent item = selectedItems[i] as vmContent;
+                //        if (item == null) continue;
 
-                        if (!this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Add(item);
-                        if (this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Remove(item);
-                    }
-                }
+                //        if (!this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Add(item);
+                //        if (this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Remove(item);
+                //    }
+                //}
             }
             catch (Exception ee)
             {
@@ -346,33 +351,33 @@ namespace MDM.Views.MarkChecker.Pages
         }
         private void btn_ToUnorder_Click(object sender, RoutedEventArgs e)
         {
-            Button btn = sender as Button;
-            if (btn == null) return;
-            string uid = btn.Uid;
-            if (uid == "Normal")
-            {
-                var selectedItems = this.listbox_normalText.SelectedItems;
-                for (int i = 0; i < selectedItems.Count; i++)
-                {
-                    vmContent item = selectedItems[i] as vmContent;
-                    if (item == null) continue;
+            //Button btn = sender as Button;
+            //if (btn == null) return;
+            //string uid = btn.Uid;
+            //if (uid == "Normal")
+            //{
+            //    var selectedItems = this.listbox_normalText.SelectedItems;
+            //    for (int i = 0; i < selectedItems.Count; i++)
+            //    {
+            //        vmContent item = selectedItems[i] as vmContent;
+            //        if (item == null) continue;
 
-                    if (!this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Add(item);
-                    if (this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Remove(item);
-                }
-            }
-            else if (uid == "Order")
-            {
-                var selectedItems = this.listbox_orderedText.SelectedItems;
-                for (int i = 0; i < selectedItems.Count; i++)
-                {
-                    vmContent item = selectedItems[i] as vmContent;
-                    if (item == null) continue;
+            //        if (!this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Add(item);
+            //        if (this.NormalTextContentList.Contains(item)) this.NormalTextContentList.Remove(item);
+            //    }
+            //}
+            //else if (uid == "Order")
+            //{
+            //    var selectedItems = this.listbox_orderedText.SelectedItems;
+            //    for (int i = 0; i < selectedItems.Count; i++)
+            //    {
+            //        vmContent item = selectedItems[i] as vmContent;
+            //        if (item == null) continue;
 
-                    if (!this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Add(item);
-                    if (this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Remove(item);
-                }
-            }
+            //        if (!this.UnOrderedTextContentList.Contains(item)) this.UnOrderedTextContentList.Add(item);
+            //        if (this.OrderedTextContentList.Contains(item)) this.OrderedTextContentList.Remove(item);
+            //    }
+            //}
         }
 
         private void btn_UnOrder_FirstDigitRemove_Click(object sender, RoutedEventArgs e)

@@ -48,6 +48,7 @@ namespace MDM.Models.ViewModels
 
         private string _Temp_Content = string.Empty;
         private string _Temp_Title = string.Empty;
+        private string _Temp_TableHtml = string.Empty;
         private string _ImagePath = string.Empty;
         private bool? _IsContentsValid = null;
 
@@ -130,6 +131,7 @@ namespace MDM.Models.ViewModels
             {
                 _IsContentsValid = value;
                 OnPropertyChanged(nameof(IsContentsValid));
+                this.Display_Background = value.HasValue ? value.Value ? Brushes.LightGray : Brushes.LightPink : Brushes.White;
             }
         }
 
@@ -264,6 +266,15 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(this.Temp_Title));
             }
         }
+        public string Temp_TableHTML
+        {
+            get => _Temp_TableHtml;
+            set
+            {
+                _Temp_TableHtml = value;
+                OnPropertyChanged(nameof(this.Temp_TableHTML));
+            }
+        }
 
 
 
@@ -324,8 +335,6 @@ namespace MDM.Models.ViewModels
             this.Display_Content = this.Temp.Display_Text;
             this.Temp_Content = this.Temp.Display_Text.ToString();
             this.Temp_Title = this.Temp.Display_Title.ToString();
-
-
         }
         public override void SetInitialData()
         {
@@ -381,6 +390,14 @@ namespace MDM.Models.ViewModels
         public void SetNewContent(string newContent)
         {
             this.Temp.SetText(newContent);
+            InitializeDisplay();
+        }
+        public void SetNewImageContent(string title, string fileName)
+        {
+            this.Temp_Title = title;
+            this.Temp.SetTitle(title);
+            this.Temp.SetImageText(title, fileName);
+
             InitializeDisplay();
         }
         public void SetContentType(eContentType type)

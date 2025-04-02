@@ -145,6 +145,11 @@ namespace MDM.Views.MarkChecker.Pages
                             if (header9 != null && !items.Contains(header9)) items.Add(header9);
                             mItem header10 = GetSameItem(level++, content, items);
                             if (header10 != null && !items.Contains(header10)) items.Add(header10);
+                            
+                            if(key == 237)
+                            {
+                             
+                            }
 
                             mItem conItem = new mItem();
                             conItem.ItemType = content.ContentsType;
@@ -170,6 +175,14 @@ namespace MDM.Views.MarkChecker.Pages
 
                     foreach (mSlide slide in slides)
                     {
+                        if(slide.Index == 237)
+                        {
+                            bool hasImage = slide.Shapes.Any(x => x.ShapeType == 222);
+                            if(hasImage)
+                            {
+
+                            }
+                        }
                         vmSlide newSlide = new vmSlide(slide);
                         newSlide.SetParentMaterial(newMaterial);
                         if (headings.Count > 0)
@@ -214,6 +227,7 @@ namespace MDM.Views.MarkChecker.Pages
                     item.ItemType = content.ContentsType;
                     item.Level = newHeading.Temp.Level + 1;
                     item.LineText = content.Contents;
+                    if (item.ItemType == eItemType.Image.GetHashCode()) item.Title = TextHelper.GetImageTitleFromMarkdown(item.LineText);
 
                     sameItem = new vmItem(item);
                 }

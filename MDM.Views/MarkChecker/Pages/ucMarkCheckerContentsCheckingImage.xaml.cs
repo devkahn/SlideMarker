@@ -11,6 +11,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Markup;
+using static OfficeOpenXml.ExcelErrorValue;
 
 
 namespace MDM.Views.MarkChecker.Pages
@@ -28,29 +30,17 @@ namespace MDM.Views.MarkChecker.Pages
             set
             {
                 _Material = value;
-                this.Origin.Clear();
-                if (value != null)
-                {
-                    foreach (vmContent con in value.Contents)
-                    {
-                        bool hasSame = this.Origin.Any(x => x.Temp.Temp.Uid == con.Temp.Temp.Uid);
-                        if (hasSame) continue;
+                SetOriginList();
 
-                        switch (con.Temp.ItemType)
-                        {
-                            case eItemType.Image:
-                                con.ContentType = eContentType.Image;
-                                this.Origin.Add(con);
-                                continue;
-                            default: continue;
-                        }
-                    }
-                }
-
+                this.txtbox_SearchKeyword.Text = string.Empty;
+                this.rBtn_All.IsChecked = true;
                 BindList();
                 BindPageComboBox();
             }
         }
+
+        
+
         public ObservableCollection<vmContent> Origin { get; set; } = new ObservableCollection<vmContent>();
 
 
@@ -72,9 +62,32 @@ namespace MDM.Views.MarkChecker.Pages
         }
 
 
+        public void SetOriginList()
+        {
+            this.Origin.Clear();
+            if (this.Material != null)
+            {
+                foreach (vmContent con in this.Material.Contents)
+                {
+                    bool hasSame = this.Origin.Any(x => x.Temp.Temp.Uid == con.Temp.Temp.Uid);
+                    if (hasSame) continue;
 
+                    switch (con.Temp.ItemType)
+                    {
+                        case eItemType.Image:
+                            con.ContentType = eContentType.Image;
+                            this.Origin.Add(con);
+                            continue;
+                        default: continue;
+                    }
+                }
+            }
+        }
         public void BindList(string keyword = "", int page = -1)
         {
+            if (this.listbox_headers == null) return;
+
+
             ObservableCollection<vmContent> list = new ObservableCollection<vmContent>();
             foreach (vmContent con in this.Origin)
             {
@@ -341,6 +354,7 @@ namespace MDM.Views.MarkChecker.Pages
                 foreach (vmContent item in this.listbox_headers.SelectedItems)
                 {
                     if (item == null) continue;
+                    if (TextHelper.IsNoText(item.Temp_Title)) continue;
 
                     string output = string.Empty;
                     switch (uid)
@@ -362,12 +376,55 @@ namespace MDM.Views.MarkChecker.Pages
 
         private void btn_RemovewEmpty_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
 
+                string uid = btn.Uid;
+                foreach (vmContent content in this.listbox_headers.SelectedItems)
+                {
+                    if (content == null) continue;
+                    if (TextHelper.IsNoText(content.Temp_Title)) continue;
+
+                    string output = string.Empty;
+                    switch (uid)
+                    {
+                        case "start": output = RemoveStartTrim(content.Temp_Title); break;
+                        case "end": output = RemoveEndTrim(content.Temp_Title); break;
+                        case "startend": output = RemoveTrim(content.Temp_Title); break;
+                        case "all": output = RemoveAllEmpty(content.Temp_Title); break;
+                        default: output = content.Temp_Title; break;
+                    }
+                    //if (output != content.Temp_Content) heading.SetName(output);
+
+                    content.Temp_Title = output;
+                    if (this.check_ModifySync.IsChecked == true) content.SetNewContent();
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void btn_RemoveFirst_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                foreach (vmContent item in this.listbox_headers.SelectedItems)
+                {
+                    if (TextHelper.IsNoText(item.Temp_Title)) continue;
 
+                    string text = item.Temp_Title;
+                    item.Temp_Title = text.Substring(1);
+                    if (this.check_ModifySync.IsChecked == true) item.SetNewContent();
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void btn_KeywordRemove_Click(object sender, RoutedEventArgs e)
@@ -416,12 +473,41 @@ namespace MDM.Views.MarkChecker.Pages
 
         private void btn_AllReSet_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                foreach (vmContent data in this.listbox_headers.SelectedItems)
+                {
 
+                    string title = TextHelper.GetImageTitleFromMarkdown(data.Temp.Temp.LineText);
+                    string fileName = TextHelper.GetImageFileNameFromMarkdown(data.Temp.Temp.LineText);
+                    fileName = Path.GetFileNameWithoutExtension(fileName);
+
+                    data.Temp.SetImageText(title, fileName);
+                    data.InitializeDisplay();
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void btn_AllApply_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                foreach (vmContent data in this.listbox_headers.SelectedItems)
+                {
+                    string fileName = TextHelper.GetImageFileNameFromMarkdown(data.Temp_Content);
+                    fileName = Path.GetFileNameWithoutExtension(fileName);
 
+                    data.SetNewImageContent(data.Temp_Title, fileName);
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void TextBox_PreviewGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
@@ -431,27 +517,120 @@ namespace MDM.Views.MarkChecker.Pages
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            try
+            {
+                if (this.check_ModifySync.IsChecked != true) return;
 
+
+
+                TextBox tb = sender as TextBox;
+                if (tb == null) return;
+
+                vmContent data = tb.DataContext as vmContent;
+                if (data == null) return;
+
+                string newText = tb.Text;
+                string fileName = TextHelper.GetImageFileNameFromMarkdown(data.Temp_Content);
+                fileName = Path.GetFileNameWithoutExtension(fileName);
+
+                if (this.check_ModifySync.IsChecked == true) data.SetNewImageContent(newText, fileName);
+            }
+            catch (Exception ee )
+            {
+                ErrorHelper.ShowError(ee);
+                
+            }
         }
 
         private void btn_RemoveLast_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                foreach (vmContent item in this.listbox_headers.SelectedItems)
+                {
+                    string text = item.Temp_Title;
+                    if (TextHelper.IsNoText(text)) continue;
+                    item.Temp_Title = text.Substring(0, text.Length - 1);
+                    if (this.check_ModifySync.IsChecked == true) item.SetNewContent();
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void btn_ApplySingle_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                if (this.check_ModifySync.IsChecked == true) return;
+                Button btn = sender as Button;
+                if (btn == null) return;
 
+                vmContent data = btn.DataContext as vmContent;
+                if (data == null) return;
+
+                string newText = data.Temp_Title;
+                string fileName = TextHelper.GetImageFileNameFromMarkdown(data.Temp_Content);
+                fileName = Path.GetFileNameWithoutExtension(fileName);
+
+                data.SetNewImageContent(newText, fileName);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void btn_ResetSingle_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                if (this.check_ModifySync.IsChecked == true) return;
 
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                vmContent data = btn.DataContext as vmContent;
+                if (data == null) return;
+
+                string title = TextHelper.GetImageTitleFromMarkdown(data.Temp.Temp.LineText);
+                string fileName = TextHelper.GetImageFileNameFromMarkdown(data.Temp.Temp.LineText);
+                fileName = Path.GetFileNameWithoutExtension(fileName);
+
+                data.Temp.SetImageText(title, fileName);
+                data.InitializeDisplay();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                if (this.check_ModifySync.IsChecked != true) return;
 
+                TextBox tb = sender as TextBox;
+                if (tb == null) return;
+
+                vmContent data = tb.DataContext as vmContent;
+                if (data == null) return;
+
+                string newText = tb.Text;
+                string fileName = TextHelper.GetImageFileNameFromMarkdown(data.Temp_Content);
+                fileName = Path.GetFileNameWithoutExtension(fileName);
+
+                
+                if (this.check_ModifySync.IsChecked == true) data.SetNewImageContent(newText, fileName);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void btn_RemoveSearchKeyword_Click(object sender, RoutedEventArgs e)
@@ -484,7 +663,6 @@ namespace MDM.Views.MarkChecker.Pages
                     }
                     else
                     {
-                        item.SetBackground(System.Windows.Media.Brushes.LightPink);
                         item.IsContentsValid = false;
                     }
                     
@@ -522,10 +700,8 @@ namespace MDM.Views.MarkChecker.Pages
                 data.Temp.SetImageText(data.Temp.Temp.Title, newFileName);
                 data.InitializeDisplay();
                 data.IsContentsValid = true;
-                data.SetBackground(System.Windows.Media.Brushes.White);
 
-
-
+                BindList();
             }
             catch (Exception ee)
             {
@@ -541,6 +717,82 @@ namespace MDM.Views.MarkChecker.Pages
                 if(Directory.Exists(directory))
                 {
                     Process.Start(directory);
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_MoveToText_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                List<vmContent> seleectedList = new List<vmContent>();
+                foreach (vmContent item in this.listbox_headers.SelectedItems) seleectedList.Add(item);
+
+                foreach (vmContent item in seleectedList)
+                {
+                    item.Temp.SetItemType(eItemType.Text);
+
+                    string[] lines = TextHelper.SplitText(item.Temp_Content);
+                    if (lines.Length == 1) item.ContentType = eContentType.NormalText;
+
+                    (this.Tag as ucMarkCheckerContentsChecking).ucMarkCheckerCheckingText.SetOriginList();
+
+
+                    this.Origin.Remove(item);
+                    BindList();
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_MoveToTable_Clcik(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                List<vmContent> seleectedList = new List<vmContent>();
+                foreach (vmContent item in this.listbox_headers.SelectedItems) seleectedList.Add(item);
+
+                foreach (vmContent item in seleectedList)
+                {
+                    item.Temp.SetItemType(eItemType.Table);
+
+                    string[] lines = TextHelper.SplitText(item.Temp_Content);
+                    if (lines.Length == 1) item.ContentType = eContentType.Table;
+
+                    (this.Tag as ucMarkCheckerContentsChecking).ucmarkcheckerCheckingTable.SetOriginList();
+
+
+                    this.Origin.Remove(item);
+                    BindList();
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_RemoveALL_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                foreach (vmContent item in this.listbox_headers.SelectedItems)
+                {
+                    item.Temp_Title = string.Empty;
+                    if (this.check_ModifySync.IsChecked == true) item.SetNewContent();
                 }
             }
             catch (Exception ee)
