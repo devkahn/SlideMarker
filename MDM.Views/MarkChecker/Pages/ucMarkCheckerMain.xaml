@@ -71,13 +71,14 @@
             <TabItem Header="컨텐츠 리스트">
                 <local:ucMarkCheckerOriginExcel x:Name="mcExcelView"/>
             </TabItem>
-            <TabItem Header="제목 검토">
-                <local:ucMarkCheckerContensByHeading x:Name="mcContentsByHeading"/>
-            </TabItem>
             <TabItem Header="본문 검토">
                 <local:ucMarkCheckerContentsChecking x:Name="mcContentChecking"/>
             </TabItem>
-            <TabItem Header="Contents By Slide" Visibility="Visible">
+            <TabItem Header="제목 검토">
+                <local:ucMarkCheckerContensByHeading x:Name="mcContentsByHeading"/>
+            </TabItem>
+
+            <TabItem Header="Contents By Slide" Visibility="Collapsed">
                 <smPages:ucDataLabeling x:Name="smDataLabeling"/>
             </TabItem>
             <TabItem Header="XML 설정">

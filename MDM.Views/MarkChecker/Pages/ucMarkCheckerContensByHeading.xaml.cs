@@ -12,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Navigation;
@@ -117,15 +118,43 @@ namespace MDM.Views.MarkChecker.Pages
 
                 string jsonString = JsonHelper.ToJsonString(rootHeadings);
 
-                string targetPath = System.IO.Path.Combine(this.Material.DirectoryPath, string.Format("{0}_{1}.headers", this.Material.Temp.Name ,DateTime.Now.ToString("yyyyMMddHHmmss")));
+                DateTime nowTime = DateTime.Now;
+                string targetPath = System.IO.Path.Combine(this.Material.DirectoryPath, string.Format("{0}_{1}.headers", this.Material.Temp.Name , nowTime.ToString("yyyyMMddHHmmss")));
                 if (File.Exists(targetPath))
                 {
                     File.Delete(targetPath);
                 }
                 File.WriteAllText(targetPath, jsonString);
 
-                string msg = "저장 완료";
-                MessageHelper.ShowMessage("", msg);
+
+
+
+                this.textblock_TimeStamp.Text = nowTime.ToString("yy/MM/dd HH:mm:ss");
+                DoubleAnimation fadeInAnimation = new DoubleAnimation
+                {
+                    From = 0,
+                    To = 1,
+                    Duration = TimeSpan.FromSeconds(1)
+                };
+                DoubleAnimation fadeOutAnimation = new DoubleAnimation
+                {
+                    From = 1,
+                    To = 0,
+                    Duration = TimeSpan.FromSeconds(1),
+                    BeginTime = TimeSpan.FromSeconds(2) // 3초 후에 시작
+                };
+                fadeOutAnimation.Completed += (s, ee) =>
+                {
+                    this.stackPanel_SaveMessage.Visibility = Visibility.Collapsed;
+                };
+                fadeInAnimation.Completed += (s, ee) =>
+                {
+                    // 3초 후 페이드 아웃 애니메이션 시작
+                    stackPanel_SaveMessage.BeginAnimation(UIElement.OpacityProperty, fadeOutAnimation);
+                };
+
+                this.stackPanel_SaveMessage.Visibility = Visibility.Visible;
+                this.stackPanel_SaveMessage.BeginAnimation(UIElement.OpacityProperty, fadeInAnimation);
             }
             catch (Exception ee)
             {
@@ -136,37 +165,37 @@ namespace MDM.Views.MarkChecker.Pages
         {
             try
             {
-                if (this.contentPresenter == null) return;
+                //if (this.contentPresenter == null) return;
 
-                ListBoxItem selectedRule = this.listbox_RuleSet.SelectedItem as ListBoxItem;
-                if (selectedRule == null) return;
+                //ListBoxItem selectedRule = this.listbox_RuleSet.SelectedItem as ListBoxItem;
+                //if (selectedRule == null) return;
 
-                string uid = selectedRule.Uid;
-                if(!this.RuleSetPages.ContainsKey(uid))
-                {
-                    UserControl uc = null;
-                    switch (uid)
-                    {
-                        case "1": uc = new ucRuleCheckTreePreprocessing(); break;
-                        case "101": uc = new ucRuleCheckContentsSync(); break;
-                        case "102": uc = new ucRuleCheckSameNameFinder(); break;
-                        case "998": uc = new ucRuleCheckHeaderProperty(); break;
-                        case "999": uc = new ucRuleCheckUserModify(); break;
-                        default: break;
-                    }
-                    this.RuleSetPages.Add(uid, uc);
-                }
+                //string uid = selectedRule.Uid;
+                //if(!this.RuleSetPages.ContainsKey(uid))
+                //{
+                //    UserControl uc = null;
+                //    switch (uid)
+                //    {
+                //        case "1": uc = new ucRuleCheckTreePreprocessing(); break;
+                //        case "101": uc = new ucRuleCheckContentsSync(); break;
+                //        case "102": uc = new ucRuleCheckSameNameFinder(); break;
+                //        case "998": uc = new ucRuleCheckHeaderProperty(); break;
+                //        case "999": uc = new ucRuleCheckUserModify(); break;
+                //        default: break;
+                //    }
+                //    this.RuleSetPages.Add(uid, uc);
+                //}
 
-                UserControl page = this.RuleSetPages[uid];
-                if(page != null)
-                {
-                    page.DataContext = null;
-                    page.DataContext = this.Material;
-                }
+                //UserControl page = this.RuleSetPages[uid];
+                //if(page != null)
+                //{
+                //    page.DataContext = null;
+                //    page.DataContext = this.Material;
+                //}
                 
 
-                this.contentPresenter.Content = null;
-                this.contentPresenter.Content = page;
+                //this.contentPresenter.Content = null;
+                //this.contentPresenter.Content = page;
             }
             catch (Exception ee) 
             {
@@ -185,6 +214,21 @@ namespace MDM.Views.MarkChecker.Pages
                 ErrorHelper.ShowError(ee);
                 
             }
+        }
+
+        private void btn_SelectionRemove_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btn_SelectionMove_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btn_SelectionCopy_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

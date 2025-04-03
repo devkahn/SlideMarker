@@ -81,6 +81,7 @@
     <Compile Include="ViewModels\vmContent.cs" />
     <Compile Include="ViewModels\vmHeading.cs" />
     <Compile Include="ViewModels\vmMaterial.cs" />
+    <Compile Include="ViewModels\vmMaterialCheck.cs" />
     <Compile Include="ViewModels\vmShape.cs" />
     <Compile Include="ViewModels\vmSlide.cs" />
     <Compile Include="ViewModels\vmItem.cs" />

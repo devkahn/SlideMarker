@@ -15,7 +15,31 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <TabControl Grid.Column="2" Visibility="Visible">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5">
+                <StackPanel.Resources>
+                    <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                        
+                    </Style>
+                </StackPanel.Resources>
+                <Button Content="저장" Click="btn_ContentsSave_Click"/>
+                <Button Content="일괄 검토"/>
+            </StackPanel>
+            
+        </Grid>
+        
+        
+        
+        <TabControl Grid.Row="1" Visibility="Visible">
             <TabItem Header="글">
                 <Grid>
                     <local:ucMarkCheckerContentsCheckingText x:Name="ucMarkCheckerCheckingText" Tag="{Binding ElementName=checkingMain}"/>

@@ -89,14 +89,89 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Grid.Column="0" Text="검색어 :" FontWeight="Bold" VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="1" x:Name="txtbox_SearchKeyword" Margin="5,0,5,0" KeyUp="txtbox_SearchKeyword_KeyUp">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox">
-                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Border Grid.Column="1">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Setter Property="BorderBrush" Value="{StaticResource color_Gray3}"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="CornerRadius" Value="5"/>
+                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsFocused}" Value="true">
+                                                <Setter Property="BorderBrush" Value="{StaticResource color_Gray4}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
                                     </Style>
-                                </TextBox.Style>
-                            </TextBox>
+                                </Border.Style>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="검색어를 입력하세요." Foreground="{StaticResource color_Gray3}" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="8,0,8,0"/>
+                                    <TextBox Grid.Column="0" x:Name="txtbox_SearchKeyword" Margin="5" KeyUp="txtbox_SearchKeyword_KeyUp">
+                                        <TextBox.Style>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background" Value="White"/>
+                                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="Text" Value="">
+                                                        <Setter Property="Background" Value="Transparent"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBox.Style>
+                                    </TextBox>
+                                    <Button Grid.Column="1" x:Name="btn_SearchReset" Click="btn_SearchReset_Click">
+                                        <Button.Style>
+                                            <Style TargetType="Button" >
+                                                <Setter Property="Background" Value="{StaticResource color_Gray3}"/>
+                                                <Setter Property="BorderBrush" Value="{StaticResource color_Gray3}"/>
+                                                <Setter Property="BorderThickness" Value="1"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="Width" Value="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
+                                                <Setter Property="Margin" Value="3"/>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border CornerRadius="10" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{ TemplateBinding BorderThickness}">
+                                                                <Path Stroke="{TemplateBinding Foreground}" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                                                                    <Path.Data>
+                                                                        <PathGeometry>
+                                                                            <PathFigure StartPoint="5,5">
+                                                                                <LineSegment Point="13,13"/>
+                                                                            </PathFigure>
+                                                                            <PathFigure StartPoint="13,5">
+                                                                                <LineSegment Point="5,13"/>
+                                                                            </PathFigure>
+                                                                        </PathGeometry>
+                                                                    </Path.Data>
+                                                                </Path>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource color_Gray5}"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                           
+                                        </Button.Style>
+                                    </Button>
+
+
+                                </Grid>
+                               
+                            </Border>
+                            
                             <Button Grid.Column="2" Uid="byKeyword" Content="검색" Click="btn_Search_Click"/>
                         </Grid>
                     </Border>
@@ -149,7 +224,7 @@
                                 <Button Uid="0" Content="전체 해제" Click="btn_AllSelect_Click" />
                             </StackPanel>
                             <Grid Grid.Column="1" Margin="10,0,5,0">
-                                <Button Content="전체 검토" Click="btn_AllTextChecked_clicked"/>
+                                
                             </Grid>
                         </Grid>
                     </Border>
@@ -200,16 +275,12 @@
                 <Grid Grid.Row="2" Height="35">
                     <Grid.Resources>
                         <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
-                            <Setter Property="Margin" Value="3,5,3,5"/>
+                            <Setter Property="Margin" Value="3"/>
                         </Style>
                     </Grid.Resources>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <Button Content="검토" Click="btn_ConvertToXML_Click"/>
-                    </StackPanel>
+                    
+                    <Button Content="전체 검토" Click="btn_ConvertToXML_Click"/>
+                    
                 </Grid>
             </Grid>
 
@@ -319,11 +390,50 @@
                         <StackPanel MinHeight="35" Orientation="Horizontal">
                             <TextBlock Grid.Row="0" Grid.Column="0"  Text="글자 제거" Style="{StaticResource subStyle_Title_Textlbock}"/>
                             <WrapPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="5">
-                                <Button Content="첫 글자 제거" Click="btn_RemoveFirst_Click"/>
-                                <Button Content="끝 글자 제거" Click="btn_RemoveLast_Click"/>
-                                <StackPanel Orientation="Horizontal" Margin="20,0,10,0" Height="30">
+                                <Button Content="첫 글자 제거" Margin="0,5,0,5" Click="btn_RemoveFirst_Click"/>
+                                <Button Content="끝 글자 제거" Margin="5" Click="btn_RemoveLast_Click"/>
+                                <StackPanel Orientation="Horizontal" Margin="10,0,15,0" Height="30">
                                     <TextBlock Text="키워드 제거" VerticalAlignment="Center"/>
-                                    <TextBox x:Name="txtbox_RemoveKeyword" Width="200" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                                    <Border >
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="White"/>
+                                                <Setter Property="BorderBrush" Value="{StaticResource color_Gray3}"/>
+                                                <Setter Property="BorderThickness" Value="1"/>
+                                                <Setter Property="CornerRadius" Value="5"/>
+                                                <Setter Property="Margin" Value="5,0,5,0"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Text, ElementName=txtbox_RemoveKeyword}" Value="">
+                                                        <Setter Property="BorderBrush" Value="{StaticResource color_Gray2}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsFocused, ElementName= txtbox_RemoveKeyword}" Value="True">
+                                                        <Setter Property="BorderBrush" Value="{StaticResource color_Gray4}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Grid MinWidth="250" MaxWidth="500">
+                                            <TextBlock Text="제거할 키워드를 입력하세요." Foreground="{StaticResource color_Gray3}" FontWeight="Bold" FontSize="10" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,10,0"/>
+                                            <TextBox x:Name="txtbox_RemoveKeyword"  >
+                                                <TextBox.Style>
+                                                    <Style TargetType="TextBox">
+                                                        <Setter Property="Background" Value="White"/>
+                                                        <Setter Property="BorderBrush" Value="Transparent"/>
+                                                        <Setter Property="BorderThickness" Value="0"/>
+                                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                                        <Setter Property="Margin" Value="5,0,5,0"/>
+                                                        <Style.Triggers>
+                                                            <Trigger Property="Text" Value="">
+                                                                <Setter Property="Background" Value="Transparent"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBox.Style>
+                                            </TextBox>
+                                        </Grid>
+                                    </Border>
+                                    
+                                    
                                     <Button Content="제거" Click="btn_KeywordRemove_Click"/>
                                 </StackPanel>
 

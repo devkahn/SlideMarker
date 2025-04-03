@@ -957,5 +957,17 @@ namespace MDM.Views.MarkChecker.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
+
+        private void btn_ContentsSave_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
     }
 }

@@ -16,19 +16,52 @@
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" MaxWidth="500"/>
+            <ColumnDefinition Width="1.5*" MinWidth="400" MaxWidth="600"/>
+            <ColumnDefinition Width="*" MinWidth="350" MaxWidth="600"/>
             <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="0"/>
+            <ColumnDefinition Width="3*"/>
+            
         </Grid.ColumnDefinitions>
 
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
                 <RowDefinition Height="30"/>
                 <RowDefinition/>
                 <RowDefinition MinHeight="30" Height="auto"/>
             </Grid.RowDefinitions>
+
+
+
             <Border Grid.Row="0">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{StaticResource color_Primary}"/>
+                    </Style>
+                </Border.Style>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="목차" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="10,0,10,0"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="5">
+                        <StackPanel.Resources>
+                            <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                                
+                            </Style>
+                        </StackPanel.Resources>
+                        <StackPanel x:Name="stackPanel_SaveMessage" Orientation="Horizontal" Visibility="Collapsed">
+                            <TextBlock x:Name="textblock_TimeStamp" Text="25/04/03 15:12:16" Foreground="Yellow" FontWeight="Normal" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <TextBlock Text="SAVED!" Foreground="Gold" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        </StackPanel>
+                        <Button x:Name="btn_Save" Content="현재 목차 저장" Click="btn_Save_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Border Grid.Row="1" Background="{StaticResource color_Gray2}">
                 <Grid>
                     <Grid.Resources>
                         <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
@@ -39,26 +72,25 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,1,0,1">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="3,0,3,0">
                             <Button Uid="1" x:Name="btn_ChildrenFold" Content="하위 접기" Click="btn_ChildrenFold_Click"/>
                             <Button Uid="0" x:Name="btn_ChildrenUnFold" Content="하위 펼치기" Click="btn_ChildrenFold_Click"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="3,0,3,0">
-                            <!--<Button Uid="1" x:Name="btn_AddRoot" Content="루트 추가" Click="btn_AddRoot_Click"/>
-                            <Button Uid="0" x:Name="btn_AddChild" Content="하위 추가" Click="btn_AddChild_Click"/>-->
-                            <Button x:Name="btn_Refresh" Click="btn_Refresh_Click"/>
+                            
                         </StackPanel>
-                    </StackPanel>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <!--<Button x:Name="btn_MoveUp" Content="▲" Click="btn_MoveUp_Click"/>
-                        <Button x:Name="btn_MoveDown" Content="▼" Click="btn_MoveDown_Click"/>-->
                     </StackPanel>
                 </Grid>
             </Border>
-
-            <TreeView Grid.Row="1" x:Name="treeview_Header"  ItemsSource="{Binding RootHeadings}" 
+            <TreeView Grid.Row="2" x:Name="treeview_Header"  ItemsSource="{Binding RootHeadings}" 
                       SelectedItemChanged="treeview_Header_SelectedItemChanged">
+                <TreeView.Style>
+                    <Style TargetType="TreeView">
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
+                </TreeView.Style>
                 <TreeView.Resources>
                     <Style TargetType="TreeViewItem">
                         <Setter Property="IsExpanded" Value="{Binding IsTreeExpanded, Mode=TwoWay}"/>
@@ -111,32 +143,137 @@
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
-            <Border Grid.Row="2" Background="{StaticResource color_White}">
+            <Border Grid.Row="3" Background="{StaticResource color_Gray1}">
                 <Grid Grid.Row="1">
                     <Grid.Resources>
                         <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
                             <Setter Property="Margin" Value="5"/>
                         </Style>
                     </Grid.Resources>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <!--<Button x:Name="btn_SelectionRemove" Content="선택 삭제" Click="btn_SelectionRemove_Click"/>
+                        <Button x:Name="btn_SelectionRemove" Content="선택 삭제" Click="btn_SelectionRemove_Click"/>
                         <Button x:Name="btn_SelectionMove" Content="선택 이동" Click="btn_SelectionMove_Click"/>
-                        <Button x:Name="btn_SelectionCopy" Content="선택 복사" Click="btn_SelectionCopy_Click"/>-->
+                        <Button x:Name="btn_SelectionCopy" Content="선택 복사" Click="btn_SelectionCopy_Click"/>
                     </StackPanel>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <!--<Button x:Name="btn_ReLoad" Content="다시 로드" Click="btn_ReLoad_Click"/>-->
-                        <Button x:Name="btn_Save" Content="제목 저장" Click="btn_Save_Click"/>
-                    </StackPanel>
-
                 </Grid>
             </Border>
-            
         </Grid>
         <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition />
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{StaticResource color_Primary2}"/>
+                    </Style>
+                </Border.Style>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0,5,0">
+                        <TextBlock Grid.Column="0" Text="본문" Style="{StaticResource baseStyle_PanelTitle_Textblock}"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="3,0,3,0">
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource baseStyle_PanelTitle_Textblock}">
+                                    <Setter Property="FontSize" Value="13"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <TextBlock Text="("/>
+                            <TextBlock Text="{Binding Items.Count, ElementName=listbox_ContainContents}"/>
+                            <TextBlock Text=")"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Border Grid.Row="1">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{StaticResource color_Gray2}"/>
+                    </Style>
+                </Border.Style>
+                <Grid Grid.Column="0"  VerticalAlignment="Center" Margin="10,0,10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="선택한 제목 : " Foreground="Black" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="1" Text="{Binding SelectedItem.Display_Name , ElementName=treeview_Header}" TextTrimming="CharacterEllipsis" Foreground="Black"
+                               ToolTip="{Binding Text, RelativeSource={RelativeSource Mode=Self}}"/>
+                </Grid>
+            </Border>
+            <ListBox Grid.Row="2" x:Name="listbox_ContainContents" ItemsSource="{Binding SelectedItem.Contents, ElementName=treeview_Header}">
+                <ListBox.Style>
+                    <Style TargetType="ListBox">
+                        <Setter Property="Background" Value="White"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="DisplayMemberPath" Value="Display_Content"/>
+                    </Style>
+                </ListBox.Style>
+                <ListBox.Resources>
+                    <Style TargetType="ListBoxItem" >
+                        <Setter Property="Background" Value="Pink"/>
+                        <Setter Property="MinHeight" Value="40"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border BorderBrush="{StaticResource color_Gray2}" BorderThickness="0,0,0,1">
+                                        <Grid Margin="0,2,0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="33"/>
+                                                <ColumnDefinition Width="33"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Grid.ColumnSpan="10" Background="{TemplateBinding Background}" Opacity="0.5"/>
+
+                                            <Border Grid.Column="0" CornerRadius="50" Margin="3,5,3,5" BorderThickness="1" Background="{StaticResource color_Gray1}" BorderBrush="{StaticResource color_Gray3}"
+                                                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}">
+                                                <TextBlock Text="{Binding Display_SlideNum}" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <Border Grid.Column="1" CornerRadius="5" Margin="3,5,5,5" BorderThickness="1" Background="{StaticResource color_Gray1}" BorderBrush="{StaticResource color_Gray3}"
+                                                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}">
+                                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="11">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="글"/>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Border>
+                                            <Border Grid.Column="2" >
+                                                <TextBlock Text="{Binding Display_Content}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                            </Border>
+
+                                        </Grid>
+                                    </Border>
+                                    
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.Resources>
+                
+                
+            </ListBox>
+            
+            
+            
+        </Grid>
+            
+    
+        
+        
+        
+        <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"/>
                 <RowDefinition />
@@ -166,7 +303,7 @@
         </Grid>
 
 
-        <ContentPresenter Grid.Column="2" x:Name="contentPresenter"/>
+        
 
 
 
