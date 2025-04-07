@@ -141,7 +141,7 @@ namespace MDM.Views.MarkChecker.Pages
                     From = 1,
                     To = 0,
                     Duration = TimeSpan.FromSeconds(1),
-                    BeginTime = TimeSpan.FromSeconds(2) // 3초 후에 시작
+                    BeginTime = TimeSpan.FromSeconds(1) // 3초 후에 시작
                 };
                 fadeOutAnimation.Completed += (s, ee) =>
                 {
@@ -165,37 +165,37 @@ namespace MDM.Views.MarkChecker.Pages
         {
             try
             {
-                //if (this.contentPresenter == null) return;
+                if (this.contentPresenter == null) return;
 
-                //ListBoxItem selectedRule = this.listbox_RuleSet.SelectedItem as ListBoxItem;
-                //if (selectedRule == null) return;
+                ListBoxItem selectedRule = this.listbox_RuleSet.SelectedItem as ListBoxItem;
+                if (selectedRule == null) return;
 
-                //string uid = selectedRule.Uid;
-                //if(!this.RuleSetPages.ContainsKey(uid))
-                //{
-                //    UserControl uc = null;
-                //    switch (uid)
-                //    {
-                //        case "1": uc = new ucRuleCheckTreePreprocessing(); break;
-                //        case "101": uc = new ucRuleCheckContentsSync(); break;
-                //        case "102": uc = new ucRuleCheckSameNameFinder(); break;
-                //        case "998": uc = new ucRuleCheckHeaderProperty(); break;
-                //        case "999": uc = new ucRuleCheckUserModify(); break;
-                //        default: break;
-                //    }
-                //    this.RuleSetPages.Add(uid, uc);
-                //}
+                string uid = selectedRule.Uid;
+                if (!this.RuleSetPages.ContainsKey(uid))
+                {
+                    UserControl uc = null;
+                    switch (uid)
+                    {
+                        case "1": uc = new ucRuleCheckTreePreprocessing(); break;
+                        case "101": uc = new ucRuleCheckContentsSync(); break;
+                        case "102": uc = new ucRuleCheckSameNameFinder(); break;
+                        case "998": uc = new ucRuleCheckHeaderProperty(); break;
+                        case "999": uc = new ucRuleCheckUserModify(); break;
+                        default: break;
+                    }
+                    this.RuleSetPages.Add(uid, uc);
+                }
 
-                //UserControl page = this.RuleSetPages[uid];
-                //if(page != null)
-                //{
-                //    page.DataContext = null;
-                //    page.DataContext = this.Material;
-                //}
-                
+                UserControl page = this.RuleSetPages[uid];
+                if (page != null)
+                {
+                    page.DataContext = null;
+                    page.DataContext = this.Material;
+                }
 
-                //this.contentPresenter.Content = null;
-                //this.contentPresenter.Content = page;
+
+                this.contentPresenter.Content = null;
+                this.contentPresenter.Content = page;
             }
             catch (Exception ee) 
             {
@@ -229,6 +229,34 @@ namespace MDM.Views.MarkChecker.Pages
         private void btn_SelectionCopy_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void btn_DeleteSelectContent_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                vmHeading heading = this.treeview_Header.SelectedItem as vmHeading;
+                if (heading == null) return;
+
+                List<vmContent> selectedItems = new List<vmContent>();
+                foreach (vmContent item in this.listbox_ContainContents.SelectedItems)
+                {
+                    if (item == null) continue;
+                    selectedItems.Add(item);
+                }
+
+
+                foreach (vmContent item in selectedItems)
+                {
+                    heading.RemoveContent(item);
+                    this.Material.RemoveContent(item);
+                }
+                
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
     }
 }

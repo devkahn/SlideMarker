@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
 
 namespace MDM.Views.MarkChecker.Pages
 {
@@ -901,6 +902,61 @@ namespace MDM.Views.MarkChecker.Pages
             content.InitializeDisplay();
             content.SetBackground(true);
         }
+        public void UnOrderlistCheckAndConvert2(vmContent content)
+        {
+            Dictionary<int, string> tempDic = new Dictionary<int, string>();
+            string[] lines = TextHelper.SplitText(content.Temp.Temp.LineText);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string ln = lines[i];
+                if (TextHelper.IsNoText(ln)) continue;
+                tempDic.Add(i, ln);
+            }
+
+            char[] marks = { '#', '*' };
+
+            int cnt = 0;
+            bool onMarking = true;
+            while(onMarking)
+            {
+                Dictionary<int, string> targetLines = new Dictionary<int, string>();
+
+                foreach (int key in tempDic.Keys)
+                {
+                    string ln = tempDic[key];
+
+                    if (marks.Contains(ln.First())) continue;
+                    if (char.IsWhiteSpace(ln.First())) continue;
+                    
+                    targetLines.Add(key, ln)
+                }
+
+                if (targetLines.Count == 0) break;
+
+                foreach (int key in targetLines.Keys)
+                {
+                    string ln = tempDic[key];
+                    bool isOrderedList = char.IsDigit(ln.First());
+
+                    string mark = string.Empty;
+                    for (int i = 0; i <= cnt; i++) mark += isOrderedList ? "#" : "*";
+
+                    tempDic[key] = string.Format(mark, " ", ln.Trim());
+                }
+
+                cnt++;
+            }
+
+            string result = string.Empty;
+            foreach (string item in tempDic.Values)
+            {
+                result += item;
+                if (item != tempDic.Values.Last()) result += "\n";
+            }
+            content.Temp.SetText(result);
+            content.InitializeDisplay();
+            content.SetBackground(true);
+        }
         public void NormalCheckAndConvert(vmContent content)
         {
             string ln = content.Temp.Temp.LineText;
@@ -935,6 +991,29 @@ namespace MDM.Views.MarkChecker.Pages
                 this.txtbox_SearchKeyword.Text = this.SearchKeyword = string.Empty;
                 BindList();
                 btn.Visibility = Visibility.Collapsed;
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_CheckSelectedItems_click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                foreach (vmContent item in this.listbox_SelectedItems.Items)
+                {
+                    if (item == null) continue;
+                    switch (item.ContentType)
+                    {
+
+                        case eContentType.NormalText: NormalCheckAndConvert(item); break;
+                        case eContentType.OrderList: OrderListCheckAndConvert(item); break;
+                        case eContentType.UnOrderList: UnOrderlistCheckAndConvert(item); break;
+                        default: break;
+                    }
+                }
             }
             catch (Exception ee)
             {

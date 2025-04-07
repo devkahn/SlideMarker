@@ -458,7 +458,33 @@
                 </Border>
                 <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10"  Height="1" Background="{StaticResource color_Gray1}" VerticalAlignment="Bottom"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="0"  Text="선택" Style="{StaticResource subStyle_Title_Textlbock}"/>
+                <Grid Grid.Row="1" Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Grid.Row="1" Grid.Column="0"  Text="선택" Style="{StaticResource subStyle_Title_Textlbock}"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="-3,0,3,0">
+                            <TextBlock Text="("/>
+                            <TextBlock Text="{Binding Items.Count, ElementName=listbox_SelectedItems}" Margin="1,0,1,0"/>
+                            <TextBlock Text=")"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <Button Grid.Row="1"  HorizontalAlignment="Center" VerticalAlignment="Center" Click="btn_CheckSelectedItems_click">
+                        <Button.Content>
+                            <TextBlock Margin="5">
+                                선택
+                                <LineBreak/>
+                                검토    
+                            </TextBlock>
+                        </Button.Content>
+                    </Button>
+
+
+
+                </Grid>
+                
                 <Border Grid.Row="1" Grid.Column="1" >
                     <Grid>
                         <Grid.RowDefinitions>
@@ -466,7 +492,7 @@
                             <RowDefinition Height="35"/>
                         </Grid.RowDefinitions>
 
-                        <ListBox ItemsSource="{Binding SelectedItems, ElementName=listbox_headers}">
+                        <ListBox x:Name="listbox_SelectedItems" ItemsSource="{Binding SelectedItems, ElementName=listbox_headers}">
                             <ListBox.Style>
                                 <Style TargetType="ListBox">
                                     <Setter Property="BorderBrush" Value="Transparent"/>

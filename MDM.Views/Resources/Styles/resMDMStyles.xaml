@@ -31,6 +31,12 @@
     <valueConverter:NullToVisibilityConverter x:Key="converter_NullToVisibility"/>
     <valueConverter:NullToVisibilityConverterReverse x:Key="converter_NullToVisibilityReverse"/>
 
+    <valueConverter:ParentCountConverter x:Key="ParentCountConverterInstance"/>
+    <valueConverter:SumConverter x:Key="SumConverterInstance"/>
+
+
+
+
     <Style TargetType="ToolTip">
         <Setter Property="ToolTipService.InitialShowDelay" Value="100"/>
         <Setter Property="ToolTipService.ShowDuration" Value="1500"/>

@@ -120,6 +120,8 @@
     <Compile Include="Converters\IntToVisibilityConverterReverse.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverterReverse.cs" />
+    <Compile Include="Converters\ParentCountConverter.cs" />
+    <Compile Include="Converters\SumConverter.cs" />
     <Compile Include="DataLabeling\Pages\ucDataLabelingPreviewItem.xaml.cs">
       <DependentUpon>ucDataLabelingPreviewItem.xaml</DependentUpon>
     </Compile>
