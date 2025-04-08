@@ -81,9 +81,11 @@
                                 <Button Uid="1" x:Name="btn_ChildrenFold" Content="하위 접기" Click="btn_ChildrenFold_Click"/>
                                 <Button Uid="0" x:Name="btn_ChildrenUnFold" Content="하위 펼치기" Click="btn_ChildrenFold_Click"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="3,0,3,0">
-
-                            </StackPanel>
+                      
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="3,0,3,0">
+                            <Button x:Name="btn_MoveUp" Content="▲" Click="btn_MoveUp_Click"/>
+                            <Button x:Name="btn_MoveDown" Content="▼" Click="btn_MoveDown_Click"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -94,22 +96,24 @@
                             <Setter Property="BorderThickness" Value="0"/>
                             <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=Grid}}"/>
                             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="auto"/>
+                            
                         </Style>
                     </TreeView.Style>
                     <TreeView.Resources>
                         <Style TargetType="TreeViewItem">
                             <Setter Property="IsExpanded" Value="{Binding IsTreeExpanded, Mode=TwoWay}"/>
                             <Setter Property="Margin" Value="0,0,0,1"/>
-                            <Setter Property="ContextMenu">
+                            
+                            <!--<Setter Property="ContextMenu">
                                 <Setter.Value>
                                     <ContextMenu>
-                                        <MenuItem Header="제목 이동"/>
-                                        <MenuItem Header="제목 복사"/>
+                                        <MenuItem Header="제목 이동" Click="menuItem_MoveHeader_Click"/>
+                                        <MenuItem Header="제목 복사" Click="menuItem_CopyHeader_Click"/>
                                         <Separator/>
-                                        <MenuItem Header="삭제"/>
+                                        <MenuItem Header="삭제" Click="menuItem_DeleteHeader_Click"/>
                                     </ContextMenu>
                                 </Setter.Value>
-                            </Setter>
+                            </Setter>-->
                             
                         </Style>
                     </TreeView.Resources>
@@ -124,27 +128,42 @@
                                 </Grid.Width>-->
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
+                                    
                                     <ColumnDefinition />
+                                    <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
-                                <Border Grid.Column="0" Background="White" BorderBrush="DarkGreen" BorderThickness="1" VerticalAlignment="Center" Margin="3,3,0,3" Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Contents.Count}" Value="0">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                    <TextBlock Text="컨" FontSize="10" Margin="1" Foreground="DarkGreen" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
+                                <Grid Width="50">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" CornerRadius="5,0,0,5" Background="White" BorderBrush="{StaticResource color_Gray3}" BorderThickness="1,1,0,1" Margin="4,4,0,4">
+                                        <TextBlock x:Name="txtblock_StartNum" Text="{Binding Display_StartNum}" Foreground="Black" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="8"/>
+                                    </Border>
+                                    <Border Grid.Column="1" CornerRadius="0,5,5,0" Background="White" BorderThickness="1" Margin="0,4,4,4">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="BorderBrush" Value="{StaticResource color_Gray3}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Display_FinishNum}" Value="{x:Null}">
+                                                        <Setter Property="BorderBrush" Value="{StaticResource color_Gray2}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <TextBlock x:Name="txtblock_finish" Text="{Binding Display_FinishNum}" Foreground="Black" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="8">
+                                        </TextBlock>
+                                                  
+                                    </Border>
+                                </Grid>
+                               
                                 <Grid Grid.Column="1" MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=TreeView}}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding Display_Name}" TextTrimming="WordEllipsis" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5"/>
+                                    <TextBlock Grid.Column="0" Text="{Binding Display_Name}" TextTrimming="WordEllipsis" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5,5,5"/>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="3,0,10,0">
                                         <StackPanel.Style>
                                             <Style TargetType="StackPanel">
@@ -166,6 +185,19 @@
                                         <TextBlock Text=")"/>
                                     </StackPanel>
                                 </Grid>
+                                <Border Grid.Column="2" Background="White" BorderBrush="DarkGreen" BorderThickness="1" VerticalAlignment="Center" Margin="3,3,0,3" Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Contents.Count}" Value="0">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="컨" FontSize="10" Margin="1" Foreground="DarkGreen" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
                             </Grid>
                         </HierarchicalDataTemplate>
                     </TreeView.ItemTemplate>
@@ -182,6 +214,9 @@
                             <Button x:Name="btn_SelectionMove" Content="선택 이동" Click="btn_SelectionMove_Click"/>
                             <Button x:Name="btn_SelectionCopy" Content="선택 복사" Click="btn_SelectionCopy_Click"/>
                         </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="제목 추가" Click="btn_CreateNewHeader_Click"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
             </Grid>
@@ -190,6 +225,7 @@
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"/>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
                 <RowDefinition />
                 <RowDefinition Height="30"/>
@@ -237,6 +273,30 @@
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="Background" Value="{StaticResource color_Gray2}"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource color_Gray3}"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                    </Style>
+                </Border.Style>
+                <Grid>
+                    <Grid.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}"/>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,3,5,3">
+                        <Button Content="전체 선택" Click="btn_AllSelect_Click"/>
+                        <Button Content="전체 해제" Click="btn_AllUnSelect_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <Border Grid.Row="2">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{StaticResource color_Gray1}"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource color_Gray3}"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
                     </Style>
                 </Border.Style>
                 <Grid Grid.Column="0"  VerticalAlignment="Center" Margin="10,0,10,0">
@@ -251,7 +311,7 @@
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="3">
                 <TextBlock Text="No Contents" FontWeight="Bold"  Margin="10" />
                 <ListBox Grid.Row="2" x:Name="listbox_ContainContents" ItemsSource="{Binding SelectedItem.Contents, ElementName=treeview_Header}">
                     <ListBox.Style>
@@ -359,7 +419,7 @@
                     </ListBox.Resources>
                 </ListBox>
             </Grid>
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="4">
                 <Grid.Resources>
                     <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
                         
@@ -372,7 +432,9 @@
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,3,5,3">
                     <Button Content="선택 삭제" Click="btn_DeleteSelectContent_Click"/>
                 </StackPanel>
-                
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,3,5,3">
+                    <Button Content="선택 이동" Click="btn_MoveSelectContent_Click"/>
+                </StackPanel>
 
             </Grid>
         </Grid>
@@ -387,7 +449,7 @@
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Rules" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="5"/>
+                    <TextBlock Grid.Column="0" Text="Tools" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="5"/>
                 </Grid>
             </Border>
             <ListBox Grid.Row="1" x:Name="listbox_RuleSet" SelectionChanged="listbox_RuleSet_SelectionChanged" >
@@ -396,10 +458,10 @@
                         <Setter Property="Height" Value="35"/>
                     </Style>
                 </ListBox.Resources>
-                <ListBoxItem Uid="1" Content="목차 전처리"/>
-                <ListBoxItem Uid="101" Content="목차 동기화 검토"/>
-                <ListBoxItem Uid="102" Content="동일 제목 검토"/>
-                <ListBoxItem Uid="998" Content="개별 수정"/>
+                <ListBoxItem Uid="1" Content="목차 전처리" Visibility="Collapsed"/>
+                <ListBoxItem Uid="101" Content="목차 동기화 검토" Visibility="Collapsed"/>
+                <ListBoxItem Uid="102" Content="하위 제목 검토" />
+                <ListBoxItem Uid="998" Content="개별 수정" IsSelected="True"/>
                 <ListBoxItem Uid="999" Content="일괄 수정"/>
 
             </ListBox>

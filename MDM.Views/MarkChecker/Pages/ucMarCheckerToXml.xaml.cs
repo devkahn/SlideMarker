@@ -4,6 +4,7 @@ using MDM.Models.Attributes;
 using MDM.Models.DataModels;
 using MDM.Models.DataModels.ManualWorksXMLs;
 using MDM.Models.ViewModels;
+using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -192,7 +193,8 @@ namespace MDM.Views.MarkChecker.Pages
 
             if(heading.HeadingType == Commons.Enum.eHeadingType.ExportNote)
             {
-                SetContentProperties(xmlDoc, headingElement, option.NoteElement);
+                int slideNum = heading.Contents.Any() ? heading.Contents.Min(x => int.Parse(x.Display_SlideNum.ToString())) : 0;
+                SetContentProperties(slideNum , xmlDoc, headingElement, option.NoteElement);
 
                 //Config
                 {
@@ -214,6 +216,8 @@ namespace MDM.Views.MarkChecker.Pages
                     output += string.Format("<p>{0}</p>", subHeading.Temp.Name);
                     foreach (vmContent subCon in subHeading.Contents)
                     {
+                        if (!subCon.IsEnable) continue;
+
                         string contentDiv = "<div>";
                         switch (subCon.ContentType)
                         {
@@ -250,6 +254,8 @@ namespace MDM.Views.MarkChecker.Pages
 
                 foreach (vmContent subCon in heading.Contents)
                 {
+                    if (!subCon.IsEnable) continue;
+
                     string contentDiv = "<div>";
                     switch (subCon.ContentType)
                     {
@@ -293,7 +299,8 @@ namespace MDM.Views.MarkChecker.Pages
                 }
 
 
-                SetHeadingProperties(xmlDoc, headingElement, headingOption);
+                int slideNum = heading.Contents.Any() ? heading.Contents.Min(x => int.Parse(x.Display_SlideNum.ToString())) : 0;
+                SetHeadingProperties(slideNum, xmlDoc, headingElement, headingOption);
 
                 XmlElement headling1Name = xmlDoc.CreateElement("content");
                 headingElement.AppendChild(headling1Name);
@@ -303,6 +310,8 @@ namespace MDM.Views.MarkChecker.Pages
 
                 foreach (vmContent con in heading.Contents)
                 {
+                    if (!con.IsEnable) continue;
+
                     XmlElement contentElement = xmlDoc.CreateElement("element");
                     chapterElement.AppendChild(contentElement);
                     xmlElement optionElement = null;
@@ -316,7 +325,7 @@ namespace MDM.Views.MarkChecker.Pages
                         default: optionElement = option.TextElement; break;
                     }
 
-                    SetContentProperties(xmlDoc, contentElement, optionElement);
+                    SetContentProperties(int.Parse(con.Display_SlideNum.ToString()), xmlDoc, contentElement, optionElement);
 
 
                     // image
@@ -341,6 +350,7 @@ namespace MDM.Views.MarkChecker.Pages
                     if (con.ContentType == Commons.Enum.eContentType.Image) contentString = image.FileName;
                     if (con.ContentType == Commons.Enum.eContentType.Table)
                     {
+                        contentString = con.Temp_TableHTML;
                         string pattern = @"!\[\]\((.*?)\)";
                         MatchCollection matches = Regex.Matches(contentString, pattern);
 
@@ -507,7 +517,7 @@ namespace MDM.Views.MarkChecker.Pages
 
             SetBasicProperty(rootDoc, props);
         }
-        private void SetHeadingProperties(XmlDocument rootDoc, XmlElement element, xmlElement heading1Option)
+        private void SetHeadingProperties(int slideNum, XmlDocument rootDoc, XmlElement element, xmlElement heading1Option)
         {
             string id = XMLHelper.GenerateUUId(8);
             element.SetAttribute("id", id);
@@ -525,6 +535,7 @@ namespace MDM.Views.MarkChecker.Pages
 
                 XmlElement xmlProp = rootDoc.CreateElement("property");
                 xmlProp.SetAttribute("name", subPropAtt.Prorperty.Name);
+                if (subPropAtt.Prorperty.Name == "alias") valueString = id + "_" + slideNum.ToString("0000");
                 xmlProp.SetAttribute("value", valueString);
                 props.AppendChild(xmlProp);
             }
@@ -539,7 +550,7 @@ namespace MDM.Views.MarkChecker.Pages
 
             SetBasicProperty(rootDoc, props);
         }
-        private void SetContentProperties(XmlDocument rootDoc, XmlElement element, xmlElement contentOption)
+        private void SetContentProperties(int slideNum, XmlDocument rootDoc, XmlElement element, xmlElement contentOption)
         {
             string id = XMLHelper.GenerateUUId(8);
             element.SetAttribute("id", id);
@@ -558,6 +569,7 @@ namespace MDM.Views.MarkChecker.Pages
 
                 XmlElement xmlProp = rootDoc.CreateElement("property");
                 xmlProp.SetAttribute("name", subPropAtt.Prorperty.Name);
+                if (subPropAtt.Prorperty.Name == "alias") valueString = id + "_" + slideNum.ToString("0000");
                 xmlProp.SetAttribute("value", valueString);
                 props.AppendChild(xmlProp);
             }

@@ -115,7 +115,7 @@ namespace MDM.Helpers
             string divider = lines.Where(x => IsTableDivider(x)).FirstOrDefault();
             if (string.IsNullOrEmpty(divider)) return false;
 
-            int columnCnt = GetCellValueInRowString(divider.Replace("+", "|")).Length;
+            int columnCnt = GetCellValueInRowString(divider.Replace("＋", "+").Replace("+", "|")).Length;
             foreach (string ln in lines)
             {
                 if (ln == divider) continue;
@@ -128,12 +128,16 @@ namespace MDM.Helpers
         }
         public static bool IsTableDivider(string input)
         {
+            string line = CleansingForXML(input).RemoveEmtpy();
+            line = line.Replace("＋", "+");
+
             string pattern = @"^(\|[-]+|\+[-]+)+\|$";
-            return Regex.IsMatch(RemoveEmtpy(input), pattern);
+            bool isDivider = Regex.IsMatch(line, pattern);
+            return isDivider;
         }
         public static string[] GetCellValueInRowString(string input)
         {
-            string[] parts = CleansingForXML(input).Split('|', (char)StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = CleansingForXML(input.Trim()).Split('|', (char)StringSplitOptions.RemoveEmptyEntries);
             if(string.IsNullOrEmpty(parts.First())) parts = parts.Skip(1).ToArray();
             if(string.IsNullOrEmpty(parts.Last())) parts = parts.Take(parts.Length - 1).ToArray();
 

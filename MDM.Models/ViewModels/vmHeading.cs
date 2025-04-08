@@ -16,9 +16,12 @@ namespace MDM.Models.ViewModels
         private mHeading _Origin = null;
 
         private bool _IsTreeExpanded = true;
+        private bool _IsEnabled = true;
+
         private object _Display_Name = null;
         private eHeadingType _HeadingType = eHeadingType.Normal;
-
+        private object _Display_StartNum = null;
+        private object _Display_FinishNum = null;
     }
 
     public partial class vmHeading : vmViewModelbase
@@ -68,9 +71,18 @@ namespace MDM.Models.ViewModels
                 OnPropertyChanged(nameof(this.IsTreeExpanded), false);
             }
         }
+        public bool IsEnabled
+        {
+            get => _IsEnabled;
+            set
+            {
+                _IsEnabled = value;
+                OnPropertyChanged(nameof(this.IsEnabled));
+            }
+        }
 
         public ReadOnlyObservableCollection<vmHeading> Children => new ReadOnlyObservableCollection<vmHeading>(this.OriginChildren);
-        public ReadOnlyObservableCollection<vmContent> Contents => new ReadOnlyObservableCollection<vmContent>(this.OriginContents);
+        public ReadOnlyObservableCollection<vmContent> Contents => new ReadOnlyObservableCollection<vmContent>(new ObservableCollection<vmContent>(this.OriginContents.Where(x=> x.IsEnable)));
 
 
         public object Display_Name
@@ -80,6 +92,34 @@ namespace MDM.Models.ViewModels
             {
                 _Display_Name = value;
                 OnPropertyChanged(nameof(this.Display_Name));
+            }
+        }
+        public object Display_StartNum
+        {
+            get
+            {
+                if (this.Contents != null && this.Contents.Count() > 0)
+                {
+                    int min = this.Contents.Min(x => int.Parse(x.Display_SlideNum.ToString()));
+                    return this._Display_StartNum = min;
+                }
+   
+                return null;
+            }
+        }
+        public object Display_FinishNum
+        {
+            get
+            {
+                if (this.Contents != null && this.Contents.Count() > 0)
+                {
+                    int max = this.Contents.Max(x => int.Parse(x.Display_SlideNum.ToString()));
+                    int min = this.Contents.Min(x => int.Parse(x.Display_SlideNum.ToString()));
+                    this._Display_FinishNum = max;
+                    if (max != min) return this._Display_FinishNum;
+                }
+    
+                return null;
             }
         }
     }
@@ -94,6 +134,7 @@ namespace MDM.Models.ViewModels
         {
             if (this.OriginContents.Contains(content)) return;
             this.OriginContents.Add(content);
+            OnPropertyChanged(nameof(this.Contents));
         }
         public void TreeExpand(bool isExpanded)
         {
@@ -126,6 +167,9 @@ namespace MDM.Models.ViewModels
         {
             if(!this.OriginContents.Contains(content)) return;
             this.OriginContents.Remove(content);
+            OnPropertyChanged(nameof(this.Contents));
+            OnPropertyChanged(nameof(this.Display_StartNum));
+            OnPropertyChanged(nameof(this.Display_FinishNum));
         }
         public void SetChildrenLevel()
         {
@@ -175,7 +219,45 @@ namespace MDM.Models.ViewModels
                 this.Parent.AddChild(this);
             }
             SetChildrenLevel();
+            
         }
+
+        public void SetPageNumber()
+        {
+            OnPropertyChanged(nameof(this.Display_StartNum));
+            OnPropertyChanged(nameof(this.Display_FinishNum));
+        }
+        public int? GetStartNum()
+        {
+            int? min = null;
+
+            if(this.Contents != null && this.Contents.Count >0)
+            {
+                return this.Contents.Min(x => int.Parse(x.Display_SlideNum.ToString()));
+            }
+            else if (this.Children != null && this.Children.Count > 0)
+            {
+                return this.Children.Min(x => x.GetStartNum());
+            }
+
+            return min;
+        }
+        public int? GetFinishNum()
+        {
+            int? max = null;
+
+            if (this.Contents != null && this.Contents.Count > 0)
+            {
+                return this.Contents.Max(x => int.Parse(x.Display_SlideNum.ToString()));
+            }
+            else if (this.Children != null && this.Children.Count > 0)
+            {
+                return this.Children.Max(x => x.GetFinishNum());
+            }
+
+            return max;
+        }
+
         public void SetHeadintType(eHeadingType type)
         {
             this.HeadingType = type;
@@ -231,6 +313,19 @@ namespace MDM.Models.ViewModels
             this.Origin.Level = this.Temp.Level;
             this.Origin.Name = this.Temp.Name;
             return this.Origin;
+        }
+        public void ContentsOrderBy()
+        {
+            List<vmContent> orderContents = this.OriginContents.OrderBy(x => int.Parse(x.Display_SlideNum.ToString())).ToList();
+            this.OriginContents.Clear();
+            foreach (vmContent item in orderContents)
+            {
+                if (item.IsEnable == false) continue;
+
+                this.OriginContents.Add(item);
+            }
+            SetPageNumber();
+
         }
     }
 }

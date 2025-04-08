@@ -64,10 +64,10 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
                     List<string> childHeaders = new List<string>();
                     foreach (var item in heading.Children)
                     {
-                        string name = item.Temp.Name;
+                        string name = item.Temp.Name.Trim();
                         if(childHeaders.Contains(name))
                         {
-                            checkitems.Add(item);
+                            checkitems.Add(heading);
                             break;
                         }
                         else
@@ -79,6 +79,25 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
 
                 this.listbox_parentheader.ItemsSource = checkitems;
                 this.listbox_parentheader.SelectedIndex = 0;
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void listbox_parentheader_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (this.listbox_childrenheader == null) return;
+                if (e.AddedItems == null) return;
+                
+
+                foreach (vmHeading item in e.AddedItems)
+                {
+                    this.listbox_childrenheader.ItemsSource = item.Children;
+                }
             }
             catch (Exception ee)
             {

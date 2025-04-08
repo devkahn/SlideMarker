@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MDM.Commons;
@@ -166,21 +168,28 @@ namespace MDM.Helpers
             List<mSlide> children = DBHelper.Read(parent);
             if (children == null) return;
 
-            foreach (mSlide slide in children)
+            foreach (mSlide slide in children.OrderBy(x=> x.Index))
             {
                 vmSlide newSlide = new vmSlide(slide);
                 newSlide.SetParentMaterial(obj);
                 newSlide.LoadChildren();
+                Debug.WriteLine(slide.Index);
             }
         }
         public static void LoadChildren(this vmSlide obj)
         {
+            Thread.Sleep(1000);
+            if (obj.Display_Index.ToString() == "270")
+            {
+
+            }
             mSlide parent = obj.Temp;
             List<mShape> children = DBHelper.Read(parent);
             if (children == null) return;
 
             foreach (mShape shape in children)
             {
+                
                 vmShape newShape = new vmShape(shape);
                 newShape.SetParent(obj);
                 newShape.LoadChildren();

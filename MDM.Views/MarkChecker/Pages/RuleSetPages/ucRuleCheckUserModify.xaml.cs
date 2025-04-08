@@ -37,6 +37,9 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
                 _Material = value;
             }
         }
+
+        public vmHeading SelectedParentHeading { get; set; } = null;
+
         public ucRuleCheckUserModify()
         {
             InitializeComponent();
@@ -48,6 +51,8 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
             {
                 vmHeading selectedHeading = e.NewValue as vmHeading;
                 if (selectedHeading == null) return;
+
+                this.SelectedParentHeading = selectedHeading;
 
                 List<vmHeadingModify> list = new List<vmHeadingModify>();
                 foreach (vmHeading child in selectedHeading.Children)
@@ -311,6 +316,49 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
             {
                 ErrorHelper.ShowError(ee);
             }
+        }
+
+        private void btn_MergeSameHeader_click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                List<vmHeadingModify> list = this.datagrid_Children.ItemsSource as List<vmHeadingModify>;
+
+                List<vmHeading> newList = new List<vmHeading>();
+                foreach (vmHeadingModify item in list)
+                {
+                    vmHeading sameNameHeader = newList.Where(x => x.Temp.Name == item.Origin.Temp.Name).FirstOrDefault();
+                    if(sameNameHeader == null)
+                    {
+                        newList.Add(item.Origin);
+                    }
+                    else
+                    {
+                        foreach (vmContent content in item.Origin.Contents.ToList())
+                        {
+                            item.Origin.RemoveContent(content);
+                            content.SetParentHeading(sameNameHeader);
+                        }
+                        this.SelectedParentHeading.RemoveChild(item.Origin);
+                    }
+                }
+
+                List<vmHeadingModify> modiList = new List<vmHeadingModify>();
+                foreach (vmHeading item in newList)
+                {
+                    item.ContentsOrderBy();
+                    vmHeadingModify newModify = new vmHeadingModify(item);
+                    modiList.Add(newModify);
+                }
+                this.datagrid_Children.ItemsSource = null;
+                this.datagrid_Children.ItemsSource = modiList;
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+
         }
     }
 

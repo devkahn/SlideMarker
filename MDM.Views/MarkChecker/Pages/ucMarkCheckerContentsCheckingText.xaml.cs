@@ -122,6 +122,8 @@ namespace MDM.Views.MarkChecker.Pages
             ObservableCollection<vmContent> list = new ObservableCollection<vmContent>();
             foreach (vmContent con in this.Origin)
             {
+                if (!con.IsEnable) continue;
+
                 if(this.TextType != eContentType.All)
                 {
                     if(con.ContentType != this.TextType) continue;
@@ -502,6 +504,7 @@ namespace MDM.Views.MarkChecker.Pages
 
                 foreach (vmContent item in removalList)
                 {
+                    item.IsEnable = false;
                     this.Material.RemoveContent(item);
                     this.Origin.Remove(item);
                 }
@@ -726,8 +729,8 @@ namespace MDM.Views.MarkChecker.Pages
                     {
                        
                         case eContentType.NormalText: NormalCheckAndConvert(item); break;
-                        case eContentType.OrderList: OrderListCheckAndConvert(item); break;
-                        case eContentType.UnOrderList: UnOrderlistCheckAndConvert(item); break;
+                        case eContentType.OrderList: UnOrderlistCheckAndConvert2(item); break;
+                        case eContentType.UnOrderList: UnOrderlistCheckAndConvert2(item); break;
                         default:
                             break;
                     }
@@ -902,8 +905,12 @@ namespace MDM.Views.MarkChecker.Pages
             content.InitializeDisplay();
             content.SetBackground(true);
         }
+
+        char[] marks = { '#', '*' };
         public void UnOrderlistCheckAndConvert2(vmContent content)
         {
+            Dictionary<int, string> finalLines = new Dictionary<int, string>();
+
             Dictionary<int, string> tempDic = new Dictionary<int, string>();
             string[] lines = TextHelper.SplitText(content.Temp.Temp.LineText);
             for (int i = 0; i < lines.Length; i++)
@@ -912,8 +919,6 @@ namespace MDM.Views.MarkChecker.Pages
                 if (TextHelper.IsNoText(ln)) continue;
                 tempDic.Add(i, ln);
             }
-
-            char[] marks = { '#', '*' };
 
             int cnt = 0;
             bool onMarking = true;
@@ -927,8 +932,8 @@ namespace MDM.Views.MarkChecker.Pages
 
                     if (marks.Contains(ln.First())) continue;
                     if (char.IsWhiteSpace(ln.First())) continue;
-                    
-                    targetLines.Add(key, ln)
+
+                    targetLines.Add(key, ln);
                 }
 
                 if (targetLines.Count == 0) break;
@@ -941,17 +946,35 @@ namespace MDM.Views.MarkChecker.Pages
                     string mark = string.Empty;
                     for (int i = 0; i <= cnt; i++) mark += isOrderedList ? "#" : "*";
 
-                    tempDic[key] = string.Format(mark, " ", ln.Trim());
+                    finalLines.Add(key, mark + " " + ln.Trim());
+                    tempDic.Remove(key);
+                }
+
+
+                if (tempDic.Count == 0) break;
+
+                bool hasTarget = true;
+                while (hasTarget)
+                {
+                    foreach (int key in tempDic.Keys.ToList())
+                    {
+                        string ln = tempDic[key];
+                        if (char.IsWhiteSpace(ln.First())) ln = ln.Substring(1);
+                        tempDic[key] = ln;
+
+                        hasTarget = hasTarget && char.IsWhiteSpace(ln.First());
+                    }
                 }
 
                 cnt++;
             }
 
             string result = string.Empty;
-            foreach (string item in tempDic.Values)
+            foreach (int key  in finalLines.Keys.OrderBy(x=> x))
             {
+                string item = finalLines[key];
                 result += item;
-                if (item != tempDic.Values.Last()) result += "\n";
+                if (item != finalLines.Values.Last()) result += "\n";
             }
             content.Temp.SetText(result);
             content.InitializeDisplay();
@@ -1009,8 +1032,8 @@ namespace MDM.Views.MarkChecker.Pages
                     {
 
                         case eContentType.NormalText: NormalCheckAndConvert(item); break;
-                        case eContentType.OrderList: OrderListCheckAndConvert(item); break;
-                        case eContentType.UnOrderList: UnOrderlistCheckAndConvert(item); break;
+                        case eContentType.OrderList: UnOrderlistCheckAndConvert2(item); break;
+                        case eContentType.UnOrderList: UnOrderlistCheckAndConvert2(item); break;
                         default: break;
                     }
                 }

@@ -365,5 +365,56 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
                 ErrorHelper.ShowError(ee);
             }
         }
+
+        private void txtbox_SearchKeyword_KeyUp(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                string keyword = this.txtbox_SearchKeyword.Text;
+                BindHeaders(keyword);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_RemoveFirst_click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                foreach (vmHeading heading in this.listbox_headers.SelectedItems)
+                {
+                    if (heading == null) continue;
+
+                    string output = heading.Temp.Name;
+                    output = output.Substring(1);
+                    if (output != heading.Temp.Name) heading.SetName(output);
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_RemoveLast_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                foreach (vmHeading heading in this.listbox_headers.SelectedItems)
+                {
+                    if (heading == null) continue;
+
+                    string output = heading.Temp.Name;
+                    output = output.Substring(0, output.Length-1);
+                    if (output != heading.Temp.Name) heading.SetName(output);
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
     }
 }

@@ -53,7 +53,8 @@
                         <TextBlock Grid.Column="0" Text="상위 제목" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="5" HorizontalAlignment="Center"/>
                     </Grid>
                 </Border>
-                <ListBox Grid.Row="1" x:Name="listbox_parentheader" DisplayMemberPath="{Binding Display_Name}">
+                <ListBox Grid.Row="1" x:Name="listbox_parentheader" DisplayMemberPath="Display_Name"
+                         SelectionChanged="listbox_parentheader_SelectionChanged">
                     <ListBox.Resources>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Height" Value="35"/>
@@ -72,15 +73,16 @@
                             <ColumnDefinition />
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="하위" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="5" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Text="{Binding Items.Count, ElementName=listbox_childrenheader}" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="5" HorizontalAlignment="Center"/>
                     </Grid>
                 </Border>
-                <ListBox Grid.Row="1" x:Name="listbox_childrenheader" ItemsSource="{Binding SelectedItem.Children, ElementName=listbox_parentheader}" DisplayMemberPath="{Binding Display_Name}">
+                <ListBox Grid.Row="1" x:Name="listbox_childrenheader"  DisplayMemberPath="Display_Name">
                     <ListBox.Resources>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Height" Value="35"/>
                         </Style>
                     </ListBox.Resources>
+                    
                 </ListBox>
             </Grid>
         </Grid>

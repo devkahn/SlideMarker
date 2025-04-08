@@ -51,6 +51,7 @@ namespace MDM.Models.ViewModels
         private string _Temp_TableHtml = string.Empty;
         private string _ImagePath = string.Empty;
         private bool? _IsContentsValid = null;
+        private bool _IsEnable = true;
 
     }
     public partial class vmContent :vmViewModelbase
@@ -132,6 +133,16 @@ namespace MDM.Models.ViewModels
                 _IsContentsValid = value;
                 OnPropertyChanged(nameof(IsContentsValid));
                 this.Display_Background = value.HasValue ? value.Value ? Brushes.LightGray : Brushes.LightPink : Brushes.White;
+            }
+        }
+
+        public bool IsEnable
+        {
+            get => _IsEnable;
+            set
+            {
+                _IsEnable = false;
+                OnPropertyChanged(nameof(this.IsEnable));
             }
         }
 
@@ -357,6 +368,7 @@ namespace MDM.Models.ViewModels
             if (this.ParentHeading != null)
             {
                 heading.AddContent(this);
+                heading.SetPageNumber();
             }
         }
         public void SetBackground(Brush color)

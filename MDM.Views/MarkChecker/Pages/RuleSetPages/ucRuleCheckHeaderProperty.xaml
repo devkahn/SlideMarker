@@ -131,7 +131,8 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Column="0" Text="검색어 :" FontWeight="Bold" VerticalAlignment="Center"/>
-                                <TextBox Grid.Column="1" x:Name="txtbox_SearchKeyword" Margin="5,0,5,0">
+                                <TextBox Grid.Column="1" x:Name="txtbox_SearchKeyword" Margin="5,0,5,0"
+                                         KeyUp="txtbox_SearchKeyword_KeyUp">
                                     <TextBox.Style>
                                         <Style TargetType="TextBox">
                                             <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -159,7 +160,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="ListBoxItem">
-                                            <Grid>
+                                            <Grid Background="White">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="35"/>
                                                     <ColumnDefinition/>
@@ -301,6 +302,14 @@
                                     <Button Uid="end" Content="뒤 공백 제거"  Click="btn_RemovewEmpty_Click"/>
                                     <Button Uid="startend" Content="앞,뒤 공백 제거"  Click="btn_RemovewEmpty_Click"/>
                                     <Button Uid="all" Content="모든 공백 제거"  Click="btn_RemovewEmpty_Click"/>
+                                </WrapPanel>
+                            </StackPanel>
+                            <StackPanel MinHeight="35" Orientation="Horizontal">
+                                <TextBlock Grid.Row="0" Grid.Column="0"  Text="글자 제거" Style="{StaticResource subStyle_Title_Textlbock}"/>
+                                <WrapPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="5">
+                                    <Button Content="앞 글자 제거" Click="btn_RemoveFirst_click"/>
+                                    <Button Content="뒤 글자 제거"  Click="btn_RemoveLast_Click"/>
+                                    
                                 </WrapPanel>
                             </StackPanel>
                             <StackPanel MinHeight="35" Orientation="Horizontal">

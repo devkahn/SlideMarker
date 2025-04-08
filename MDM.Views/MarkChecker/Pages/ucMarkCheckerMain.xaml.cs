@@ -124,32 +124,31 @@ namespace MDM.Views.MarkChecker.Pages
 
                             sameSlide.Status = ePageStatus.Completed.GetHashCode();
 
-                            int level = 1;
-                            mItem header1 = GetSameItem(level++, content, items);
-                            if (header1 != null && !items.Contains(header1)) items.Add(header1);
-                            mItem header2 = GetSameItem(level++, content, items);
-                            if (header2 != null && !items.Contains(header2)) items.Add(header2);
-                            mItem header3 = GetSameItem(level++, content, items);
-                            if (header3 != null && !items.Contains(header3)) items.Add(header3);
-                            mItem header4 = GetSameItem(level++, content, items);
-                            if (header4 != null && !items.Contains(header4)) items.Add(header4);
-                            mItem header5 = GetSameItem(level++, content, items);
-                            if (header5 != null && !items.Contains(header5)) items.Add(header5);
-                            mItem header6 = GetSameItem(level++, content, items);
-                            if (header6 != null && !items.Contains(header6)) items.Add(header6);
-                            mItem header7 = GetSameItem(level++, content, items);
-                            if (header7 != null && !items.Contains(header7)) items.Add(header7);
-                            mItem header8 = GetSameItem(level++, content, items);
-                            if (header8 != null && !items.Contains(header8)) items.Add(header8);
-                            mItem header9 = GetSameItem(level++, content, items);
-                            if (header9 != null && !items.Contains(header9)) items.Add(header9);
-                            mItem header10 = GetSameItem(level++, content, items);
-                            if (header10 != null && !items.Contains(header10)) items.Add(header10);
-                            
-                            if(key == 237)
-                            {
-                             
-                            }
+                            #region 이전 코드
+                            //int level = 1;
+                            //mItem header1 = GetSameItem(level++, content, items);
+                            //if (header1 != null && !items.Contains(header1)) items.Add(header1);
+                            //mItem header2 = GetSameItem(level++, content, items);
+                            //if (header2 != null && !items.Contains(header2)) items.Add(header2);
+                            //mItem header3 = GetSameItem(level++, content, items);
+                            //if (header3 != null && !items.Contains(header3)) items.Add(header3);
+                            //mItem header4 = GetSameItem(level++, content, items);
+                            //if (header4 != null && !items.Contains(header4)) items.Add(header4);
+                            //mItem header5 = GetSameItem(level++, content, items);
+                            //if (header5 != null && !items.Contains(header5)) items.Add(header5);
+                            //mItem header6 = GetSameItem(level++, content, items);
+                            //if (header6 != null && !items.Contains(header6)) items.Add(header6);
+                            //mItem header7 = GetSameItem(level++, content, items);
+                            //if (header7 != null && !items.Contains(header7)) items.Add(header7);
+                            //mItem header8 = GetSameItem(level++, content, items);
+                            //if (header8 != null && !items.Contains(header8)) items.Add(header8);
+                            //mItem header9 = GetSameItem(level++, content, items);
+                            //if (header9 != null && !items.Contains(header9)) items.Add(header9);
+                            //mItem header10 = GetSameItem(level++, content, items);
+                            //if (header10 != null && !items.Contains(header10)) items.Add(header10);
+                            #endregion
+
+                            SetHeaderItems(content, items);
 
                             mItem conItem = new mItem();
                             conItem.ItemType = content.ContentsType;
@@ -210,6 +209,171 @@ namespace MDM.Views.MarkChecker.Pages
             {
                 ErrorHelper.ShowError(ee);
             }
+        }
+
+        private void SetHeaderItems(mContent content, List<mItem> items)
+        {
+            // Header Level 1
+            int levelOrder = -1;
+            string headingString = content.Heading1String;
+            if (!string.IsNullOrEmpty(headingString))
+            {
+                mItem sameItem = items.Where(x => x.LineText == headingString).LastOrDefault();
+                if (sameItem == null)
+                {
+                    sameItem = new mItem();
+                    sameItem.ItemType = eItemType.Header.GetHashCode();
+                    sameItem.Level = 1;
+                    sameItem.LineText = headingString;
+                    items.Add(sameItem);
+                }
+                levelOrder = items.IndexOf(sameItem);
+            }
+
+            // Header Level 2
+            headingString = content.Heading2String;
+            if (!string.IsNullOrEmpty(headingString))
+            {
+                mItem sameItem = items.Where(x => items.IndexOf(x) > levelOrder && x.LineText == headingString).LastOrDefault();
+                if (sameItem == null)
+                {
+                    sameItem = new mItem();
+                    sameItem.ItemType = eItemType.Header.GetHashCode();
+                    sameItem.Level = 2;
+                    sameItem.LineText = headingString;
+                    items.Add(sameItem);
+                }
+                levelOrder = items.IndexOf(sameItem);
+            }
+
+            // Header Level 3
+            headingString = content.Heading3String;
+            if (!string.IsNullOrEmpty(headingString))
+            {
+                mItem sameItem = items.Where(x => items.IndexOf(x) > levelOrder && x.LineText == headingString).LastOrDefault();
+                if (sameItem == null)
+                {
+                    sameItem = new mItem();
+                    sameItem.ItemType = eItemType.Header.GetHashCode();
+                    sameItem.Level = 3;
+                    sameItem.LineText = headingString;
+                    items.Add(sameItem);
+                }
+                levelOrder = items.IndexOf(sameItem);
+            }
+
+            // Header Level 4
+            headingString = content.Heading4String;
+            if (!string.IsNullOrEmpty(headingString))
+            {
+                mItem sameItem = items.Where(x => items.IndexOf(x) > levelOrder && x.LineText == headingString).LastOrDefault();
+                if (sameItem == null)
+                {
+                    sameItem = new mItem();
+                    sameItem.ItemType = eItemType.Header.GetHashCode();
+                    sameItem.Level = 4;
+                    sameItem.LineText = headingString;
+                    items.Add(sameItem);
+                }
+                levelOrder = items.IndexOf(sameItem);
+            }
+
+            // Header Level 5
+            headingString = content.Heading5String;
+            if (!string.IsNullOrEmpty(headingString))
+            {
+                mItem sameItem = items.Where(x => items.IndexOf(x) > levelOrder && x.LineText == headingString).LastOrDefault();
+                if (sameItem == null)
+                {
+                    sameItem = new mItem();
+                    sameItem.ItemType = eItemType.Header.GetHashCode();
+                    sameItem.Level = 5;
+                    sameItem.LineText = headingString;
+                    items.Add(sameItem);
+                }
+                levelOrder = items.IndexOf(sameItem);
+            }
+
+            // Header Level 6
+            headingString = content.Heading6String;
+            if (!string.IsNullOrEmpty(headingString))
+            {
+                mItem sameItem = items.Where(x => items.IndexOf(x) > levelOrder && x.LineText == headingString).LastOrDefault();
+                if (sameItem == null)
+                {
+                    sameItem = new mItem();
+                    sameItem.ItemType = eItemType.Header.GetHashCode();
+                    sameItem.Level = 6;
+                    sameItem.LineText = headingString;
+                    items.Add(sameItem);
+                }
+                levelOrder = items.IndexOf(sameItem);
+            }
+
+            // Header Level 7
+            headingString = content.Heading7String;
+            if (!string.IsNullOrEmpty(headingString))
+            {
+                mItem sameItem = items.Where(x => items.IndexOf(x) > levelOrder && x.LineText == headingString).LastOrDefault();
+                if (sameItem == null)
+                {
+                    sameItem = new mItem();
+                    sameItem.ItemType = eItemType.Header.GetHashCode();
+                    sameItem.Level = 7;
+                    sameItem.LineText = headingString;
+                    items.Add(sameItem);
+                }
+                levelOrder = items.IndexOf(sameItem);
+            }
+
+            // Header Level 8
+            headingString = content.Heading8String;
+            if (!string.IsNullOrEmpty(headingString))
+            {
+                mItem sameItem = items.Where(x => items.IndexOf(x) > levelOrder && x.LineText == headingString).LastOrDefault();
+                if (sameItem == null)
+                {
+                    sameItem = new mItem();
+                    sameItem.ItemType = eItemType.Header.GetHashCode();
+                    sameItem.Level = 8;
+                    sameItem.LineText = headingString;
+                    items.Add(sameItem);
+                }
+                levelOrder = items.IndexOf(sameItem);
+            }
+
+            // Header Level 9
+            headingString = content.Heading9String;
+            if (!string.IsNullOrEmpty(headingString))
+            {
+                mItem sameItem = items.Where(x => items.IndexOf(x) > levelOrder && x.LineText == headingString).LastOrDefault();
+                if (sameItem == null)
+                {
+                    sameItem = new mItem();
+                    sameItem.ItemType = eItemType.Header.GetHashCode();
+                    sameItem.Level = 9;
+                    sameItem.LineText = headingString;
+                    items.Add(sameItem);
+                }
+                levelOrder = items.IndexOf(sameItem);
+            }
+
+            // Header Level 10
+            headingString = content.Heading10String;
+            if (!string.IsNullOrEmpty(headingString))
+            {
+                mItem sameItem = items.Where(x => items.IndexOf(x) > levelOrder && x.LineText == headingString).LastOrDefault();
+                if (sameItem == null)
+                {
+                    sameItem = new mItem();
+                    sameItem.ItemType = eItemType.Header.GetHashCode();
+                    sameItem.Level = 10;
+                    sameItem.LineText = headingString;
+                    items.Add(sameItem);
+                }
+                levelOrder = items.IndexOf(sameItem);
+            }
+
         }
 
         private void SetHeading(mHeading heading, vmHeading parent ,vmMaterial material, List<vmItem> items)

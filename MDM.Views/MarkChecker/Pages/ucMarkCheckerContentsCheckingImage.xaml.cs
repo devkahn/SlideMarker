@@ -91,7 +91,9 @@ namespace MDM.Views.MarkChecker.Pages
             ObservableCollection<vmContent> list = new ObservableCollection<vmContent>();
             foreach (vmContent con in this.Origin)
             {
-                if(this.ImageStatus.HasValue)
+                if (!con.IsEnable) continue;
+
+                if (this.ImageStatus.HasValue)
                 {
                     if (con.IsContentsValid != this.ImageStatus.Value) continue;
                 }
@@ -457,6 +459,7 @@ namespace MDM.Views.MarkChecker.Pages
 
                 foreach (vmContent item in removalList)
                 {
+                    item.IsEnable = false;
                     this.Material.RemoveContent(item);
                     this.Origin.Remove(item);
                 }

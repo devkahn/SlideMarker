@@ -41,7 +41,7 @@ namespace MDM.Views.MarkChecker.Pages
             set
             {
                 _Material = value;
-                this.DataContext = value;
+                BindTree();
                 
             }
         }
@@ -54,7 +54,20 @@ namespace MDM.Views.MarkChecker.Pages
         public ucMarkCheckerContensByHeading()
         {
             InitializeComponent();
+            this.listbox_RuleSet.SelectedIndex = 3;
         }
+
+
+        private void BindTree()
+        {
+            this.treeview_Header.ItemsSource = null;
+            if (this.Material == null) return;
+
+            int minLevel = this.Material.Headings.Min(x => x.Temp.Level);
+            this.treeview_Header.ItemsSource = this.Material.Headings.Where(x => x.Temp.Level == minLevel);
+
+        }
+
 
         private void treeview_Header_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
@@ -218,17 +231,119 @@ namespace MDM.Views.MarkChecker.Pages
 
         private void btn_SelectionRemove_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
 
+                string caption = btn.Content.ToString();
+
+                vmHeading selectedItem = this.treeview_Header.SelectedItem as vmHeading;
+                if (selectedItem == null) return;
+
+                vmHeading parent = selectedItem.Parent;
+
+                if (parent == null && selectedItem.Contents.Any())
+                {
+                    string eMsg = "선택한 제목에 포함하는 컨텐츠가 존재합니다.";
+                    MessageHelper.ShowErrorMessage(caption, eMsg);
+                    return;
+                }
+
+                foreach (vmHeading child in selectedItem.Children.ToList())
+                {
+                    child.SetParent(parent);
+                }
+                if (parent == null)
+                {
+                    this.Material.RemoveHeading(selectedItem);
+                }
+                else
+                {
+                    foreach (vmContent content in selectedItem.Contents.ToList())
+                    {
+                        content.SetParentHeading(parent);
+                    }
+                    parent.RemoveChild(selectedItem);
+                }
+
+                foreach (var item in this.Material.Headings)
+                {
+                    item.InitializeDisplay();
+                }
+
+                BindTree();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void btn_SelectionMove_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                vmHeading selectedHeding = this.treeview_Header.SelectedItem as vmHeading;
+                if (selectedHeding == null)
+                {
+                    string eMsg = "이동할 제목을 선택하세요.";
+                    MessageHelper.ShowErrorMessage("새 제목 추가", eMsg);
+                    return;
+                }
 
+                wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection();
+                wndTarget.DataContext = this.Material;
+                wndTarget.ShowDialog();
+
+                if (wndTarget.DialogResult != true) return;
+
+                vmHeading target = wndTarget.SelectedTargetHeader;
+
+
+                selectedHeding.SetParent(target);
+                selectedHeding.SetChildrenLevel();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void btn_SelectionCopy_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                vmHeading selectedHeding = this.treeview_Header.SelectedItem as vmHeading;
+                if (selectedHeding == null)
+                {
+                    string eMsg = "복사할 제목을 선택하세요.";
+                    MessageHelper.ShowErrorMessage("새 제목 추가", eMsg);
+                    return;
+                }
 
+                wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection();
+                wndTarget.DataContext = this.Material;
+                wndTarget.ShowDialog();
+
+                if (wndTarget.DialogResult != true) return;
+
+                vmHeading target = wndTarget.SelectedTargetHeader;
+
+
+                mHeading heading = new mHeading();
+                heading.Level = target.Temp.Level + 1;
+                heading.Name = selectedHeding.Temp.Name;
+
+                vmHeading newHeading = new vmHeading(heading);
+                newHeading.SetParentMaterial(this.Material);
+                newHeading.SetParent(target);
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void btn_DeleteSelectContent_Click(object sender, RoutedEventArgs e)
@@ -248,10 +363,197 @@ namespace MDM.Views.MarkChecker.Pages
 
                 foreach (vmContent item in selectedItems)
                 {
+                    item.IsEnable = false;
                     heading.RemoveContent(item);
                     this.Material.RemoveContent(item);
                 }
                 
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void menuItem_MoveHeader_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void menuItem_CopyHeader_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void menuItem_DeleteHeader_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_MoveSelectContent_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedContents = this.listbox_ContainContents.SelectedItems;
+            if (selectedContents.Count < 0)
+            {
+                string eMsg = "이동할 본문을 선택하세요.";
+                MessageHelper.ShowErrorMessage("본문 이동", eMsg);
+                return;
+            }
+
+            wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection();
+            wndTarget.DataContext = this.Material;
+            wndTarget.ShowDialog();
+
+            if (wndTarget.DialogResult != true) return;
+
+            vmHeading target = wndTarget.SelectedTargetHeader;
+
+            List<vmContent> contents= new List<vmContent>();
+            foreach (vmContent item in selectedContents)
+            {
+                if (item == null) continue;
+                contents.Add(item);
+            }
+            
+
+            foreach (vmContent item in contents)
+            {
+                item.ParentHeading.RemoveContent(item);
+                item.SetParentHeading(target);
+            }
+           
+            this.listbox_ContainContents.Items.Refresh();
+
+        }
+
+        private void btn_AllSelect_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                this.listbox_ContainContents.SelectAll();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_AllUnSelect_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                this.listbox_ContainContents.UnselectAll();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_MoveUp_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                vmHeading selectedItem = this.treeview_Header.SelectedItem as vmHeading;
+                if (selectedItem == null) return;
+
+                selectedItem.Move(true);
+
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_MoveDown_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                vmHeading selectedItem = this.treeview_Header.SelectedItem as vmHeading;
+                if (selectedItem == null) return;
+
+                selectedItem.Move(false);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_CreateNewHeader_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                vmHeading selectedHeding = this.treeview_Header.SelectedItem as vmHeading;
+                if (selectedHeding == null)
+                {
+                    wndHeaderNameInput wndHi = new wndHeaderNameInput();
+                    wndHi.ShowDialog();
+
+                    if (wndHi.DialogResult != true) return;
+
+                    string newName = wndHi.HeaderName;
+
+                    mHeading heading = new mHeading();
+                    heading.Level = 0;
+                    heading.Name = newName;
+
+                    vmHeading newHeading = new vmHeading(heading);
+                    newHeading.SetParentMaterial(this.Material);
+                    newHeading.SetParent(null);
+
+                    BindTree();
+                }
+                else
+                {
+                    wndHeaderNameInput wndHi = new wndHeaderNameInput();
+                    wndHi.ShowDialog();
+
+                    if (wndHi.DialogResult != true) return;
+
+                    string newName = wndHi.HeaderName;
+
+                    mHeading heading = new mHeading();
+                    heading.Level = 0;
+                    heading.Name = newName;
+
+                    vmHeading newHeading = new vmHeading(heading);
+                    newHeading.SetParentMaterial(this.Material);
+                    newHeading.SetParent(selectedHeding);
+
+                    //BindTree();
+                }
+
+
             }
             catch (Exception ee)
             {

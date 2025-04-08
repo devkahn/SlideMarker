@@ -102,10 +102,13 @@ namespace MDM.Views.MarkChecker.Pages
         public void BindList(string keyword = "", int page = -1)
         {
             if (this.listbox_headers == null) return;
+            
 
             ObservableCollection<vmContent> list = new ObservableCollection<vmContent>();
             foreach (vmContent con in this.Origin)
             {
+                if (!con.IsEnable) continue;
+
                 if (this.TableStatus.HasValue)
                 {
                     if (con.IsContentsValid != this.TableStatus.Value) continue;
@@ -376,7 +379,26 @@ namespace MDM.Views.MarkChecker.Pages
 
         private void btn_RemoveContent_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                List<vmContent> removalList = new List<vmContent>();
+                foreach (vmContent item in this.listbox_headers.SelectedItems) removalList.Add(item);
 
+
+                foreach (vmContent item in removalList)
+                {
+                    item.IsEnable = false;
+                    this.Material.RemoveContent(item);
+                    this.Origin.Remove(item);
+                }
+
+
+                BindList(this.SearchKeyword);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void btn_AllReSet_Click(object sender, RoutedEventArgs e)
