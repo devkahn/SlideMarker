@@ -289,6 +289,8 @@ namespace MDM.Models.ViewModels
                 contentData.Heading9Idx = content.Heading9 == null ? -1 : content.Heading9.Temp.Idx;
                 contentData.Heading10Idx = content.Heading10 == null ? -1 : content.Heading10.Temp.Idx;
 
+                contentData.SlideIdx = content.Temp.ParentShape.ParentSlide.Temp.Index;
+                contentData.SlideUid = content.Temp.ParentShape.ParentSlide.Temp.Uid;
                 contentData.HeadingUid_1 = content.Heading1 == null? string.Empty : content.Heading1.Temp.Uid;
                 contentData.HeadingUid_2 = content.Heading2 == null? string.Empty : content.Heading2.Temp.Uid;
                 contentData.HeadingUid_3 = content.Heading3 == null? string.Empty : content.Heading3.Temp.Uid;
@@ -300,6 +302,7 @@ namespace MDM.Models.ViewModels
                 contentData.HeadingUid_9 = content.Heading9 == null? string.Empty : content.Heading9.Temp.Uid;
                 contentData.HeadingUid_10 = content.Heading10 == null ? string.Empty : content.Heading10.Temp.Uid;
 
+                
                 contentData.ContentsType = content.Temp.Temp.ItemType;
                 contentData.Contents = content.Temp.Temp.LineText;
 

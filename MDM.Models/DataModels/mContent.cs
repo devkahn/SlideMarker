@@ -100,6 +100,8 @@ namespace MDM.Models.DataModels
         public string Heading10String { get; set; } = string.Empty;
 
 
+
+        public string SlideUid { get; set; } = string.Empty;
         public string HeadingUid_1 { get; set; } = string.Empty;
         public string HeadingUid_2 { get; set; } = string.Empty;
         public string HeadingUid_3 { get; set; } = string.Empty;

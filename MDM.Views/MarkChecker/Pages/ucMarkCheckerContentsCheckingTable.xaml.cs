@@ -408,7 +408,17 @@ namespace MDM.Views.MarkChecker.Pages
 
         private void btn_AllApply_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                foreach (vmContent item in this.listbox_headers.SelectedItems)
+                {
+                    item.Temp.SetText(item.Temp_Content);
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
 
         private void btn_RemoveSearchKeyword_Click(object sender, RoutedEventArgs e)

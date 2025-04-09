@@ -138,7 +138,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="추출" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="10,0,10,0"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Grid.Column="1" Content="  일괄 설정  " Margin="5" Click="btn_AllSetting_Click"/>
+                        <Button Grid.Column="1" Content="  일괄 설정  " Margin="5" Click="btn_AllSetting_Click" Visibility="Collapsed"/>
                     </StackPanel>
                     
                 </Grid>
@@ -181,13 +181,11 @@
                             </Setter>
                         </Style>
                     </ListBox.Resources>
-                    <ListBoxItem Content="설정1"/>
-                    <ListBoxItem Content="설정2"/>
-                    <ListBoxItem Content="설정3"/>
-                    <ListBoxItem Content="설정4"/>
-                    <ListBoxItem Content="설정5"/>
-
                 </ListBox>
+                <Grid>
+                    <Border Background="{StaticResource color_Gray3}" Opacity="0.5"/>
+                    <TextBlock Text="준비중" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource color_Gray5}"/>
+                </Grid>
             </Grid>
             <Border Grid.Row="2" Background="{StaticResource color_Gray2}">
                 <Grid>

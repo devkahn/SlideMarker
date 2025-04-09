@@ -132,7 +132,7 @@ namespace MDM.Views.MarkChecker.Pages
                 string jsonString = JsonHelper.ToJsonString(rootHeadings);
 
                 DateTime nowTime = DateTime.Now;
-                string targetPath = System.IO.Path.Combine(this.Material.DirectoryPath, string.Format("{0}_{1}.headers", this.Material.Temp.Name , nowTime.ToString("yyyyMMddHHmmss")));
+                string targetPath = System.IO.Path.Combine(this.Material.DirectoryPath, string.Format("{0}_{1}.headers", this.Material.Temp.Name , nowTime.ToString("yyMMddHHmmss")));
                 if (File.Exists(targetPath))
                 {
                     File.Delete(targetPath);

@@ -212,7 +212,11 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
         {
             try
             {
-
+                List<vmHeadingModify> items = GetSelectedHeaderList();
+                foreach (vmHeadingModify item in items)
+                {
+                    item.Display_TargetName = item.Display_OriginName;
+                }
             }
             catch (Exception ee)
             {

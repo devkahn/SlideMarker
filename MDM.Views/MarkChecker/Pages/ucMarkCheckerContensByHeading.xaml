@@ -460,7 +460,7 @@
                 </ListBox.Resources>
                 <ListBoxItem Uid="1" Content="목차 전처리" Visibility="Collapsed"/>
                 <ListBoxItem Uid="101" Content="목차 동기화 검토" Visibility="Collapsed"/>
-                <ListBoxItem Uid="102" Content="하위 제목 검토" />
+                <ListBoxItem Uid="102" Content="하위 제목 검토" Visibility="Collapsed"/>
                 <ListBoxItem Uid="998" Content="개별 수정" IsSelected="True"/>
                 <ListBoxItem Uid="999" Content="일괄 수정"/>
 

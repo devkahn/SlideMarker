@@ -43,7 +43,7 @@
                         <Button Content="초기화" Click="btn_Reset_Click"/>
                     </StackPanel>
                     <StackPanel>
-                        <Button Content="선택 제외"/>
+                        <!--<Button Content="선택 제외">-->
                     </StackPanel>
 
                 </StackPanel>

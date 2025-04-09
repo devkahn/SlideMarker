@@ -41,7 +41,7 @@ namespace MDM.Views.MarkChecker.Pages
         {
             try
             {
-                FileInfo fInfo = FileHelper.GetOpenFileInfo();
+                FileInfo fInfo = FileHelper.GetOpenFileInfo("파일 열기", eFILE_TYPE.Json);
                 if (fInfo == null) return;
 
                 mMaterial material = new mMaterial();

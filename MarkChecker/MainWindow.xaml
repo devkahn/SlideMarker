@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MarkChecker"
         xmlns:pages="clr-namespace:MDM.Views.MarkChecker.Pages;assembly=MDM.Views"
         mc:Ignorable="d"
-        Title="Mark Checker" Height="450" Width="800">
+        Title="Migration Data Checker" Height="450" Width="800">
     <Grid>
         <pages:ucMarkCheckerMain x:Name="MarkCheckerMain"/>
     </Grid>
