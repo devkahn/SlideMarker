@@ -338,6 +338,12 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
                     }
                     else
                     {
+                        foreach (vmHeading child in item.Origin.Children.ToList())
+                        {
+                            item.Origin.RemoveChild(child);
+                            child.SetParent(sameNameHeader);
+                        }
+
                         foreach (vmContent content in item.Origin.Contents.ToList())
                         {
                             item.Origin.RemoveContent(content);

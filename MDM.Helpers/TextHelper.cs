@@ -150,7 +150,7 @@ namespace MDM.Helpers
             foreach (char c in divider)
             {
                 if (c == '|') output++;
-                else if (c == '+') return output;
+                else if (c == '+' || c== '＋') return output;
             }
 
             return 0;

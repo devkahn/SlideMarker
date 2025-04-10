@@ -243,7 +243,7 @@ namespace MDM.Views.MarkChecker.Pages
 
                 vmHeading parent = selectedItem.Parent;
 
-                if (parent == null && selectedItem.Contents.Any())
+                if (parent == null && selectedItem.Contents.Count() >0)
                 {
                     string eMsg = "선택한 제목에 포함하는 컨텐츠가 존재합니다.";
                     MessageHelper.ShowErrorMessage(caption, eMsg);

@@ -291,6 +291,27 @@ namespace MDM.Views.MarkChecker.Pages
 
                     newLine = newLine.Insert(0, indent);
                 }
+                else if(char.IsWhiteSpace(newLine.First()))
+                {
+                    int emptyCnt = 0;
+
+                    char firstChar = newLine.First();
+                    while (char.IsWhiteSpace(firstChar))
+                    {
+                        newLine = newLine.Substring(1);
+                        emptyCnt++;
+                        firstChar = newLine.First();
+                    }
+
+                    int levelCnt = emptyCnt / 2;
+                    string emptyLevel = string.Empty;
+                    for (int i = 0; i < levelCnt; i++) emptyLevel += "  ";
+
+                    string finalText = emptyLevel;
+                    if (mark.Contains(newLine.First())) newLine = newLine.Substring(1).Trim();
+                    finalText += newLine;
+                    newLine = finalText;
+                }
 
                 output += newLine;
                 if (ln != lines.Last()) output += "\n";
