@@ -1064,5 +1064,65 @@ namespace MDM.Views.MarkChecker.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
+
+        private void btn_MoveToTable_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                List<vmContent> seleectedList = new List<vmContent>();
+                foreach (vmContent item in this.listbox_headers.SelectedItems) seleectedList.Add(item);
+
+                foreach (vmContent item in seleectedList)
+                {
+                    item.Temp.SetItemType(eItemType.Text);
+
+                    string[] lines = TextHelper.SplitText(item.Temp_Content);
+                    if (lines.Length == 1) item.ContentType = eContentType.Table;
+
+                    (this.Tag as ucMarkCheckerContentsChecking).ucMarkCheckerCheckingText.SetOriginList();
+
+
+                    this.Origin.Remove(item);
+                    BindList();
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_MoveToImage_Clcik(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Button btn = sender as Button;
+                if (btn == null) return;
+
+                List<vmContent> seleectedList = new List<vmContent>();
+                foreach (vmContent item in this.listbox_headers.SelectedItems) seleectedList.Add(item);
+
+                foreach (vmContent item in seleectedList)
+                {
+                    item.Temp.SetItemType(eItemType.Text);
+
+                    string[] lines = TextHelper.SplitText(item.Temp_Content);
+                    if (lines.Length == 1) item.ContentType = eContentType.Image;
+
+                    (this.Tag as ucMarkCheckerContentsChecking).ucMarkCheckerCheckingText.SetOriginList();
+
+
+                    this.Origin.Remove(item);
+                    BindList();
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
     }
 }

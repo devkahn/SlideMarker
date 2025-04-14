@@ -290,12 +290,30 @@ namespace MDM.Views.MarkChecker.Pages
                 xmlElement headingOption = null;
                 switch (heading.Temp.Level)
                 {
-                    case 1: headingOption = option.Heading1Element; break;
-                    case 2: headingOption = option.Heading2Element; break;
-                    case 3: headingOption = option.Heading3Element; break;
-                    case 4: headingOption = option.Heading4Element; break;
-                    case 5: headingOption = option.Heading5Element; break;
-                    default: headingOption = option.TextElement; break;
+                    case 1: 
+                        headingOption = option.Heading1Element;
+                        headingOption.ElementType = eXMLElementType.heading1;
+                        break;
+                    case 2: 
+                        headingOption = option.Heading2Element;
+                        headingOption.ElementType = eXMLElementType.heading2;
+                        break;
+                    case 3: 
+                        headingOption = option.Heading3Element;
+                        headingOption.ElementType = eXMLElementType.heading3;
+                        break;
+                    case 4:
+                        headingOption = option.Heading4Element;
+                        headingOption.ElementType = eXMLElementType.heading4;
+                        break;
+                    case 5: 
+                        headingOption = option.Heading5Element;
+                        headingOption.ElementType = eXMLElementType.heading5;
+                        break;
+                    default: 
+                        headingOption = option.TextElement;
+                        headingOption.ElementType = eXMLElementType.normal;
+                        break;
                 }
 
 
@@ -317,12 +335,30 @@ namespace MDM.Views.MarkChecker.Pages
                     xmlElement optionElement = null;
                     switch (con.ContentType)
                     {
-                        case Commons.Enum.eContentType.NormalText: optionElement = option.TextElement; break;
-                        case Commons.Enum.eContentType.OrderList: optionElement = option.OrderedListElement; break;
-                        case Commons.Enum.eContentType.UnOrderList: optionElement = option.UnorderedListElement; break;
-                        case Commons.Enum.eContentType.Image: optionElement = option.ImageElement; break;
-                        case Commons.Enum.eContentType.Table: optionElement = option.TableElement; break;
-                        default: optionElement = option.TextElement; break;
+                        case Commons.Enum.eContentType.NormalText: 
+                            optionElement = option.TextElement;
+                            optionElement.ElementType = eXMLElementType.normal;
+                            break;
+                        case Commons.Enum.eContentType.OrderList: 
+                            optionElement = option.OrderedListElement;
+                            optionElement.ElementType = eXMLElementType.ordered_list;
+                            break;
+                        case Commons.Enum.eContentType.UnOrderList: 
+                            optionElement = option.UnorderedListElement;
+                            optionElement.ElementType = eXMLElementType.unordered_list;
+                            break;
+                        case Commons.Enum.eContentType.Image: 
+                            optionElement = option.ImageElement;
+                            optionElement.ElementType = eXMLElementType.image;
+                            break;
+                        case Commons.Enum.eContentType.Table: 
+                            optionElement = option.TableElement;
+                            optionElement.ElementType = eXMLElementType.table;
+                            break;
+                        default: 
+                            optionElement = option.TextElement;
+                            optionElement.ElementType = eXMLElementType.normal;
+                            break;
                     }
 
                     SetContentProperties(int.Parse(con.Display_SlideNum.ToString()), xmlDoc, contentElement, optionElement);
@@ -409,9 +445,14 @@ namespace MDM.Views.MarkChecker.Pages
                 int width = bitmap.Width;   // 가로 크기
                 int height = bitmap.Height; // 세로 크기
 
-                newImage.Height = (optionElement.Config as xmlImageConfig).Height = height;
-                newImage.Width = (optionElement.Config as xmlImageConfig).Width = width;
-                (optionElement.Config as xmlImageConfig).Caption = string.IsNullOrEmpty(con.Temp.Temp.Title) ? TextHelper.GetImageTitleFromMarkdown(con.Temp.Temp.LineText) : con.Temp.Temp.Title;
+                xmlImageConfig imageConfig = optionElement.Config as xmlImageConfig;
+                if (imageConfig == null) imageConfig = new xmlImageConfig();
+
+                newImage.Height = imageConfig.Height = height;
+                newImage.Width = imageConfig.Width = width;
+                imageConfig.Caption = string.IsNullOrEmpty(con.Temp.Temp.Title) ? TextHelper.GetImageTitleFromMarkdown(con.Temp.Temp.LineText) : con.Temp.Temp.Title;
+
+                optionElement.Config = imageConfig;
             }
 
             
@@ -471,6 +512,7 @@ namespace MDM.Views.MarkChecker.Pages
 
                 XmlElement xmlProp = rootDoc.CreateElement("property");
                 xmlProp.SetAttribute("name", subPropAtt.Prorperty.Name);
+                if (subPropAtt.Prorperty.Name == "type") valueString = "ARTICLE";
                 xmlProp.SetAttribute("value", valueString);
                 props.AppendChild(xmlProp);
             }
@@ -503,6 +545,10 @@ namespace MDM.Views.MarkChecker.Pages
 
                 XmlElement xmlProp = rootDoc.CreateElement("property");
                 xmlProp.SetAttribute("name", subPropAtt.Prorperty.Name);
+                if(subPropAtt.Prorperty.Name == "type" && valueString == "NONE")
+                {
+                    valueString = "CHAPTER";
+                }
                 xmlProp.SetAttribute("value", valueString);
                 props.AppendChild(xmlProp);
             }
@@ -536,6 +582,7 @@ namespace MDM.Views.MarkChecker.Pages
                 XmlElement xmlProp = rootDoc.CreateElement("property");
                 xmlProp.SetAttribute("name", subPropAtt.Prorperty.Name);
                 if (subPropAtt.Prorperty.Name == "alias") valueString = id + "_" + slideNum.ToString("0000");
+                //if (subPropAtt.Prorperty.Name == "type") valueString = "heading1" ;
                 xmlProp.SetAttribute("value", valueString);
                 props.AppendChild(xmlProp);
             }

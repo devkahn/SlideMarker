@@ -486,6 +486,23 @@
                                                                 <RowDefinition />
                                                                 <RowDefinition Height="auto"/>
                                                             </Grid.RowDefinitions>
+                                                            <!--<DataGrid Grid.Row="0" ItemsSource="{Binding Temp_Content}">
+                                                                <DataGrid.Style>
+                                                                    <Style TargetType="DataGrid" BasedOn="{StaticResource baseStyle_Common_Datagrid}">
+                                                                    </Style>
+                                                                </DataGrid.Style>
+                                                                <DataGrid.Columns>
+                                                                    <DataGridTextColumn Binding="{Binding Display_Index}"/>
+                                                                    <DataGridTemplateColumn>
+                                                                        <DataGridTemplateColumn.CellTemplate>
+                                                                            <DataTemplate>
+                                                                                <TextBox Text="{Binding Temp_Content}" Width="500"/>
+                                                                            </DataTemplate>
+                                                                        </DataGridTemplateColumn.CellTemplate>
+                                                                    </DataGridTemplateColumn>
+                                                                </DataGrid.Columns>
+                                                                
+                                                            </DataGrid>-->
                                                             <TextBox Grid.Row="0" Text="{Binding Temp_Content}">
                                                                 <TextBox.Style>
                                                                     <Style TargetType="TextBox" BasedOn="{StaticResource sbuStyle_Markdown_Textbox}">

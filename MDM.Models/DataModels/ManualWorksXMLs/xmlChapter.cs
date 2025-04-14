@@ -51,7 +51,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Nullable(false)]
         [Description("장 유형")]
         [DefaultValue(eXMLChapterType.CHAPTER)]
-        public eXMLChapterType Type { get; set; } = eXMLChapterType.NONE;
+        public eXMLChapterType Type { get; set; } = eXMLChapterType.CHAPTER;
 
         [XmlIgnore]
         [xmlSubProperty("always_top")]

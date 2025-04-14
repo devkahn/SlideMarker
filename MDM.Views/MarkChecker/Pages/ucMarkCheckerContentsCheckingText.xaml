@@ -598,8 +598,12 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,3,5,3">
-                                    <Button Content="선택 삭제" Click="btn_RemoveContent_Click"/>
-                                    
+                                    <Button Content="모두 삭제" Click="btn_RemoveContent_Click"/>
+                                    <StackPanel Orientation="Horizontal" Margin="10,0,5,0">
+                                        <Button Content="모두 이미지로 이동" Click="btn_MoveToImage_Clcik"/>
+                                        <Button Content="모두 표로 이동" Click="btn_MoveToTable_Click"/>
+                                    </StackPanel>
+
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,3,5,3">
                                     <StackPanel.Resources>
