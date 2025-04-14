@@ -289,6 +289,10 @@
                         <Button Content="전체 선택" Click="btn_AllSelect_Click"/>
                         <Button Content="전체 해제" Click="btn_AllUnSelect_Click"/>
                     </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,3,5,3">
+                        <Button x:Name="btn_ContentMoveUp" Content="▲" Click="btn_ContentMoveUp_Click"/>
+                        <Button x:Name="btn_ContentMoveDown" Content="▼" Click="btn_ContentMoveDown_Click"/>
+                    </StackPanel>
                 </Grid>
             </Border>
             <Border Grid.Row="2">

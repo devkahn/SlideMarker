@@ -319,7 +319,7 @@ namespace MDM.Models.ViewModels
         }
         public void ContentsOrderBy()
         {
-            List<vmContent> orderContents = this.OriginContents.OrderBy(x => int.Parse(x.Display_SlideNum.ToString())).ToList();
+            List<vmContent> orderContents = this.OriginContents.OrderBy(x => int.Parse(x.Display_SlideNum.ToString())).ThenBy(x=> x.Temp.Temp.Order).ToList();
             this.OriginContents.Clear();
             foreach (vmContent item in orderContents)
             {
@@ -328,7 +328,7 @@ namespace MDM.Models.ViewModels
                 this.OriginContents.Add(item);
             }
             SetPageNumber();
-
+            OnPropertyChanged(nameof(this.Contents));
         }
     }
 }

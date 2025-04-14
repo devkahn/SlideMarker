@@ -88,9 +88,11 @@ namespace MDM.Views.MarkChecker.Pages
                     List<mContent> contentList = JsonHelper.ToObject<List<mContent>>(jsonString) as List<mContent>;
 
 
+                    int cnt = 0;
                     Dictionary<int, List<mContent>> slideDic = new Dictionary<int, List<mContent>>();
                     foreach (mContent content in contentList)
                     {
+                        content.Idx = cnt++;
                         int slideNum = content.SlideIdx;
                         if (!slideDic.ContainsKey(slideNum)) slideDic.Add(slideNum, new List<mContent>());
                         slideDic[slideNum].Add(content);
@@ -154,7 +156,8 @@ namespace MDM.Views.MarkChecker.Pages
                             conItem.ItemType = content.ContentsType;
                             conItem.Level = GetContentLevel(content);
                             conItem.LineText = content.Contents;
-                            if(conItem.ItemType == eItemType.Image.GetHashCode()) conItem.Title = TextHelper.GetImageTitleFromMarkdown(conItem.LineText);
+                            conItem.Order = content.Idx;
+                            if (conItem.ItemType == eItemType.Image.GetHashCode()) conItem.Title = TextHelper.GetImageTitleFromMarkdown(conItem.LineText);
                             items.Add(conItem);
                         }
 

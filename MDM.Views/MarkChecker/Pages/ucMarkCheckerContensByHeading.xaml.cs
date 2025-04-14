@@ -442,6 +442,7 @@ namespace MDM.Views.MarkChecker.Pages
                 item.ParentHeading.RemoveContent(item);
                 item.SetParentHeading(target);
             }
+            target.ContentsOrderBy();
            
             this.listbox_ContainContents.Items.Refresh();
 
@@ -554,6 +555,86 @@ namespace MDM.Views.MarkChecker.Pages
                 }
 
 
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_ContentMoveUp_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selectedContents = this.listbox_ContainContents.SelectedItems;
+                if (selectedContents.Count <= 0)
+                {
+                    string eMsg = "이동할 본문을 선택하세요.";
+                    MessageHelper.ShowErrorMessage("본문 이동", eMsg);
+                    return;
+                }
+
+
+                vmContent firstContent = selectedContents[0] as vmContent;
+                if (firstContent == null) return;
+
+                vmHeading parentHeading = firstContent.ParentHeading;
+
+                int curIndex = parentHeading.Contents.IndexOf(firstContent);
+                if (curIndex == 0) return;
+
+                vmContent prevContent = parentHeading.Contents[curIndex - 1];
+                if (prevContent == null) return;
+
+                int order = firstContent.Temp.Temp.Order;
+                firstContent.Temp.Temp.Order = prevContent.Temp.Temp.Order;
+                prevContent.Temp.Temp.Order = order;
+
+                parentHeading.ContentsOrderBy();
+
+                
+
+                this.listbox_ContainContents.Items.Refresh();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_ContentMoveDown_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selectedContents = this.listbox_ContainContents.SelectedItems;
+                if (selectedContents.Count <= 0)
+                {
+                    string eMsg = "이동할 본문을 선택하세요.";
+                    MessageHelper.ShowErrorMessage("본문 이동", eMsg);
+                    return;
+                }
+
+
+                vmContent firstContent = selectedContents[0] as vmContent;
+                if (firstContent == null) return;
+
+                vmHeading parentHeading = firstContent.ParentHeading;
+
+                int curIndex = parentHeading.Contents.IndexOf(firstContent);
+                if (curIndex == parentHeading.Contents.Count()-1) return;
+
+                vmContent nextContent = parentHeading.Contents[curIndex +1];
+                if (nextContent == null) return;
+
+                int order = firstContent.Temp.Temp.Order;
+                firstContent.Temp.Temp.Order = nextContent.Temp.Temp.Order;
+                nextContent.Temp.Temp.Order = order;
+
+                parentHeading.ContentsOrderBy();
+
+
+
+                this.listbox_ContainContents.Items.Refresh();
             }
             catch (Exception ee)
             {
