@@ -31,8 +31,9 @@
                         
                     </Style>
                 </StackPanel.Resources>
-                <Button Content="저장" Click="btn_ContentsSave_Click"/>
-                <Button Content="일괄 검토"/>
+                <Button Content="저장" Click="btn_ContentsSave_Click" IsEnabled="False"/>
+                <Button Content="일괄 검토" IsEnabled="False"/>
+                <Button Content="새로 고침" Click="btn_RefreshAll_click" />
             </StackPanel>
             
         </Grid>

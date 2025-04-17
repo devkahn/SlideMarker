@@ -969,5 +969,20 @@ namespace MDM.Views.MarkChecker.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
+
+        private void btn_RefreshAll_click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                this.ucMarkCheckerCheckingText.SetOriginList();
+                this.ucMarkCheckerCheckingImage.SetOriginList();
+                this.ucmarkcheckerCheckingTable.SetOriginList();
+                
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
     }
 }

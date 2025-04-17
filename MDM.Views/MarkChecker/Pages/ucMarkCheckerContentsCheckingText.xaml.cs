@@ -143,7 +143,7 @@ namespace MDM.Views.MarkChecker.Pages
                 list.Add(con);
             }
 
-            this.listbox_headers.ItemsSource = list;
+            this.listbox_headers.ItemsSource = list.OrderBy(x => x.Temp.ParentShape.ParentSlide.Temp.SlideNumber).ThenBy(x => x.Temp.Temp.Order);
         }
         private void BindPageComboBox()
         {
@@ -179,21 +179,7 @@ namespace MDM.Views.MarkChecker.Pages
 
             return output;
         }
-        private string RemoveNoTextLine(string input)
-        {
-            string output = string.Empty;
 
-            string[] lines = TextHelper.SplitText(input);
-            foreach (string ln in lines)
-            {
-                if (TextHelper.IsNoText(ln)) continue;
-                if (ln != lines.First()) output += "\n";
-                output += ln;
-                
-            }
-
-            return output;
-        }
         private string RemoveAllEmpty(string input)
         {
             string output = string.Empty;
@@ -456,7 +442,7 @@ namespace MDM.Views.MarkChecker.Pages
                     switch (uid)
                     {
                         case "toOne": output = ChangeNameToOne(item.Temp_Content); break;
-                        case "removeEmpty": output = RemoveNoTextLine(item.Temp_Content); break;
+                        case "removeEmpty": output =TextHelper.RemoveNoTextLine(item.Temp_Content); break;
                         default: output = item.Temp_Content; break;
                     }
                     item.Temp_Content = output;

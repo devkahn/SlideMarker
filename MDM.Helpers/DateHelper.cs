@@ -12,5 +12,15 @@ namespace MDM.Helpers
         {
             return date.ToString("yyyy-MM-dd");
         }
+        public static DateTime ConvertFromTimeStamp(string stamp)
+        {
+            DateTime output = new DateTime();
+
+            long stampLong = long.Parse(stamp);
+
+            output = output.AddMilliseconds(stampLong);
+
+            return output;
+        }
     }
 }

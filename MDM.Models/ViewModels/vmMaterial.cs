@@ -115,7 +115,7 @@ namespace MDM.Models.ViewModels
             if(this.OriginSlides.Contains(slide)) return;
             this.OriginSlides.Add(slide);
         }
-        internal void AddContent(vmContent content)
+        public void AddContent(vmContent content)
         {
             if(this.OriginContents.Contains(content)) return;
             this.OriginContents.Add(content);

@@ -31,5 +31,14 @@ namespace MDM.Commons
             Brushes.Purple,
             Brushes.Pink,
         };
+
+        public static List<char> LIST_MARKER = new List<char>()
+        {
+            '-',
+            '>',
+            '*',
+            '▣',
+            '▷'
+        };
     }
 }

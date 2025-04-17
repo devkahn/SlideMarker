@@ -26,16 +26,16 @@ namespace MDM.Helpers
             ofd.EnsureValidNames = true;
             //ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-
-            string basicName = EnumHelpers.GetDescription(eFILE_TYPE.None).Split('|')[0];
-            string absicExtensions = EnumHelpers.GetDescription(eFILE_TYPE.None).Split('|')[1];
-            ofd.Filters.Add(new CommonFileDialogFilter(basicName, absicExtensions));
-            if(filter != eFILE_TYPE.None)
+            if (filter != eFILE_TYPE.None)
             {
                 string name = EnumHelpers.GetDescription(filter).Split('|')[0];
                 string extensions = EnumHelpers.GetDescription(filter).Split('|')[1];
                 ofd.Filters.Add(new CommonFileDialogFilter(name, extensions));
             }
+            string basicName = EnumHelpers.GetDescription(eFILE_TYPE.None).Split('|')[0];
+            string absicExtensions = EnumHelpers.GetDescription(eFILE_TYPE.None).Split('|')[1];
+            ofd.Filters.Add(new CommonFileDialogFilter(basicName, absicExtensions));
+
 
             
             if(ofd.ShowDialog() == CommonFileDialogResult.Ok)

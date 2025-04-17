@@ -51,6 +51,8 @@ namespace MDM.Helpers
             int maxLength = Math.Max(origin.Length, target.Length);
             return (1.0 - (double)distance / maxLength) * 100; // 유사도를 퍼센트로 계산
         }
+        public static double CalculateSimilary2(string origin, string target) => JaroWinklerSimilarity(origin, target) *100;
+        
         private static int LevenshteinDistance(string origin, string target)
         {
             int n = origin.Length;
@@ -72,6 +74,72 @@ namespace MDM.Helpers
             }
             return d[n, m];
         }
+        private static double JaroWinklerSimilarity(string s1, string s2)
+        {
+            if (s1 == s2)
+                return 1.0;
+
+            int len1 = s1.Length;
+            int len2 = s2.Length;
+
+            if (len1 == 0 || len2 == 0)
+                return 0.0;
+
+            // 각 문자열의 유사도 비교 범위 설정
+            int matchDistance = Math.Max(len1, len2) / 2 - 1;
+
+            bool[] s1Matches = new bool[len1];
+            bool[] s2Matches = new bool[len2];
+
+            int matches = 0;
+            for (int i = 0; i < len1; i++)
+            {
+                int start = Math.Max(0, i - matchDistance);
+                int end = Math.Min(i + matchDistance + 1, len2);
+
+                for (int j = start; j < end; j++)
+                {
+                    if (s2Matches[j]) continue;
+                    if (s1[i] != s2[j]) continue;
+                    s1Matches[i] = true;
+                    s2Matches[j] = true;
+                    matches++;
+                    break;
+                }
+            }
+
+            if (matches == 0) return 0.0;
+
+            // 문자열 간 변환 작업 횟수 계산
+            double t = 0;
+            int k = 0;
+            for (int i = 0; i < len1; i++)
+            {
+                if (!s1Matches[i]) continue;
+                while (!s2Matches[k]) k++;
+                if (s1[i] != s2[k]) t++;
+                k++;
+            }
+
+            t /= 2;
+
+            // Jaro 유사도 계산
+            double jaro = ((matches / (double)len1) +
+                          (matches / (double)len2) +
+                          ((matches - t) / matches)) / 3.0;
+
+            // Jaro-Winkler 보정
+            int prefix = 0;
+            for (int i = 0; i < Math.Min(4, Math.Min(len1, len2)); i++)
+            {
+                if (s1[i] == s2[i])
+                    prefix++;
+                else
+                    break;
+            }
+
+            return jaro + (prefix * 0.1 * (1 - jaro));
+        }
         public static bool IsTextNuberic(string text)
         {
             foreach (char c in text)
@@ -91,7 +159,21 @@ namespace MDM.Helpers
             // 정규 표현식으로 \v, \r, \n 등을 기준으로 분리
             return Regex.Split(input, @"[\v\r\n]");
         }
+        public static string RemoveNoTextLine(string input)
+        {
+            string output = string.Empty;
 
+            string[] lines = TextHelper.SplitText(input);
+            foreach (string ln in lines)
+            {
+                if (TextHelper.IsNoText(ln)) continue;
+                if (ln != lines.First()) output += "\n";
+                output += ln;
+
+            }
+
+            return output;
+        }
         public static bool IsNoText(string input)
         {
             foreach (char c in input)
@@ -275,6 +357,37 @@ namespace MDM.Helpers
             }
 
             return output;
+        }
+        public static string RemoveLevelInText(string value)
+        {
+            string[] lines = SplitText(value);
+
+            int num = 0;
+            Dictionary<int, string> tempLines = new Dictionary<int, string>();
+            foreach (string ln in lines) if(!IsNoText(ln)) tempLines.Add(num++, ln);
+
+            bool hasLetterFirst = tempLines.Values.Where(x=> !char.IsWhiteSpace(x.First())).Count() > 0;
+            while (!hasLetterFirst)
+            {
+                foreach (int key in tempLines.Keys.ToList())
+                {
+                    string text = tempLines[key];
+                    if (char.IsWhiteSpace(text.First())) text = text.Substring(1);
+                    tempLines[key] = text;
+                }
+
+                hasLetterFirst = tempLines.Values.Where(x => !char.IsWhiteSpace(x.First())).Count() > 0;
+            }
+
+
+            string output = string.Empty;
+            foreach (string item in tempLines.Values)
+            {
+                output += item;
+                output += "\n";
+            }
+
+            return output.Trim();
         }
 
         public static string CleansingForXML(string value)

@@ -97,11 +97,11 @@ namespace MDM.Views.DataLabeling.Pages
             this.txtbox_CurSlideIndex.Text = index.ToString();
             MovePage();
         }
-        private void BindPages()
+        public void BindPages(List<vmSlide> slideList = null)
         {
-            if (this.Material == null) return;
+            if (slideList == null && this.Material == null) return;
 
-            List<vmSlide> pages = this.Material.Slides.ToList();
+            List<vmSlide> pages = slideList == null ? this.Material.Slides.ToList() : slideList;
 
             if (this.StatusCode != ePageStatus.All) pages = pages.Where(x=> x.Status.Status == this.StatusCode).ToList();
             if (this.ChangeCode != ePageStatus.All)
@@ -311,7 +311,7 @@ namespace MDM.Views.DataLabeling.Pages
                 this.btn_MoveLast.IsEnabled = cList.LastOrDefault() != selectedSlide;
                 this.btn_MoveNext.IsEnabled = cList.LastOrDefault() != selectedSlide;
 
-                if (this.Material.OriginPresentation != null)
+                if (this.Material != null && this.Material.OriginPresentation != null)
                 {
                     this.IsSelectionChange = true;
                     this.Material.OriginPresentation.Slides.FindBySlideID(selectedSlide.Temp.SlideId).Select();

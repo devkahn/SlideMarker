@@ -336,6 +336,7 @@
                     </ListBox.Style>
                     <ListBox.Resources>
                         <Style TargetType="ListBoxItem" >
+                            <Setter Property="ContextMenu" Value="{Binding ControlMenu}"/>
                             <Setter Property="Background" Value="white"/>
                             <Setter Property="MinHeight" Value="40"/>
                             <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=ListBox}}"/>
@@ -414,6 +415,7 @@
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
+                           
                             <Style.Triggers>
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="Background" Value="LightCyan"/>
@@ -435,8 +437,10 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,3,5,3">
                     <Button Content="선택 삭제" Click="btn_DeleteSelectContent_Click"/>
+                    <Button Content="선택 병합" Click="btn_MergeContent_Click"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,3,5,3">
+                    
                     <Button Content="선택 이동" Click="btn_MoveSelectContent_Click"/>
                 </StackPanel>
 

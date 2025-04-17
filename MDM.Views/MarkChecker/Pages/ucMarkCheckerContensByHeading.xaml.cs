@@ -1,29 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.TextFormatting;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using MDM.Commons;
 using MDM.Helpers;
 using MDM.Models.DataModels;
 using MDM.Models.ViewModels;
 using MDM.Views.MarkChecker.Pages.RuleSetPages;
 using MDM.Views.MarkChecker.Windows;
-using OfficeOpenXml.Style.XmlAccess;
-using static OfficeOpenXml.ExcelErrorValue;
+using MenuItem = System.Windows.Controls.MenuItem;
 
 namespace MDM.Views.MarkChecker.Pages
 {
@@ -47,15 +37,50 @@ namespace MDM.Views.MarkChecker.Pages
         }
 
         private Dictionary<string, UserControl> RuleSetPages { get; set; } = new Dictionary<string, UserControl>();
-
-
         
+
+
 
         public ucMarkCheckerContensByHeading()
         {
             InitializeComponent();
+            
             this.listbox_RuleSet.SelectedIndex = 3;
         }
+
+        
+
+        private ContextMenu SetContentsContextMenu()
+        {
+            ContextMenu output = new ContextMenu();
+            output.Uid = "ucMarkCheckerContensByHeading";
+
+            MenuItem goFirstRowToHeader = new MenuItem();
+            output.Items.Add(goFirstRowToHeader);
+            goFirstRowToHeader.Header = "첫 행 제목으로 만들기";
+            goFirstRowToHeader.Click += menuItem_DivideLevel1_click;
+
+            MenuItem divideByLevel1 = new MenuItem();
+            output.Items.Add(divideByLevel1);
+            divideByLevel1.Header = "Level1로 분할하기";
+            divideByLevel1.Click += DivideByLevel1_Click; ;
+
+            output.Items.Add(new Separator());
+
+            MenuItem moveContent = new MenuItem();
+            output.Items.Add(moveContent);
+            moveContent.Header = "이동";
+            moveContent.Click += MoveContent_Click;
+
+            MenuItem removeItem = new MenuItem();
+            output.Items.Add(removeItem);
+            removeItem.Header = "삭제";
+            removeItem.Click += RemoveItem_Click; ;
+
+
+            return output;
+        }
+
 
 
         private void BindTree()
@@ -75,15 +100,15 @@ namespace MDM.Views.MarkChecker.Pages
             {
                 if (e.NewValue == null) return;
 
-
-
                 vmHeading selectedItem = e.NewValue as vmHeading;
                 this.Material.CurrentHeading = selectedItem;
 
+                foreach (vmContent con in selectedItem.Contents)
+                {
+                    if (con.ControlMenu.Uid == "ucMarkCheckerContensByHeading") continue;
 
-
-
-
+                    con.ControlMenu = SetContentsContextMenu();
+                }
             }
             catch (Exception ee)
             {
@@ -635,6 +660,272 @@ namespace MDM.Views.MarkChecker.Pages
 
 
                 this.listbox_ContainContents.Items.Refresh();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_FirstToHeader_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selectedContents = this.listbox_ContainContents.SelectedItems;
+                if (selectedContents.Count != 1)
+                {
+                    string eMsg = "제목으로 변환할 본문을 1개만 선택하세요.";
+                    MessageHelper.ShowErrorMessage("제목으로 만들기", eMsg);
+                    return;
+                }
+
+                vmContent selectContent = selectedContents[0] as vmContent;
+                if (selectContent == null) return;
+
+
+                string firstLine = string.Empty;
+                string remainTextLines = string.Empty;
+
+                string text = TextHelper.RemoveNoTextLine(selectContent.Temp.Temp.LineText);
+                string[] lines = TextHelper.SplitText(text);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    if (i == 0) firstLine = lines[i];
+                    else remainTextLines += lines[i] + "\n";
+                }
+
+
+                if(Defines.LIST_MARKER.Contains(firstLine.First())) firstLine = firstLine.Substring(1).Trim();
+                
+
+
+
+                mHeading heading = new mHeading();
+                heading.Name = firstLine;
+                vmHeading newHeading = new vmHeading(heading);
+                newHeading.SetParent(selectContent.ParentHeading);
+
+                selectContent.ParentHeading.RemoveContent(selectContent);
+                selectContent.Temp.SetText(remainTextLines);
+                selectContent.InitializeDisplay();
+                selectContent.SetParentHeading(newHeading);
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void menuItem_DivideLevel1_click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                MenuItem menu = sender as MenuItem;
+                if (menu == null) return;
+
+                vmContent data = menu.DataContext as vmContent;
+                if (data == null) return;
+                
+                if(data.Temp.ItemType != Commons.Enum.eItemType.Text)
+                {
+                    string eMsg = "[글] 속성 이외에는 제목으로 만들 수 없습니다.";
+                    MessageHelper.ShowErrorMessage("제목으로 만들기", eMsg);
+                    return;
+                }
+
+
+
+                string firstLine = string.Empty;
+                string remainTextLines = string.Empty;
+
+                string text = TextHelper.RemoveNoTextLine(data.Temp.Temp.LineText);
+                string[] lines = TextHelper.SplitText(text);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    if (i == 0) firstLine = lines[i];
+                    else remainTextLines += lines[i] + "\n";
+                }
+
+                if (Defines.LIST_MARKER.Contains(firstLine.First()))
+                {
+                    firstLine = firstLine.Substring(1).Trim();
+                }
+                remainTextLines = TextHelper.RemoveLevelInText(remainTextLines);
+
+                mHeading heading = new mHeading();
+                heading.Name = firstLine;
+                vmHeading newHeading = new vmHeading(heading);
+                newHeading.SetParent(data.ParentHeading);
+
+                data.ParentHeading.RemoveContent(data);
+                data.Temp.SetText(remainTextLines);
+                data.InitializeDisplay();
+                data.SetParentHeading(newHeading);
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void DivideByLevel1_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                MenuItem menu = sender as MenuItem;
+                if (menu == null) return;
+
+                vmContent data = menu.DataContext as vmContent;
+                if (data == null) return;
+
+                if (data.Temp.ItemType != Commons.Enum.eItemType.Text)
+                {
+                    string eMsg = "[글] 속성 이외에는 분할 할 수 없습니다.";
+                    MessageHelper.ShowErrorMessage("본문 분할하기", eMsg);
+                    return;
+                }
+
+                string text = TextHelper.RemoveNoTextLine(data.Temp.Temp.LineText);
+                string[] lines = TextHelper.SplitText(text);
+                if (lines.Length <= 1) return;
+
+                List<string> divideText = new List<string>();
+
+                string target = string.Empty;
+                foreach (string ln in lines)
+                {
+                    if(string.IsNullOrEmpty(target))
+                    {
+                        target = ln;
+                    }
+                    else
+                    {
+                        if(char.IsWhiteSpace(ln.First()))
+                        {
+                            target += "\n" + ln;
+                        }
+                        else
+                        {
+                            divideText.Add(target);
+                            target = ln;
+                        }
+                    }
+                }
+                divideText.Add(target);
+
+                foreach (string newText in divideText)
+                {
+                    mItem item = new mItem();
+                    item.ItemType = data.Temp.Temp.ItemType;
+                    item.Level = data.Temp.Temp.Level;
+                    item.LineText = newText;
+                    item.Order = data.Temp.Temp.Order + divideText.IndexOf(newText);
+
+                    vmItem newItem = new vmItem(item);
+                    newItem.SetParent(data.Temp.ParentShape);
+
+                    vmContent newContent = new vmContent(newItem);
+                    newContent.ContentType = Commons.Enum.eContentType.UnOrderList;
+                    newContent.ControlMenu = SetContentsContextMenu();
+                    newContent.SetParentHeading(data.ParentHeading);
+                    newContent.SetParentMaterial(this.Material);
+
+                }
+
+                data.IsEnable = false;
+                data.ParentHeading.RemoveContent(data);
+                this.Material.RemoveContent(data);
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void MoveContent_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                MenuItem menu = sender as MenuItem;
+                if (menu == null) return;
+
+                vmContent data = menu.DataContext as vmContent;
+                if (data == null) return;
+
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void RemoveItem_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                MenuItem menu = sender as MenuItem;
+                if (menu == null) return;
+
+                vmContent data = menu.DataContext as vmContent;
+                if (data == null) return;
+
+                string qMsg = string.Format("선택한 본문을 삭제하시겠습니까?");
+
+                System.Windows.Forms.DialogResult result = MessageHelper.ShowYewNoMessage("본문 삭제", qMsg);
+                if(result != System.Windows.Forms.DialogResult.Yes) return;
+
+                data.IsEnable = false;
+                data.ParentHeading.RemoveContent(data);
+                this.Material.RemoveContent(data);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_MergeContent_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selectedContents = this.listbox_ContainContents.SelectedItems;
+                if (selectedContents.Count <= 1)
+                {
+                    string eMsg = "이동할 본문을 선택하세요.";
+                    MessageHelper.ShowErrorMessage("본문 병합", eMsg);
+                    return;
+                }
+
+                List<vmContent> contents = new List<vmContent>();
+                foreach (vmContent item in selectedContents)
+                {
+                    if(item.Temp.ItemType != Commons.Enum.eItemType.Text)
+                    {
+                        string eMsg = "[글] 본문 이외에는 병합할 수 없습니다.";
+                        MessageHelper.ShowErrorMessage("본문 병합", eMsg);
+                        return;
+                    }
+                    contents.Add(item);
+                }
+
+
+                vmContent targetContent = contents.First();
+                for (int i = 1; i < contents.Count; i++)
+                {
+                    vmContent con = contents[i];
+
+                    string targetText = targetContent.Temp.Temp.LineText;
+                    targetText += "\n" + con.Temp.Temp.LineText;
+                    targetContent.Temp.SetText(targetText);
+
+                    con.IsEnable = false;
+                    con.ParentHeading.RemoveContent(con);
+                    this.Material.RemoveContent(con);
+                }
+                targetContent.InitializeDisplay();
             }
             catch (Exception ee)
             {

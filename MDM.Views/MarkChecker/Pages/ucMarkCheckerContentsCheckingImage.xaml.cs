@@ -118,7 +118,7 @@ namespace MDM.Views.MarkChecker.Pages
                 list.Add(con);
             }
 
-            this.listbox_headers.ItemsSource = list.OrderBy(x => int.Parse(x.Display_SlideNum.ToString()));
+            this.listbox_headers.ItemsSource = list.OrderBy(x => x.Temp.ParentShape.ParentSlide.Temp.SlideNumber).ThenBy(x => x.Temp.Temp.Order);
         }
         private void BindPageComboBox()
         {

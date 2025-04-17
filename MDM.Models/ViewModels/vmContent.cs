@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
+using MDM.Commons;
 using MDM.Commons.Enum;
 using MDM.Models.DataModels;
 
@@ -45,7 +47,7 @@ namespace MDM.Models.ViewModels
         private object _Display_Description = null;
         private object _Display_Message = null;
 
-
+        
         private string _Temp_Content = string.Empty;
         private string _Temp_Title = string.Empty;
         private string _Temp_TableHtml = string.Empty;
@@ -135,7 +137,6 @@ namespace MDM.Models.ViewModels
                 this.Display_Background = value.HasValue ? value.Value ? Brushes.LightGray : Brushes.LightPink : Brushes.White;
             }
         }
-
         public bool IsEnable
         {
             get => _IsEnable;
@@ -258,7 +259,10 @@ namespace MDM.Models.ViewModels
             }
         }
 
+
+        public ContextMenu ControlMenu { get; set; } = new ContextMenu();
         
+
         public string Temp_Content
         {
             get => _Temp_Content;
@@ -371,6 +375,11 @@ namespace MDM.Models.ViewModels
                 heading.SetPageNumber();
             }
         }
+        public void SetSlideNum(int number)
+        {
+            //this.Display_SlideNum = this.Temp.ParentShape.ParentSlide.Temp.SlideNumber = number;
+            this.Display_SlideNum = number;
+        }
         public void SetBackground(Brush color)
         {
             this.Display_Background = color;
@@ -386,6 +395,10 @@ namespace MDM.Models.ViewModels
                 this.Display_Background = Brushes.White;
             }
         }
+        
+
+      
+
         public void SetNewContent()
         {
             if(this.ContentType == eContentType.Image)

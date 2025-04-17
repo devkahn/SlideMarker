@@ -1,4 +1,6 @@
 ﻿using MDM.Models.Attributes;
+using MDM.Models.DataModels.ManualWorksXMLs;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,5 +17,9 @@ namespace MDM.Models.DataModels
         [PropOrder(11)]
         [ColumnHeader("Name")]
         public string Name { get; set; } = string.Empty;
+
+        [JsonIgnore]
+        public mBook ManualworksBook { get; set; } = null;
+
     }
 }

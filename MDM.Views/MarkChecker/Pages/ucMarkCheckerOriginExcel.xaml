@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MDM.Views.MarkChecker.Pages"
+             xmlns:mdmPages ="clr-namespace:MDM.Views.DataLabeling.Pages"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -16,32 +17,129 @@
     </UserControl.Resources>
 
     <Grid>
-        <DataGrid x:Name="dg_Contents">
-            <DataGrid.Style>
-                <Style TargetType="DataGrid" BasedOn="{StaticResource baseStyle_Common_Datagrid}">
-                    <Setter Property="HeadersVisibility" Value="Column"/>
-                    <Setter Property="IsReadOnly" Value="True"/>
-                </Style>
-            </DataGrid.Style>
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="S_Num" Binding="{Binding Display_SlideNum}"/>
-                <DataGridTextColumn Header="제목_Lv1" Binding="{Binding Heading1.Display_Name}"/>
-                <DataGridTextColumn Header="제목_Lv2" Binding="{Binding Heading2.Display_Name}"/>
-                <DataGridTextColumn Header="제목_Lv3" Binding="{Binding Heading3.Display_Name}"/>
-                <DataGridTextColumn Header="제목_Lv4" Binding="{Binding Heading4.Display_Name}"/>
-                <DataGridTextColumn Header="제목_Lv5" Binding="{Binding Heading5.Display_Name}"/>
-                <DataGridTextColumn Header="제목_Lv6" Binding="{Binding Heading6.Display_Name}"/>
-                <DataGridTextColumn Header="제목_Lv7" Binding="{Binding Heading7.Display_Name}"/>
-                <DataGridTextColumn Header="제목_Lv8" Binding="{Binding Heading8.Display_Name}"/>
-                <DataGridTextColumn Header="제목_Lv9" Binding="{Binding Heading9.Display_Name}"/>
-                <DataGridTextColumn Header="제목_Lv10" Binding="{Binding Heading10.Display_Name}"/>
-                <DataGridTextColumn Header="본문 유형" Binding="{Binding Display_ContentType}"/>
-                <DataGridTextColumn Header="본문" Binding="{Binding Display_Content}"/>
-                <DataGridTextColumn Header="비고" Binding="{Binding Display_Description}"/>
-                <DataGridTextColumn Header="노트" Binding="{Binding Display_Message}"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
 
-            </DataGrid.Columns>
-    
-        </DataGrid>
+        <mdmPages:ucDataLabelingSildes x:Name="ucSlideList"/>
+        <Grid Grid.Column="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition />
+                <RowDefinition Height="35"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0">
+                <Border.Style>
+                    <Style TargetType="Border" >
+                        <Setter Property="CornerRadius" Value="5,5,0,0"/>
+                        <Setter Property="Background" Value="{StaticResource color_Primary1}"/>
+                    </Style>
+                </Border.Style>
+                <Grid Margin="5,0,5,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <TextBlock Text="Contents" Style="{StaticResource baseStyle_PanelTitle_Textblock}" Margin="5"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock" >
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <TextBlock Text="("/>
+                            <TextBlock Text="{Binding Items.Count, ElementName=dg_Contents}" Margin="2,0,2,0"/>
+                            <TextBlock Text=")"/>
+                        </StackPanel>
+
+                        <TextBlock x:Name="txtblock_NopageCount" Text="" FontWeight="Bold" Foreground="Yellow" VerticalAlignment="Center" Margin="5"/>
+                    </StackPanel>
+                    
+                    
+
+                </Grid>
+            </Border>
+
+            <DataGrid Grid.Row="1" x:Name="dg_Contents">
+                <DataGrid.Style>
+                    <Style TargetType="DataGrid" BasedOn="{StaticResource baseStyle_Common_Datagrid}">
+                        <Setter Property="HeadersVisibility" Value="Column"/>
+                        <Setter Property="ColumnHeaderHeight" Value="35"/>
+                        <Setter Property="IsReadOnly" Value="True"/>
+                    </Style>
+                </DataGrid.Style>
+                <DataGrid.Resources>
+                    <Style x:Key="subStyle_CellValue_Textblock" TargetType="TextBlock">
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Margin" Value="5"/>
+                        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                    </Style>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Pg" Width="30">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Display_SlideNum}" Style="{StaticResource subStyle_CellValue_Textblock}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    <DataGridTextColumn Header="제목_Lv1" Binding="{Binding Heading1.Display_Name}"/>
+                    <DataGridTextColumn Header="제목_Lv2" Binding="{Binding Heading2.Display_Name}"/>
+                    <DataGridTextColumn Header="제목_Lv3" Binding="{Binding Heading3.Display_Name}"/>
+                    <DataGridTextColumn Header="제목_Lv4" Binding="{Binding Heading4.Display_Name}"/>
+                    <DataGridTextColumn Header="제목_Lv5" Binding="{Binding Heading5.Display_Name}"/>
+                    <DataGridTextColumn Header="제목_Lv6" Binding="{Binding Heading6.Display_Name}"/>
+                    <DataGridTextColumn Header="제목_Lv7" Binding="{Binding Heading7.Display_Name}"/>
+                    <DataGridTextColumn Header="제목_Lv8" Binding="{Binding Heading8.Display_Name}"/>
+                    <DataGridTextColumn Header="제목_Lv9" Binding="{Binding Heading9.Display_Name}"/>
+                    <DataGridTextColumn Header="제목_Lv10" Binding="{Binding Heading10.Display_Name}"/>
+                    <DataGridTextColumn Header="본문 유형" Binding="{Binding Display_ContentType}"/>
+                    <DataGridTextColumn Header="본문" Binding="{Binding Display_Content}"/>
+                    <DataGridTextColumn Header="비고" Binding="{Binding Display_Description}"/>
+                    <DataGridTextColumn Header="노트" Binding="{Binding Display_Message}"/>
+
+                </DataGrid.Columns>
+
+            </DataGrid>
+
+            <Border Grid.Row="2">
+                <Border.Style>
+                    <Style TargetType="Border" >
+                        <Setter Property="CornerRadius" Value="0,0,5,5"/>
+                        <Setter Property="Background" Value="{StaticResource color_Gray2}"/>
+                    </Style>
+                </Border.Style>
+
+                <Grid Margin="5,0,5,0">
+                    <Grid.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                            
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="5">
+                        <Button Content="temp" Click="btn_FindPage_Click"/>
+                    </StackPanel>
+                     
+                    
+                    
+                </Grid>
+            </Border>
+        </Grid>
+
+      
     </Grid>
 </UserControl>

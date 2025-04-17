@@ -60,6 +60,10 @@
     <Compile Include="Attributes\UpdateUseAttribute.cs" />
     <Compile Include="Attributes\xmlElementTypeAttribute.cs" />
     <Compile Include="Attributes\xmlSubPropertyAttribute.cs" />
+    <Compile Include="DataModels\ManualWorksXMLs\mBook.cs" />
+    <Compile Include="DataModels\ManualWorksXMLs\mChapter.cs" />
+    <Compile Include="DataModels\ManualWorksXMLs\mElement.cs" />
+    <Compile Include="DataModels\ManualWorksXMLs\mLabel.cs" />
     <Compile Include="DataModels\ManualWorksXMLs\xmlBase.cs" />
     <Compile Include="DataModels\ManualWorksXMLs\xmlBook.cs" />
     <Compile Include="DataModels\ManualWorksXMLs\xmlChapter.cs" />
