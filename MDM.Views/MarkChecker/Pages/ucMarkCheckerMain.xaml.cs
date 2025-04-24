@@ -6,6 +6,7 @@ using MDM.Models.ViewModels;
 using Microsoft.Office.Interop.PowerPoint;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -224,8 +225,152 @@ namespace MDM.Views.MarkChecker.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
+        private void btn_FileOpen_Click2(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                FileInfo fInfo = FileHelper.GetOpenFileInfo("파일 열기", eFILE_TYPE.Json);
+                if (fInfo == null) return;
+                DirectoryInfo dInfo = fInfo.Directory;
 
-        private void SetHeaderItems(mContent content, List<mItem> items)
+
+                mMaterial material = new mMaterial();
+                material.Name = Path.GetFileNameWithoutExtension(fInfo.FullName);
+                vmMaterial newMaterial = new vmMaterial(material);
+                newMaterial.DirectoryPath = fInfo.DirectoryName;
+
+
+                List<mHeading> headingList = new List<mHeading>();
+                List<mContent> contentList = new List<mContent>();
+                FileInfo headerInfo = dInfo.GetFiles("*.headers", SearchOption.TopDirectoryOnly).OrderBy(x => x.Name).LastOrDefault();
+                if (headerInfo != null)
+                {
+                    string headerJsonString = File.ReadAllText(headerInfo.FullName);
+                    List<mHeading> headings = JsonHelper.ToObject<List<mHeading>>(headerJsonString);
+                    SetConetentList(headings, contentList, headingList);
+                }
+                else
+                {
+                    string jsonString = File.ReadAllText(fInfo.FullName);
+                    contentList = JsonHelper.ToObject<List<mContent>>(jsonString) as List<mContent>;
+                }
+                { 
+            
+                    int cnt = 0;
+                    Dictionary<int, List<mContent>> slideDic = new Dictionary<int, List<mContent>>();
+                    foreach (mContent content in contentList)
+                    {
+                        if(content.Idx == -1) content.Idx = (cnt++) * 10;
+                        int slideNum = content.SlideIdx;
+                        if (!slideDic.ContainsKey(slideNum)) slideDic.Add(slideNum, new List<mContent>());
+                        slideDic[slideNum].Add(content);
+                    }
+
+
+                    List<mSlide> slides = new List<mSlide>();
+                    foreach (int key in slideDic.Keys)
+                    {
+                        mSlide newSlide = new mSlide();
+                        newSlide.SlideNumber = key;
+                        newSlide.Index = key;
+                        slides.Add(newSlide);
+
+                        List<mItem> items = new List<mItem>();
+                        foreach (mContent content in slideDic[key])
+                        {
+                            mSlide sameSlide = slides.Where(x => x.SlideNumber == key).FirstOrDefault();
+                            if (sameSlide == null)
+                            {
+                                sameSlide = new mSlide();
+                                sameSlide.SlideNumber = content.SlideIdx;
+                                sameSlide.Index = sameSlide.SlideNumber;
+                                slides.Add(sameSlide);
+                            }
+
+                            sameSlide.Description += content.Description + "\n" + content.Message + "\n";
+                            if (TextHelper.IsNoText(content.Contents))
+                            {
+                                sameSlide.Status = ePageStatus.Exception.GetHashCode();
+                                continue;
+                            }
+
+                            sameSlide.Status = ePageStatus.Completed.GetHashCode();
+
+                            SetHeaderItems(content, items);
+
+                            mItem conItem = new mItem();
+                            conItem.Uid = content.Uid;
+                            conItem.ItemType = content.ContentsType;
+                            conItem.Level = GetContentLevel(content);
+                            conItem.LineText = content.Contents;
+                            conItem.Order = content.Idx;
+                            if (conItem.ItemType == eItemType.Image.GetHashCode()) conItem.Title = TextHelper.GetImageTitleFromMarkdown(conItem.LineText);
+                            items.Add(conItem);
+                        }
+
+                        foreach (mItem item in items)
+                        {
+                            mShape newShape = new mShape();
+                            newShape.ShapeType = item.ItemType;
+                            if (item.ItemType == 210) newShape.ShapeType = eShapeType.Text.GetHashCode();
+                            newShape.Top = items.IndexOf(item);
+                            newShape.Text = item.LineText;
+                            newShape.Lines.Add(item);
+
+                            newSlide.Shapes.Add(newShape);
+                        }
+                    }
+
+
+                    foreach (mSlide slide in slides)
+                    {
+                        if (slide.Index == 237)
+                        {
+                            bool hasImage = slide.Shapes.Any(x => x.ShapeType == 222);
+                            if (hasImage)
+                            {
+
+                            }
+                        }
+                        vmSlide newSlide = new vmSlide(slide);
+                        newSlide.SetParentMaterial(newMaterial);
+                        
+                        if(headingList.Count > 0)
+                        {
+                            newSlide.ConvertAndSetContents(headingList, contentList);
+                        }
+                        else
+                        {
+                            newSlide.ConvertAndSetContents();
+                        }
+
+                        
+                    }
+                }
+
+                this.Material = newMaterial;
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void SetConetentList(List<mHeading> headings, List<mContent> contentList, List<mHeading> allHeadings)
+        {
+            foreach (mHeading item in headings)
+            {
+                allHeadings.Add(item);
+                foreach (mContent content in item.Contents)
+                {
+                    contentList.Add(content);
+                }
+
+                SetConetentList(item.Children.ToList(), contentList, allHeadings);
+            }
+        }
+
+        private void SetHeaderItems(mContent content, List<mItem> items, List<mHeading> allHeadings = null)
         {
             // Header Level 1
             int levelOrder = -1;
@@ -236,6 +381,7 @@ namespace MDM.Views.MarkChecker.Pages
                 if (sameItem == null)
                 {
                     sameItem = new mItem();
+                    if (!string.IsNullOrEmpty(content.HeadingUid_1)) sameItem.Uid = content.HeadingUid_1;
                     sameItem.ItemType = eItemType.Header.GetHashCode();
                     sameItem.Level = 1;
                     sameItem.LineText = headingString;
@@ -252,6 +398,7 @@ namespace MDM.Views.MarkChecker.Pages
                 if (sameItem == null)
                 {
                     sameItem = new mItem();
+                    if (!string.IsNullOrEmpty(content.HeadingUid_2)) sameItem.Uid = content.HeadingUid_2;
                     sameItem.ItemType = eItemType.Header.GetHashCode();
                     sameItem.Level = 2;
                     sameItem.LineText = headingString;
@@ -268,6 +415,7 @@ namespace MDM.Views.MarkChecker.Pages
                 if (sameItem == null)
                 {
                     sameItem = new mItem();
+                    if (!string.IsNullOrEmpty(content.HeadingUid_3)) sameItem.Uid = content.HeadingUid_3;
                     sameItem.ItemType = eItemType.Header.GetHashCode();
                     sameItem.Level = 3;
                     sameItem.LineText = headingString;
@@ -284,6 +432,7 @@ namespace MDM.Views.MarkChecker.Pages
                 if (sameItem == null)
                 {
                     sameItem = new mItem();
+                    if (!string.IsNullOrEmpty(content.HeadingUid_4)) sameItem.Uid = content.HeadingUid_4;
                     sameItem.ItemType = eItemType.Header.GetHashCode();
                     sameItem.Level = 4;
                     sameItem.LineText = headingString;
@@ -300,6 +449,7 @@ namespace MDM.Views.MarkChecker.Pages
                 if (sameItem == null)
                 {
                     sameItem = new mItem();
+                    if (!string.IsNullOrEmpty(content.HeadingUid_5)) sameItem.Uid = content.HeadingUid_5;
                     sameItem.ItemType = eItemType.Header.GetHashCode();
                     sameItem.Level = 5;
                     sameItem.LineText = headingString;
@@ -316,6 +466,7 @@ namespace MDM.Views.MarkChecker.Pages
                 if (sameItem == null)
                 {
                     sameItem = new mItem();
+                    if (!string.IsNullOrEmpty(content.HeadingUid_6)) sameItem.Uid = content.HeadingUid_6;
                     sameItem.ItemType = eItemType.Header.GetHashCode();
                     sameItem.Level = 6;
                     sameItem.LineText = headingString;
@@ -332,6 +483,7 @@ namespace MDM.Views.MarkChecker.Pages
                 if (sameItem == null)
                 {
                     sameItem = new mItem();
+                    if (!string.IsNullOrEmpty(content.HeadingUid_7)) sameItem.Uid = content.HeadingUid_7;
                     sameItem.ItemType = eItemType.Header.GetHashCode();
                     sameItem.Level = 7;
                     sameItem.LineText = headingString;
@@ -348,6 +500,7 @@ namespace MDM.Views.MarkChecker.Pages
                 if (sameItem == null)
                 {
                     sameItem = new mItem();
+                    if (!string.IsNullOrEmpty(content.HeadingUid_8)) sameItem.Uid = content.HeadingUid_8;
                     sameItem.ItemType = eItemType.Header.GetHashCode();
                     sameItem.Level = 8;
                     sameItem.LineText = headingString;
@@ -364,6 +517,7 @@ namespace MDM.Views.MarkChecker.Pages
                 if (sameItem == null)
                 {
                     sameItem = new mItem();
+                    if (!string.IsNullOrEmpty(content.HeadingUid_9)) sameItem.Uid = content.HeadingUid_9;
                     sameItem.ItemType = eItemType.Header.GetHashCode();
                     sameItem.Level = 9;
                     sameItem.LineText = headingString;
@@ -380,6 +534,7 @@ namespace MDM.Views.MarkChecker.Pages
                 if (sameItem == null)
                 {
                     sameItem = new mItem();
+                    if (!string.IsNullOrEmpty(content.HeadingUid_10)) sameItem.Uid = content.HeadingUid_10;
                     sameItem.ItemType = eItemType.Header.GetHashCode();
                     sameItem.Level = 10;
                     sameItem.LineText = headingString;
@@ -387,6 +542,12 @@ namespace MDM.Views.MarkChecker.Pages
                 }
                 levelOrder = items.IndexOf(sameItem);
             }
+
+
+
+    
+
+
 
         }
 

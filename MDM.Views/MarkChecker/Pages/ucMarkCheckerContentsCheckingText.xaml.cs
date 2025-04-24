@@ -75,45 +75,50 @@ namespace MDM.Views.MarkChecker.Pages
                     {
                         case eItemType.Text:
 
-                            string text = con.Temp.Temp.LineText;
-                            string[] lines = TextHelper.SplitText(text);
-                            if (lines.Length == 1)
-                            {
-                                con.ContentType = eContentType.NormalText;
-                            }
-                            else
-                            {
-                                int length = lines.Length;
-                                Dictionary<int, string> temp = new Dictionary<int, string>();
-                                for (int i = 0; i < length; i++) temp.Add(i, lines[i]);
+                            //if(con.ContentType == eContentType.None)
+                            //{
+                            //    string text = con.Temp.Temp.LineText;
+                            //    string[] lines = TextHelper.SplitText(text);
+                            //    if (lines.Length == 1)
+                            //    {
+                            //        con.ContentType = eContentType.NormalText;
+                            //    }
+                            //    else
+                            //    {
+                            //        int length = lines.Length;
+                            //        Dictionary<int, string> temp = new Dictionary<int, string>();
+                            //        for (int i = 0; i < length; i++) temp.Add(i, lines[i]);
 
-                                int digitCnt = 0;
-                                int total = 0;
-                                foreach (string item in temp.Values)
-                                {
-                                    if (TextHelper.IsNoText(item)) continue;
-                                    char firstChar = item.First();
-                                    if (char.IsWhiteSpace(firstChar)) firstChar = item[1];
-                                    if (char.IsWhiteSpace(firstChar)) continue;
+                            //        int digitCnt = 0;
+                            //        int total = 0;
+                            //        foreach (string item in temp.Values)
+                            //        {
+                            //            if (TextHelper.IsNoText(item)) continue;
+                            //            char firstChar = item.First();
+                            //            if (char.IsWhiteSpace(firstChar)) firstChar = item[1];
+                            //            if (char.IsWhiteSpace(firstChar)) continue;
 
-                                    if (char.IsDigit(item.First())) digitCnt++;
-                                    total++;
-                                }
+                            //            if (char.IsDigit(item.First())) digitCnt++;
+                            //            total++;
+                            //        }
 
-                                if (total / 2 < digitCnt)
-                                {
-                                    con.ContentType = eContentType.OrderList;
-                                }
-                                else
-                                {
-                                    con.ContentType = eContentType.UnOrderList;
-                                }
-                            }
+                            //        if (total / 2 < digitCnt)
+                            //        {
+                            //            con.ContentType = eContentType.OrderList;
+                            //        }
+                            //        else
+                            //        {
+                            //            con.ContentType = eContentType.UnOrderList;
+                            //        }
+                            //    }
+                            //}
 
-                            this.Origin.Add(con);
+                            DataHelper.ClassifyContent(con);
+                            if(con.Temp.ItemType == eItemType.Text) this.Origin.Add(con);
                             continue;
                         default: continue;
                     }
+
                 }
             }
         }
@@ -124,17 +129,30 @@ namespace MDM.Views.MarkChecker.Pages
             {
                 if (!con.IsEnable) continue;
 
-                if(this.TextType != eContentType.All)
+                if(this.TextType == eContentType.None)
                 {
-                    if(con.ContentType != this.TextType) continue;
+                    if(con.IsContentsValid != false) continue;
                 }
 
-                if(!string.IsNullOrEmpty(keyword))
+                if (this.TextType == eContentType.OrderList)
+                {
+                    if (con.IsContentsValid == false) continue;
+                    if (con.ContentType != eContentType.OrderList && con.ContentType != eContentType.UnOrderList) continue;
+                }
+                if (this.TextType == eContentType.NormalText)
+                {
+                    if (con.IsContentsValid == false) continue;
+                    if (con.ContentType != eContentType.NormalText) continue;
+                }
+
+                if (!string.IsNullOrEmpty(keyword))
                 {
                     if (!con.Temp.Temp.LineText.ToUpper().Contains(keyword.ToUpper())) continue;
                 }
 
-                if(page > 0)
+
+
+                if (page > 0)
                 {
                     if (con.Display_SlideNum.ToString() != page.ToString()) continue;
                 }
@@ -732,15 +750,8 @@ namespace MDM.Views.MarkChecker.Pages
             {
                 foreach (vmContent item in this.Origin)
                 {
-                    switch (item.ContentType)
-                    {
-                       
-                        case eContentType.NormalText: NormalCheckAndConvert(item); break;
-                        case eContentType.OrderList: UnOrderlistCheckAndConvert2(item); break;
-                        case eContentType.UnOrderList: UnOrderlistCheckAndConvert2(item); break;
-                        default:
-                            break;
-                    }
+                    DataHelper.ClassifyContent(item);
+                   
                 }
             }
             catch (Exception ee)
@@ -1034,15 +1045,7 @@ namespace MDM.Views.MarkChecker.Pages
             {
                 foreach (vmContent item in this.listbox_SelectedItems.Items)
                 {
-                    if (item == null) continue;
-                    switch (item.ContentType)
-                    {
-
-                        case eContentType.NormalText: NormalCheckAndConvert(item); break;
-                        case eContentType.OrderList: UnOrderlistCheckAndConvert2(item); break;
-                        case eContentType.UnOrderList: UnOrderlistCheckAndConvert2(item); break;
-                        default: break;
-                    }
+                    DataHelper.ClassifyContent(item);
                 }
             }
             catch (Exception ee)
@@ -1066,9 +1069,14 @@ namespace MDM.Views.MarkChecker.Pages
                     item.Temp.SetItemType(eItemType.Text);
 
                     string[] lines = TextHelper.SplitText(item.Temp_Content);
-                    if (lines.Length == 1) item.ContentType = eContentType.Table;
+                    if (lines.Length == 1)
+                    {
+                        item.ContentType = eContentType.Table;
+                        item.Temp.SetItemType(eItemType.Table);
+                    }
 
-                    (this.Tag as ucMarkCheckerContentsChecking).ucMarkCheckerCheckingText.SetOriginList();
+
+                    (this.Tag as ucMarkCheckerContentsChecking).ucmarkcheckerCheckingTable.SetOriginList();
 
 
                     this.Origin.Remove(item);
@@ -1096,9 +1104,13 @@ namespace MDM.Views.MarkChecker.Pages
                     item.Temp.SetItemType(eItemType.Text);
 
                     string[] lines = TextHelper.SplitText(item.Temp_Content);
-                    if (lines.Length == 1) item.ContentType = eContentType.Image;
+                    if (lines.Length == 1)
+                    {
+                        item.ContentType = eContentType.Image;
+                        item.Temp.SetItemType(eItemType.Image);
+                    }
 
-                    (this.Tag as ucMarkCheckerContentsChecking).ucMarkCheckerCheckingText.SetOriginList();
+                    (this.Tag as ucMarkCheckerContentsChecking).ucMarkCheckerCheckingImage.SetOriginList();
 
 
                     this.Origin.Remove(item);

@@ -207,18 +207,21 @@ namespace MDM.Views.MarkChecker.Pages
                 XmlElement content = xmlDoc.CreateElement("content");
                 headingElement.AppendChild(content);
                 
-                string contentString = string.Format("<p><strong>{0}</strong></p>", heading.Temp.Name);
+                string contentString = string.Format("<strong>{0}</strong>", heading.Temp.Name);
 
                 foreach (vmHeading subHeading in heading.Children)
                 {
                     string output = "<div>";
 
-                    output += string.Format("<p>{0}</p>", subHeading.Temp.Name);
+                    output += string.Format("* {0}", subHeading.Temp.Name);
                     foreach (vmContent subCon in subHeading.Contents)
                     {
                         if (!subCon.IsEnable) continue;
 
-                        string contentDiv = "<div>";
+
+
+
+                        string contentDiv = string.Empty;
                         switch (subCon.ContentType)
                         {
                             case Commons.Enum.eContentType.NormalText:
@@ -234,7 +237,7 @@ namespace MDM.Views.MarkChecker.Pages
                                 xmlImage image = null;
                                 if (subCon.ContentType == Commons.Enum.eContentType.Image) image = SetImageElementOption(subCon, option.ImageElement);
                                 if (image != null) this.ImageList.Add(image);
-                                string img = string.Format("<img src=\"/r/image/get/{0}\" width=\"{1}\" height=\"{2}\"/>", image.FileName, image.Width >720? 720 : image.Width, "auto");
+                                string img = string.Format("<img src=\"/r/image/get/{0}\" width=\"{1}\" height=\"{2}\"/>", image.FileName, image.Width >600? 600 : image.Width, "auto");
                                 contentDiv += img;
                                 break;
                             case Commons.Enum.eContentType.Table:
@@ -242,7 +245,6 @@ namespace MDM.Views.MarkChecker.Pages
                             default:
                                 break;
                         }
-                        contentDiv += "</div>";
                         output += contentDiv;
                     }
 

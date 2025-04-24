@@ -48,7 +48,7 @@ namespace MDM.Views.MarkChecker.Pages
                 this.ImageContentList.Clear();
                 this.TableCotnentList.Clear();
 
-                BindAllContents();
+               // BindAllContents();
 
             }
         }

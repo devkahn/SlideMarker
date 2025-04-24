@@ -75,7 +75,7 @@ namespace MDM.Views.MarkChecker.Pages
                     switch (con.Temp.ItemType)
                     {
                         case eItemType.Image:
-                            con.ContentType = eContentType.Image;
+                            DataHelper.ClassifyContent(con);
                             this.Origin.Add(con);
                             continue;
                         default: continue;
@@ -743,7 +743,11 @@ namespace MDM.Views.MarkChecker.Pages
                     item.Temp.SetItemType(eItemType.Text);
 
                     string[] lines = TextHelper.SplitText(item.Temp_Content);
-                    if (lines.Length == 1) item.ContentType = eContentType.NormalText;
+                    if (lines.Length == 1)
+                    {
+                        item.ContentType = eContentType.NormalText;
+                        item.Temp.SetItemType(eItemType.Text);
+                    }
 
                     (this.Tag as ucMarkCheckerContentsChecking).ucMarkCheckerCheckingText.SetOriginList();
 
@@ -773,7 +777,12 @@ namespace MDM.Views.MarkChecker.Pages
                     item.Temp.SetItemType(eItemType.Table);
 
                     string[] lines = TextHelper.SplitText(item.Temp_Content);
-                    if (lines.Length == 1) item.ContentType = eContentType.Table;
+                    if (lines.Length == 1)
+                    {
+                        item.ContentType = eContentType.Table;
+                        item.Temp.SetItemType(eItemType.Table);
+                    }
+                    
 
                     (this.Tag as ucMarkCheckerContentsChecking).ucmarkcheckerCheckingTable.SetOriginList();
 

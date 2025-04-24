@@ -510,6 +510,7 @@
                                                                         <Setter Property="MaxHeight" Value="{Binding ActualHeight, ElementName=toggle_markdownFold}"/>
                                                                         <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
                                                                         <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+                                                                        <Setter Property="AcceptsReturn" Value="True"/>
                                                                         <Style.Triggers>
                                                                             <DataTrigger Binding="{Binding IsChecked, ElementName=toggle_markdownFold}" Value="True">
                                                                                 <Setter Property="MaxHeight" Value="200"/>

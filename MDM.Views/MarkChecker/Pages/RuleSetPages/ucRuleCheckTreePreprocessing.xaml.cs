@@ -258,7 +258,7 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
                     return;
                 }
 
-                wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection();
+                wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection(selectedHeding);
                 wndTarget.DataContext = this.Material;
                 wndTarget.ShowDialog();
 
@@ -340,19 +340,23 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
 
         private void btn_SelectionCopy_Click(object sender, RoutedEventArgs e)
         {
+            vmHeading selectedHeding = this.treeview_Header.SelectedItem as vmHeading;
+            if (selectedHeding == null)
+            {
+                string eMsg = "복사할 제목을 선택하세요.";
+                MessageHelper.ShowErrorMessage("새 제목 추가", eMsg);
+                return;
+            }
+
             try
             {
-                vmHeading selectedHeding = this.treeview_Header.SelectedItem as vmHeading;
-                if (selectedHeding == null)
-                {
-                    string eMsg = "복사할 제목을 선택하세요.";
-                    MessageHelper.ShowErrorMessage("새 제목 추가", eMsg);
-                    return;
-                }
+                
 
-                wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection();
+                selectedHeding.IsEnabled = false;
+                wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection(selectedHeding);
                 wndTarget.DataContext = this.Material;
                 wndTarget.ShowDialog();
+                selectedHeding.IsEnabled = true;
 
                 if (wndTarget.DialogResult != true) return;
 
@@ -370,6 +374,7 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
             }
             catch (Exception ee)
             {
+                selectedHeding.IsEnabled = true;
                 ErrorHelper.ShowError(ee);
             }
         }

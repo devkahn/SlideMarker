@@ -1,7 +1,9 @@
-﻿using System;
+﻿using MDM.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,29 +12,12 @@ namespace MDM.Helpers
 {
     public static class TextHelper
     {
-        public static string RemoveHeadingSymbol(this string value)
-        {
-            string output = value;
-            while (output.First() == '#')
-            {
-                output = output.Substring(1);
-            }
-            return output;
-        }
-        public static string RemoveEmtpy(this string value)
-        {
-            string output = string.Empty;
-            foreach (char item in value)
-            {
-                if (char.IsWhiteSpace(item)) continue;
-                output += item;
-            }
-            return output;
-        }
-        public static string RemoveSpecialChar(this string value)
-        {
-            return Regex.Replace(value, @"[^a-zA-Z0-9\s\uac00-\ud7af]", "");
-        }
+        public static List<char> markers = new List<char>() { '-', '>', '*', '▣', '▷' };
+        public static List<char> linebreakMarkers = new List<char>() { '※', '☞', '→', '+' };
+        public static List<char> NumberDividerMarks = new List<char>() { '.', ')' };
+        static List<char> openingBrachets = new List<char>() { '(', '（', '【', '「', '『', '《' };
+        static List<char> closingBrackets = new List<char>() { ')', '）', '】', '」', '』', '》' };
+
         public static string GetLineMark(string lineText)
         {
             string output = string.Empty;
@@ -51,8 +36,21 @@ namespace MDM.Helpers
             int maxLength = Math.Max(origin.Length, target.Length);
             return (1.0 - (double)distance / maxLength) * 100; // 유사도를 퍼센트로 계산
         }
-        public static double CalculateSimilary2(string origin, string target) => JaroWinklerSimilarity(origin, target) *100;
-        
+        public static double CalculateSimilary2(string origin, string target) => JaroWinklerSimilarity(origin, target) * 100;
+        public static string CleansingForXML(string value)
+        {
+            string output = string.Empty;
+
+            foreach (char c in value)
+            {
+                if (c.IsCharZeroWidthSpace()) continue;
+                if (c.IsCharHorizontalTab()) continue;
+
+                output += c;
+            }
+
+            return output;
+        }
         private static int LevenshteinDistance(string origin, string target)
         {
             int n = origin.Length;
@@ -140,15 +138,6 @@ namespace MDM.Helpers
 
             return jaro + (prefix * 0.1 * (1 - jaro));
         }
-        public static bool IsTextNuberic(string text)
-        {
-            foreach (char c in text)
-            {
-                if (!Char.IsDigit(c))
-                    return false;
-            }
-            return true;
-        }
         public static string HighlightMarkdown(string value)
         {
 
@@ -173,6 +162,15 @@ namespace MDM.Helpers
             }
 
             return output;
+        }
+        public static bool IsTextNuberic(string text)
+        {
+            foreach (char c in text)
+            {
+                if (!Char.IsDigit(c))
+                    return false;
+            }
+            return true;
         }
         public static bool IsNoText(string input)
         {
@@ -217,11 +215,51 @@ namespace MDM.Helpers
             bool isDivider = Regex.IsMatch(line, pattern);
             return isDivider;
         }
+        public static bool IsEnClosedNumbers(char input)
+        {
+            return '\u2460' <= input && input <= '\u2471';
+        }
+        public static bool IsRomanNumbers(char input) => input >= '\u2160' && input <= '\u217F';
+        public static bool IsFirstNumericListMark(string input)
+        {
+            char firstChar = input.Trim().First();
+
+            if(char.IsDigit(firstChar)) return true;
+            if (IsEnClosedNumbers(firstChar)) return true;
+            if (IsRomanNumbers(firstChar)) return true;
+
+            
+            if (openingBrachets.Contains(firstChar))
+            {
+                int index = openingBrachets.IndexOf(firstChar);
+                char closeBracket = closingBrackets[index];
+                if(input.Contains(closeBracket))
+                {
+                    string number = input.Substring(1).Split(closeBracket)[0];
+                    return int.TryParse(number, out int result);
+                }
+            }
+            return false;
+        }
+        public static bool IsFirstLinebreakMark(string input)
+        {
+            return linebreakMarkers.Contains(input.Trim().First());
+        }
+        private static bool IsCharZeroWidthSpace(this char c) => c == '\u200B';
+        private static bool IsCharHorizontalTab(this char c) => c == '\u000B';
+        public static bool IsFirstCharUnorderMark(this string input)
+        {
+            string text = input.Trim();
+            //output = text.Substring(1).Trim();
+            return markers.Contains(text.First());
+        }
+
+
         public static string[] GetCellValueInRowString(string input)
         {
             string[] parts = CleansingForXML(input.Trim()).Split('|', (char)StringSplitOptions.RemoveEmptyEntries);
-            if(string.IsNullOrEmpty(parts.First())) parts = parts.Skip(1).ToArray();
-            if(string.IsNullOrEmpty(parts.Last())) parts = parts.Take(parts.Length - 1).ToArray();
+            if (string.IsNullOrEmpty(parts.First())) parts = parts.Skip(1).ToArray();
+            if (string.IsNullOrEmpty(parts.Last())) parts = parts.Take(parts.Length - 1).ToArray();
 
             return parts;
         }
@@ -232,16 +270,13 @@ namespace MDM.Helpers
             foreach (char c in divider)
             {
                 if (c == '|') output++;
-                else if (c == '+' || c== '＋') return output;
+                else if (c == '+' || c == '＋') return output;
             }
 
             return 0;
         }
-        
-        public static bool IsEnClosedNumbers(char input)
-        {
-            return '\u2460' <= input && input <= '\u2471';
-        }
+
+
         public static string GetImageFileNameFromMarkdown(string input)
         {
             string pattern = @"\(([^)]+)\)[^\(]*$";
@@ -260,42 +295,75 @@ namespace MDM.Helpers
 
             return null;
         }
-            
-        public static bool IsFirstNumericListMark(string input)
-        {
-            string pattern = @"^\d+\.\s";
-            return Regex.IsMatch(input, pattern);
-        }
+
+
 
         public static string Preprocessing(this string originText)
         {
             string[] textSplits = SplitText(originText);
 
             string output = string.Empty;
-            foreach (string line in textSplits)
+            foreach (string origin in textSplits)
             {
-                if (string.IsNullOrEmpty(line) || string.IsNullOrWhiteSpace(line)) continue;
+                if (IsNoText(origin)) continue;
 
-                string newLine = line;
-                if (newLine.StartsWith("\t\t\t\t")) newLine = newLine.Replace("\t\t\t\t", "        "+"- ");
-                else if (newLine.StartsWith("\t\t\t")) newLine = newLine.Replace("\t\t\t", "      "+"- ");
-                else if (newLine.StartsWith("\t\t")) newLine = newLine.Replace("\t\t", "    "+"- ");
-                else if (newLine.StartsWith("\t")) newLine = newLine.Replace("\t", "  "+"- ");
-                else if (textSplits.Length > 1)
+                string line = origin;
+
+                int levelCnt = 0;
+
+                int total = line.Length;
+                for (int i = 0; i < total; i++)
                 {
-                    if (newLine.First() == '▣') newLine = newLine.Replace("▣", "        "+"- ");
-                    else if (newLine.First() == '▷') newLine = newLine.Replace("▷", "      "+"- ");
-                    else if (newLine.First() == '*') newLine = newLine.Replace("*", "    "+"- ");
-                    else if (newLine.First() == '>') newLine = newLine.Replace(">", "  "+"- ");
-                    else if (newLine.First() != '-') newLine = newLine.Insert(0, "- ");
-                    //else newLine = newLine.Insert(0, "- ");
+                    char c = line[i];
+                    if (c == '\t')
+                    {
+                        levelCnt++;
+                        line = line.Substring(1);
+                        continue;
+                    }
+                    if (char.IsWhiteSpace(c))
+                    {
+                        string gap = line.Substring(0, 1);
+                        if(gap == "  ")
+                        {
+                            levelCnt++;
+                            line = line.Substring(2);
+                            continue;
+                        }
+                    }
+                    break;
                 }
 
-                output += newLine;
-                if (line != textSplits.Last()) output += "\n";
+                string mark = "-";
+                if (TextHelper.IsFirstCharUnorderMark(line))
+                {
+                    mark = "-";
+                    line = line.Trim().Substring(1).TrimStart();
+                }
+                else if (TextHelper.IsFirstNumericListMark(line))
+                {
+                    mark = string.Empty;
+                    line = line.Trim();
+                }
+                else if (TextHelper.IsFirstLinebreakMark(line))
+                {
+                    mark = line.First() == '+' ? string.Empty : "+";
+                    line = line.Trim();
+                }
+                else
+                {
+                    line = line.Trim();
+                }
+
+                string indent = string.Empty;
+                for (int i = 0; i < levelCnt; i++) indent += "  ";
+
+                line = string.Format("{0}{1} {2}", indent, mark, line);
+                output += line;
+                output += "\n";
             }
 
-            return output;
+            return output.TrimEnd();
         }
         public static string Numbering(this string originText)
         {
@@ -327,8 +395,7 @@ namespace MDM.Helpers
             return output;
         }
 
-        private static bool IsCharZeroWidthSpace(this char c) => c == '\u200B';
-        private static bool IsCharHorizontalTab(this char c) => c == '\u000B';
+
 
         public static string RemoveZeroWidthSpace(string value)
         {
@@ -338,7 +405,7 @@ namespace MDM.Helpers
             {
                 //(char)8203
                 if (c.IsCharZeroWidthSpace()) continue;
-                
+
                 output += c;
             }
 
@@ -352,7 +419,7 @@ namespace MDM.Helpers
             {
                 //(char)8203
                 if (c.IsCharHorizontalTab()) continue;
-                
+
                 output += c;
             }
 
@@ -360,13 +427,15 @@ namespace MDM.Helpers
         }
         public static string RemoveLevelInText(string value)
         {
+            if (IsNoText(value)) return string.Empty;
+
             string[] lines = SplitText(value);
 
             int num = 0;
             Dictionary<int, string> tempLines = new Dictionary<int, string>();
-            foreach (string ln in lines) if(!IsNoText(ln)) tempLines.Add(num++, ln);
+            foreach (string ln in lines) if (!IsNoText(ln)) tempLines.Add(num++, ln);
 
-            bool hasLetterFirst = tempLines.Values.Where(x=> !char.IsWhiteSpace(x.First())).Count() > 0;
+            bool hasLetterFirst = tempLines.Values.Where(x => !char.IsWhiteSpace(x.First())).Count() > 0;
             while (!hasLetterFirst)
             {
                 foreach (int key in tempLines.Keys.ToList())
@@ -389,20 +458,84 @@ namespace MDM.Helpers
 
             return output.Trim();
         }
+        public static string RemoveHeadingSymbol(this string value)
+        {
+            string output = value;
+            while (output.First() == '#')
+            {
+                output = output.Substring(1);
+            }
+            return output;
+        }
+        public static string RemoveEmtpy(this string value)
+        {
+            string output = string.Empty;
+            foreach (char item in value)
+            {
+                if (char.IsWhiteSpace(item)) continue;
+                output += item;
+            }
+            return output;
+        }
+        public static string RemoveSpecialChar(this string value)
+        {
+            return Regex.Replace(value, @"[^a-zA-Z0-9\s\uac00-\ud7af]", "");
+        }
+        public static Dictionary<int, string> ToDictionary(this string[] lines)
+        {
+            Dictionary<int, string> output = new Dictionary<int, string>();
+            int num = 0;
+            foreach (string line in lines)
+            {
+                if (string.IsNullOrEmpty(line)) continue;
+                if (line.Trim() == string.Empty) continue;
+                output.Add(num++, line);
+            }
+            return output;
 
-        public static string CleansingForXML(string value)
+        }
+        public static List<mTextLine> ToLineList(this string[] textLines)
+        {
+            List<mTextLine> output = new List<mTextLine>();
+            int num = 0;
+            foreach (string line in textLines)
+            {
+                if (string.IsNullOrEmpty(line)) continue;
+                if (line.Trim() == string.Empty) continue;
+                mTextLine textLine = new mTextLine();
+                textLine.LineNumber = num++;
+                textLine.LineText = line;
+                output.Add(textLine);
+            }
+            return output;
+        }
+
+        public static string GetEmptyCharFromHead(string prevLine)
         {
             string output = string.Empty;
 
-            foreach (char c in value)
+            string text = prevLine;
+            foreach (char c in prevLine)
             {
-                if (c.IsCharZeroWidthSpace()) continue;
-                if (c.IsCharHorizontalTab()) continue;
-
-                output += c;
+                if(c == '\t')
+                {
+                    output += "  ";
+                    continue;
+                }
+                if (char.IsWhiteSpace(c))
+                {
+                    output += c;
+                    continue;
+                }
+                break;
             }
 
             return output;
+        }
+        public static int GetLineLevel(string line)
+        {
+            string empty = GetEmptyCharFromHead(line);
+            return empty.Length / 2;
         }
     }
 }

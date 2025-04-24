@@ -234,7 +234,22 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
 
                 foreach (vmHeadingModify item in list)
                 {
-                    item.Display_TargetName = item.Display_TargetName.ToString().Substring(count);
+                    string text = item.Display_TargetName.ToString();
+                    if (TextHelper.IsNoText(text)) continue;
+
+                    if(rBtn_RevoveDirectionFront.IsChecked == true)
+                    {
+                        text = text.ToString().Substring(count);
+                        if (this.checkbox_AutoRemoveEmpty.IsChecked == true) text = text.TrimStart();
+                        item.Display_TargetName = text;
+                    }
+                    else
+                    {
+                        text = item.Display_TargetName.ToString().Substring(0, text.Length - count);
+                        if (this.checkbox_AutoRemoveEmpty.IsChecked == true) text = text.TrimEnd();
+                        item.Display_TargetName = text;
+                    }
+
                 }
             }
             catch (Exception ee)
@@ -369,6 +384,48 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
                 ErrorHelper.ShowError(ee);
             }
 
+        }
+
+        private void btn_RemoveFirstChar_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                List<vmHeadingModify> list = GetSelectedHeaderList();
+
+                foreach (vmHeadingModify item in list)
+                {
+                    string text = item.Display_TargetName.ToString();
+                    if (TextHelper.IsNoText(text)) continue;
+                    text = text.Substring(1);
+                    if (this.checkbox_AutoRemoveEmpty.IsChecked == true) text = text.TrimStart();
+                    item.Display_TargetName = text;
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_RemoveLastChar_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                List<vmHeadingModify> list = GetSelectedHeaderList();
+
+                foreach (vmHeadingModify item in list)
+                {
+                    string text = item.Display_TargetName.ToString();
+                    if (TextHelper.IsNoText(text)) continue;
+                    text = text.Substring(0,text.Length - 1);
+                    if(this.checkbox_AutoRemoveEmpty.IsChecked == true) text = text.TrimEnd();
+                    item.Display_TargetName = text;
+                }
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
         }
     }
 

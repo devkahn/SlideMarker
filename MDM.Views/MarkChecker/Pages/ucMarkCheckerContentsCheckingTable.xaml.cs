@@ -82,8 +82,7 @@ namespace MDM.Views.MarkChecker.Pages
             this.Origin.Clear();
             if (this.Material != null)
             {
-                foreach (vmContent con in this.Material
-                    .Contents)
+                foreach (vmContent con in this.Material.Contents)
                 {
                     bool hasSame = this.Origin.Any(x => x.Temp.Temp.Uid == con.Temp.Temp.Uid);
                     if (hasSame) continue;
@@ -91,7 +90,7 @@ namespace MDM.Views.MarkChecker.Pages
                     switch (con.Temp.ItemType)
                     {
                         case eItemType.Table:
-                            con.ContentType = eContentType.Table;
+                            DataHelper.ClassifyContent(con);
                             this.Origin.Add(con);
                             continue;
                         default: continue;

@@ -48,8 +48,11 @@
 
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="3,2,3,2">
-                    <Button Content="변경" Click="btn_Change_Click"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="3,2,3,2">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0,0,10,0">
+                        <Button Content="동일 명칭 합치기" Click="btn_MergeSameHeader_click"/>
+                    </StackPanel>
+                    <Button Content="변경사항 적용" Click="btn_Change_Click"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -114,12 +117,16 @@
             <Border Height="2" Background="{StaticResource color_Gray2}" Margin="5"/>
             <StackPanel Style="{StaticResource subStyle_Fuction_StackPanel}">
                 <Button Content="글자 제거" Click="btn_RemoveChar_Click"/>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0">
-                    <RadioButton GroupName="removeText" Content="앞" Style="{StaticResource baseStyle_LeftEnd_RadioButton}" IsChecked="True"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
+                    <RadioButton GroupName="removeText" x:Name="rBtn_RevoveDirectionFront" Content="앞" Style="{StaticResource baseStyle_LeftEnd_RadioButton}" IsChecked="True"/>
                     <RadioButton GroupName="removeText" Content="뒤" Style="{StaticResource baseStyle_RightEnd_RadioButton}"/>
                 </StackPanel>
                 <TextBox Grid.Column="1" x:Name="txtbox_RemoveCharCount" Width="35" HorizontalContentAlignment="Center"/>
-                <!--<TextBox Grid.Column="1" x:Name="txtbox_RemoveText" MinWidth="500"/>-->
+                <StackPanel Orientation="Horizontal" Margin="20,0,10,0">
+                    <Button Content="앞 글자 제거" Click="btn_RemoveFirstChar_Click"/>
+                    <Button Content="뒷 글자 제거" Click="btn_RemoveLastChar_Click"/>
+                </StackPanel>
+                <CheckBox x:Name="checkbox_AutoRemoveEmpty" Content="공백 자동 제거" VerticalAlignment="Center" IsChecked="True"/>
             </StackPanel>
             <Border Height="2" Background="{StaticResource color_Gray2}" Margin="5"/>
             <StackPanel Style="{StaticResource subStyle_Fuction_StackPanel}" >
@@ -128,7 +135,7 @@
                     <RadioButton GroupName="addText" Content="앞"  Style="{StaticResource baseStyle_LeftEnd_RadioButton}" IsChecked="True"/>
                     <RadioButton GroupName="addText" Content="뒤"  Style="{StaticResource baseStyle_RightEnd_RadioButton}"/>
                 </StackPanel>
-                <TextBox Grid.Column="1" x:Name="txtbox_AddCharIndex" Width="35"/>
+                <TextBox Grid.Column="1" x:Name="txtbox_AddCharIndex" Width="35" Text="0" HorizontalContentAlignment="Center"/>
                 <TextBox Grid.Column="1" x:Name="txtbox_AddText" MinWidth="500"/>
             </StackPanel>
             <Border Height="2" Background="{StaticResource color_Gray2}" Margin="5"/>
@@ -189,9 +196,7 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="5,3,5,3">
-                <Button Content="동일 명칭 합치기" Click="btn_MergeSameHeader_click"/>
-            </StackPanel>
+            
             
         </Grid>
               

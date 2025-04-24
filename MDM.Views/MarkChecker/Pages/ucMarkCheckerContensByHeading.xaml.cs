@@ -199,6 +199,135 @@ namespace MDM.Views.MarkChecker.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
+        private void btn_Save_Click2(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                List<mContent> conList = new List<mContent>();
+                foreach (vmContent root in this.Material.Contents)
+                {
+                    mContent newContent = new mContent();
+
+                    newContent.SlideIdx = int.Parse(root.Display_SlideNum.ToString());
+                    if (root.Heading1 != null) newContent.Heading1String = root.Heading1.Temp.Name;
+                    if (root.Heading2 != null) newContent.Heading2String = root.Heading2.Temp.Name;
+                    if (root.Heading3 != null) newContent.Heading3String = root.Heading3.Temp.Name;
+                    if (root.Heading4 != null) newContent.Heading4String = root.Heading4.Temp.Name;
+                    if (root.Heading5 != null) newContent.Heading5String = root.Heading5.Temp.Name;
+                    if (root.Heading6 != null) newContent.Heading6String = root.Heading6.Temp.Name;
+                    if (root.Heading7 != null) newContent.Heading7String = root.Heading7.Temp.Name;
+                    if (root.Heading8 != null) newContent.Heading8String = root.Heading8.Temp.Name;
+                    if (root.Heading9 != null) newContent.Heading9String = root.Heading9.Temp.Name;
+                    if (root.Heading10 != null) newContent.Heading10String = root.Heading10.Temp.Name;
+
+                    newContent.ContentsType = root.ContentType.GetHashCode();
+                    newContent.Contents = root.Temp_Content.ToString();
+                    if (root.Display_Description != null) newContent.Description = root.Display_Description.ToString();
+                    if (root.Display_Message != null) newContent.Message = root.Display_Message.ToString();
+                    newContent.ContentOrder = root.Temp.Temp.Order;
+
+                    conList.Add(newContent);
+
+
+                }
+
+
+                string jsonString = JsonHelper.ToJsonString(conList);
+                DateTime nowTime = DateTime.Now;
+                string targetPath = System.IO.Path.Combine(this.Material.DirectoryPath, string.Format("{0}_{1}.headers", this.Material.Temp.Name, nowTime.ToString("yyMMddHHmmss")));
+                if (File.Exists(targetPath))
+                {
+                    File.Delete(targetPath);
+                }
+                File.WriteAllText(targetPath, jsonString);
+
+                this.textblock_TimeStamp.Text = nowTime.ToString("yy/MM/dd HH:mm:ss");
+                DoubleAnimation fadeInAnimation = new DoubleAnimation
+                {
+                    From = 0,
+                    To = 1,
+                    Duration = TimeSpan.FromSeconds(1)
+                };
+                DoubleAnimation fadeOutAnimation = new DoubleAnimation
+                {
+                    From = 1,
+                    To = 0,
+                    Duration = TimeSpan.FromSeconds(1),
+                    BeginTime = TimeSpan.FromSeconds(1) // 3초 후에 시작
+                };
+                fadeOutAnimation.Completed += (s, ee) =>
+                {
+                    this.stackPanel_SaveMessage.Visibility = Visibility.Collapsed;
+                };
+                fadeInAnimation.Completed += (s, ee) =>
+                {
+                    // 3초 후 페이드 아웃 애니메이션 시작
+                    stackPanel_SaveMessage.BeginAnimation(UIElement.OpacityProperty, fadeOutAnimation);
+                };
+
+                this.stackPanel_SaveMessage.Visibility = Visibility.Visible;
+                this.stackPanel_SaveMessage.BeginAnimation(UIElement.OpacityProperty, fadeInAnimation);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void btn_Save_Click3(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                List<mHeading> list = new List<mHeading>();
+                foreach (vmHeading root in this.Material.RootHeadings)
+                {
+                    
+                    
+
+
+                }
+
+
+                string jsonString = JsonHelper.ToJsonString(list);
+                DateTime nowTime = DateTime.Now;
+                string targetPath = System.IO.Path.Combine(this.Material.DirectoryPath, string.Format("{0}_{1}.headers", this.Material.Temp.Name, nowTime.ToString("yyMMddHHmmss")));
+                if (File.Exists(targetPath))
+                {
+                    File.Delete(targetPath);
+                }
+                File.WriteAllText(targetPath, jsonString);
+
+                this.textblock_TimeStamp.Text = nowTime.ToString("yy/MM/dd HH:mm:ss");
+                DoubleAnimation fadeInAnimation = new DoubleAnimation
+                {
+                    From = 0,
+                    To = 1,
+                    Duration = TimeSpan.FromSeconds(1)
+                };
+                DoubleAnimation fadeOutAnimation = new DoubleAnimation
+                {
+                    From = 1,
+                    To = 0,
+                    Duration = TimeSpan.FromSeconds(1),
+                    BeginTime = TimeSpan.FromSeconds(1) // 3초 후에 시작
+                };
+                fadeOutAnimation.Completed += (s, ee) =>
+                {
+                    this.stackPanel_SaveMessage.Visibility = Visibility.Collapsed;
+                };
+                fadeInAnimation.Completed += (s, ee) =>
+                {
+                    // 3초 후 페이드 아웃 애니메이션 시작
+                    stackPanel_SaveMessage.BeginAnimation(UIElement.OpacityProperty, fadeOutAnimation);
+                };
+
+                this.stackPanel_SaveMessage.Visibility = Visibility.Visible;
+                this.stackPanel_SaveMessage.BeginAnimation(UIElement.OpacityProperty, fadeInAnimation);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
         private void listbox_RuleSet_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -268,30 +397,59 @@ namespace MDM.Views.MarkChecker.Pages
 
                 vmHeading parent = selectedItem.Parent;
 
-                if (parent == null && selectedItem.Contents.Count() >0)
+                MessageBoxResult result = MessageBoxResult.Yes;
+                if (selectedItem.Contents.Count() > 0)
                 {
                     string eMsg = "선택한 제목에 포함하는 컨텐츠가 존재합니다.";
-                    MessageHelper.ShowErrorMessage(caption, eMsg);
-                    return;
+                    if (parent == null)
+                    {
+                        eMsg += "\n삭제를 계속 하시겠습니까?(확인:전체 삭제, 취소 : 삭제 취소)";
+                        result = MessageBox.Show(eMsg, "선택 제목 삭제", MessageBoxButton.OKCancel);
+                       
+                    }
+                    else
+                    {
+                        
+                        eMsg += "\n삭제를 계속 하시겠습니까?(예:전체 삭제, 아니오:본문 상위 제목으로 이동 후 삭제, 취소 : 삭제 취소)";
+                        result = MessageBox.Show(eMsg, "선택 제목 삭제", MessageBoxButton.YesNoCancel);
+                    }
+                }
+
+
+
+
+                if (result == MessageBoxResult.Cancel) return;
+                if(result == MessageBoxResult.Yes || result == MessageBoxResult.OK)
+                {
+                    foreach (vmContent item in selectedItem.Contents)
+                    {
+                        item.IsEnable = false;
+                        selectedItem.RemoveContent(item);
+                        this.Material.RemoveContent(item);
+                    }
+                }
+                else if(result == MessageBoxResult.No)
+                {
+                    foreach (vmContent item in selectedItem.Contents)
+                    {
+                        item.SetParentHeading(parent);
+                    }
                 }
 
                 foreach (vmHeading child in selectedItem.Children.ToList())
                 {
                     child.SetParent(parent);
                 }
-                if (parent == null)
-                {
-                    this.Material.RemoveHeading(selectedItem);
-                }
-                else
-                {
-                    foreach (vmContent content in selectedItem.Contents.ToList())
-                    {
-                        content.SetParentHeading(parent);
-                    }
-                    parent.RemoveChild(selectedItem);
-                }
+                if(parent != null) parent.SetChildrenLevel();
 
+                selectedItem.IsEnabled = false;
+                if (parent != null)
+                {
+                    parent.RemoveChild(selectedItem);
+                    
+                }
+                this.Material.RemoveHeading(selectedItem);
+                
                 foreach (var item in this.Material.Headings)
                 {
                     item.InitializeDisplay();
@@ -307,24 +465,27 @@ namespace MDM.Views.MarkChecker.Pages
 
         private void btn_SelectionMove_Click(object sender, RoutedEventArgs e)
         {
+            vmHeading selectedHeding = this.treeview_Header.SelectedItem as vmHeading;
+            if (selectedHeding == null)
+            {
+                string eMsg = "이동할 제목을 선택하세요.";
+                MessageHelper.ShowErrorMessage("새 제목 추가", eMsg);
+                return;
+            }
+
             try
             {
-                vmHeading selectedHeding = this.treeview_Header.SelectedItem as vmHeading;
-                if (selectedHeding == null)
-                {
-                    string eMsg = "이동할 제목을 선택하세요.";
-                    MessageHelper.ShowErrorMessage("새 제목 추가", eMsg);
-                    return;
-                }
 
-                wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection();
+                
+                wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection(selectedHeding);
                 wndTarget.DataContext = this.Material;
                 wndTarget.ShowDialog();
+                selectedHeding.IsEnabled = true;
 
                 if (wndTarget.DialogResult != true) return;
 
                 vmHeading target = wndTarget.SelectedTargetHeader;
-
+                
 
                 selectedHeding.SetParent(target);
                 selectedHeding.SetChildrenLevel();
@@ -337,19 +498,21 @@ namespace MDM.Views.MarkChecker.Pages
 
         private void btn_SelectionCopy_Click(object sender, RoutedEventArgs e)
         {
+            vmHeading selectedHeding = this.treeview_Header.SelectedItem as vmHeading;
+            if (selectedHeding == null)
+            {
+                string eMsg = "복사할 제목을 선택하세요.";
+                MessageHelper.ShowErrorMessage("새 제목 추가", eMsg);
+                return;
+            }
+
             try
             {
-                vmHeading selectedHeding = this.treeview_Header.SelectedItem as vmHeading;
-                if (selectedHeding == null)
-                {
-                    string eMsg = "복사할 제목을 선택하세요.";
-                    MessageHelper.ShowErrorMessage("새 제목 추가", eMsg);
-                    return;
-                }
-
-                wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection();
+                selectedHeding.IsEnabled = false;
+                wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection(selectedHeding);
                 wndTarget.DataContext = this.Material;
                 wndTarget.ShowDialog();
+                selectedHeding.IsEnabled = true;
 
                 if (wndTarget.DialogResult != true) return;
 
@@ -367,6 +530,7 @@ namespace MDM.Views.MarkChecker.Pages
             }
             catch (Exception ee)
             {
+                if(selectedHeding != null) selectedHeding.IsEnabled = true;
                 ErrorHelper.ShowError(ee);
             }
         }
@@ -439,14 +603,21 @@ namespace MDM.Views.MarkChecker.Pages
         private void btn_MoveSelectContent_Click(object sender, RoutedEventArgs e)
         {
             var selectedContents = this.listbox_ContainContents.SelectedItems;
-            if (selectedContents.Count < 0)
+            List<vmContent> contents = new List<vmContent>();
+            foreach (vmContent item in selectedContents)
+            {
+                if (item == null) continue;
+                contents.Add(item);
+            }
+
+            if (contents.Count < 0)
             {
                 string eMsg = "이동할 본문을 선택하세요.";
                 MessageHelper.ShowErrorMessage("본문 이동", eMsg);
                 return;
             }
 
-            wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection();
+            wndTargetHeaderSelection wndTarget = new wndTargetHeaderSelection(null);
             wndTarget.DataContext = this.Material;
             wndTarget.ShowDialog();
 
@@ -454,12 +625,7 @@ namespace MDM.Views.MarkChecker.Pages
 
             vmHeading target = wndTarget.SelectedTargetHeader;
 
-            List<vmContent> contents= new List<vmContent>();
-            foreach (vmContent item in selectedContents)
-            {
-                if (item == null) continue;
-                contents.Add(item);
-            }
+
             
 
             foreach (vmContent item in contents)
@@ -509,6 +675,10 @@ namespace MDM.Views.MarkChecker.Pages
 
                 selectedItem.Move(true);
 
+                if (selectedItem.Parent == null) BindTree();
+
+                selectedItem.IsTreeSelected = true;
+             
 
             }
             catch (Exception ee)
@@ -528,6 +698,10 @@ namespace MDM.Views.MarkChecker.Pages
                 if (selectedItem == null) return;
 
                 selectedItem.Move(false);
+
+                if (selectedItem.Parent == null) BindTree();
+
+                selectedItem.IsTreeSelected = true;
             }
             catch (Exception ee)
             {
@@ -752,6 +926,7 @@ namespace MDM.Views.MarkChecker.Pages
                     firstLine = firstLine.Substring(1).Trim();
                 }
                 remainTextLines = TextHelper.RemoveLevelInText(remainTextLines);
+                if (string.IsNullOrEmpty(remainTextLines)) remainTextLines = firstLine;
 
                 mHeading heading = new mHeading();
                 heading.Name = firstLine;
@@ -762,6 +937,7 @@ namespace MDM.Views.MarkChecker.Pages
                 data.Temp.SetText(remainTextLines);
                 data.InitializeDisplay();
                 data.SetParentHeading(newHeading);
+               
 
             }
             catch (Exception ee)

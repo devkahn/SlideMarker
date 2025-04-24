@@ -22,7 +22,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <mdmPages:ucDataLabelingSildes x:Name="ucSlideList"/>
+        <mdmPages:ucDataLabelingSildes x:Name="ucSlideList" Visibility="Collapsed"/>
         <Grid Grid.Column="1" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"/>
@@ -131,7 +131,7 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="5">
-                        <Button Content="temp" Click="btn_FindPage_Click"/>
+                        <Button Content="temp" Click="btn_FindPage_Click" Visibility="Collapsed"/>
                     </StackPanel>
                      
                     

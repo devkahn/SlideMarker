@@ -21,15 +21,24 @@ namespace MDM.Views.MarkChecker.Windows
     /// </summary>
     public partial class wndTargetHeaderSelection : Window
     {
+        public vmHeading OriginHeader { get; set; } = null;
         public vmHeading SelectedTargetHeader { get; set; } = null;
-        public wndTargetHeaderSelection()
+        public wndTargetHeaderSelection(vmHeading originHeading)
         {
+            this.OriginHeader = originHeading;
             InitializeComponent();
         }
 
         private void btn_Ok_Click(object sender, RoutedEventArgs e)
         {
             this.SelectedTargetHeader = this.tree.SelectedItem as vmHeading;
+
+            if(this.OriginHeader == this.SelectedTargetHeader)
+            {
+                string eMsg = "동일한 제목을 선택했습니다.\n다시 선택하세요.";
+                MessageHelper.ShowErrorMessage("", eMsg);
+                return;
+            }
 
             if(this.SelectedTargetHeader == null)
             {

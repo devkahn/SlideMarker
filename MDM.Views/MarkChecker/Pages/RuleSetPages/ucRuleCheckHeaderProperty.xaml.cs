@@ -55,6 +55,7 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
 
             foreach (vmHeading item in this.Material.Headings)
             {
+                if (item.IsEnabled == false) continue;
                 headings.Add(item);
             }
 
@@ -70,7 +71,8 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
 
             foreach (vmHeading item in this.Material.Headings)
             {
-                if(item.Temp.Level == level) headings.Add(item);
+                if (item.IsEnabled == false) continue;
+                if (item.Temp.Level == level) headings.Add(item);
             }
 
             this.listbox_headers.ItemsSource = headings;
@@ -85,6 +87,7 @@ namespace MDM.Views.MarkChecker.Pages.RuleSetPages
 
             foreach (vmHeading item in this.Material.Headings)
             {
+                if (item.IsEnabled == false) continue;
                 if (item.Temp.Name.ToLower().Contains(keyword.ToLower())) headings.Add(item);
             }
 

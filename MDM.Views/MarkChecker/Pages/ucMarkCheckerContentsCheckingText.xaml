@@ -186,8 +186,8 @@
                             </Grid.ColumnDefinitions>
                             <RadioButton Grid.Column="0" GroupName="textType" x:Name="rBtn_All" Uid="0"    Content="전체" Style="{StaticResource baseStyle_LeftEnd_RadioButton}" Checked="RadioButton_Checked"/>
                             <RadioButton Grid.Column="1" GroupName="textType" Uid="2211" Content="단일" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="RadioButton_Checked"/>
-                            <RadioButton Grid.Column="2" GroupName="textType" Uid="2212" Content="순서" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="RadioButton_Checked"/>
-                            <RadioButton Grid.Column="3" GroupName="textType" Uid="2213" Content="비 순서" Style="{StaticResource baseStyle_RightEnd_RadioButton}" Checked="RadioButton_Checked"/>
+                            <RadioButton Grid.Column="2" GroupName="textType" Uid="2212" Content="목록" Style="{StaticResource baseStyle_Center_RadioButton}" Checked="RadioButton_Checked"/>
+                            <RadioButton Grid.Column="3" GroupName="textType" Uid="-1" Content="오류" Style="{StaticResource baseStyle_RightEnd_RadioButton}" Checked="RadioButton_Checked"/>
 
                             <Grid Grid.Column="4" Margin="20,0,5,0">
                                 <Grid.ColumnDefinitions>
@@ -239,13 +239,14 @@
                     </ListBox.Style>
                     <ListBox.Resources>
                         <Style TargetType="ListBoxItem">
+                            <Setter Property="Background" Value="{Binding Display_Background}"/>
                             <Setter Property="MinHeight" Value="35"/>
                             <Setter Property="MaxHeight" Value="65"/>
                             <Setter Property="Margin" Value="0,2,0,3"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ListBoxItem">
-                                        <Grid>
+                                        <Grid Background="{TemplateBinding Background}" >
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="35"/>
                                                 <ColumnDefinition Width="35"/>
@@ -443,7 +444,7 @@
                             <TextBlock Grid.Row="0" Grid.Column="0"  Text="글머리 설정" Style="{StaticResource subStyle_Title_Textlbock}"/>
                             <WrapPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="5">
                                 <Button Content="글 머리 달기" Click="btn_AddMark_Click"/>
-                                <Button Content="글 머리 제거" Click="btn_RemoveMark_Click"/>
+                                <Button Content="글 머리 제거" Click="btn_RemoveMark_Click" IsEnabled="False"/>
                             </WrapPanel>
                         </StackPanel>
                         <StackPanel MinHeight="35" Orientation="Horizontal">

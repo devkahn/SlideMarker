@@ -62,7 +62,7 @@ namespace MDM.Models.ViewModels
         {
             this.Temp = origin;
         }
-        
+  
 
         public vmItem Temp
         {
@@ -346,7 +346,41 @@ namespace MDM.Models.ViewModels
         {
             this.Display_SlideNum = this.Temp.ParentShape.ParentSlide.Temp.SlideNumber;
 
-            this.Display_ContentType = this.Temp.ItemType.ToString();
+            switch (this.Temp.ItemType)
+            {
+                case eItemType.Text:
+                    this.Temp.SetItemType(eItemType.Text);
+                    break;
+                case eItemType.Image:
+                    this.Display_ContentType = eContentType.Image.ToString();
+                    this.ContentType = eContentType.Image;
+                    break;
+                case eItemType.Table:
+                    this.Display_ContentType = eContentType.Table.ToString();
+                    this.ContentType = eContentType.Table;
+                    break;
+                default:
+                    switch (this.Temp.Temp.ItemType)
+                    {
+                        case 2212:
+                            this.Temp.SetItemType(eItemType.Text);
+                            this.Display_ContentType = eContentType.OrderList.ToString();
+                            this.ContentType = eContentType.OrderList;
+                            break;
+                        case 2213:
+                            this.Temp.SetItemType(eItemType.Text);
+                            this.Display_ContentType = eContentType.UnOrderList.ToString();
+                            this.ContentType = eContentType.UnOrderList;
+                            break;
+                        default:
+                            this.Temp.SetItemType(eItemType.Text);
+                            this.Display_ContentType = eContentType.NormalText.ToString();
+                            this.ContentType = eContentType.NormalText;
+                            break;
+                    }
+                    break;
+            }
+
             this.Display_Content = this.Temp.Display_Text;
             this.Temp_Content = this.Temp.Display_Text.ToString();
             this.Temp_Title = this.Temp.Display_Title == null ? string.Empty : this.Temp.Display_Title.ToString();
