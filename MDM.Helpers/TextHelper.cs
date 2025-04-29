@@ -224,7 +224,12 @@ namespace MDM.Helpers
         {
             char firstChar = input.Trim().First();
 
-            if(char.IsDigit(firstChar)) return true;
+            if (char.IsDigit(firstChar))
+            {
+                char second = input.Trim()[1];
+                if (TextHelper.NumberDividerMarks.Contains(second)) return true;
+                return false;
+            }
             if (IsEnClosedNumbers(firstChar)) return true;
             if (IsRomanNumbers(firstChar)) return true;
 

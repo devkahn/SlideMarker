@@ -303,8 +303,8 @@ namespace MDM.Helpers
                         }
                     }
 
-                    string mark = string.Empty;
-                    for (int i = 0; i < level; i++) mark += "  ";
+                    string indent = string.Empty;
+                    for (int i = 0; i < level; i++) indent += "  ";
                     
                     level++;
                     foreach (int key in targetKeys)
@@ -312,11 +312,11 @@ namespace MDM.Helpers
                         string line = lineDict[key];
                         if (char.IsWhiteSpace(line.First())) continue;
 
-               
+                        //string mark = string.Empty;
 
                         if (TextHelper.IsFirstNumericListMark(line.Trim()))
                         {
-                            newLineDict.Add(key, string.Format("{0}{1}", mark, line.Trim()));
+                            newLineDict.Add(key, string.Format("{0}{1}", indent, line.Trim()));
                             lineDict.Remove(key);
                         }
                         else
@@ -328,20 +328,31 @@ namespace MDM.Helpers
                                 string rawLine = line.Trim().Substring(1).Trim();
                                 bool isRawOrdered = TextHelper.IsFirstNumericListMark(rawLine);
 
-                                if (isRawOrdered && char.IsDigit(rawLine.First()))
-                                {
-                                    char second = rawLine[1];
-                                    if (!TextHelper.NumberDividerMarks.Contains(second)) isRawOrdered = false;
-                                }
-
                                 if (isRawOrdered)
                                 {
-                                    newLineDict.Add(key, string.Format("{0}{1}", mark, rawLine));
+                                    newLineDict.Add(key, string.Format("{0}{1}", indent, rawLine));
                                 }
                                 else
                                 {
-                                    if(mark.LastOrDefault() != '-') mark += "-";
-                                    newLineDict.Add(key, string.Format("{0} {1}", mark, line.Trim().Substring(1).Trim()));
+                                    string mark = string.Empty;
+                                    if (mark.LastOrDefault() != '-')
+                                    {
+                                        char firstchar = rawLine.Trim().First();
+                                        if( TextHelper.linebreakMarkers.Contains(firstchar))
+                                        {
+                                            if (newLineDict.ContainsKey(key - 1))
+                                            {
+                                                string preLine = newLineDict[key - 1];
+                                                indent = TextHelper.GetEmptyCharFromHead(preLine);
+                                            }
+                                            if (firstchar != '+') mark += "+";
+                                        }
+                                        else
+                                        {
+                                            mark += "-";
+                                        }
+                                    }
+                                    newLineDict.Add(key, string.Format("{0}{1} {2}",indent, mark, line.Trim().Substring(1).Trim()));
                                 }
 
                                 lineDict.Remove(key);
@@ -358,12 +369,17 @@ namespace MDM.Helpers
                                         return;
                                     }
 
-                                    mark = string.Empty;
-                                    string preLine = newLineDict[key - 1];
-                                    mark += TextHelper.GetEmptyCharFromHead(preLine);
-                                    if (firstChar != '+') mark += '+';
+                                    
+                                    if(newLineDict.ContainsKey(key-1))
+                                    {
+                                        string preLine = newLineDict[key - 1];
+                                        indent = TextHelper.GetEmptyCharFromHead(preLine);
+                                    }
+                            
+                                    if (firstChar == '+') line = line.Substring(1);
+                                    
 
-                                    newLineDict.Add(key, string.Format("{0} {1}", mark, line.Trim()));
+                                    newLineDict.Add(key, string.Format("{0}{1} {2}",indent, "+", line.Trim()));
                                     lineDict.Remove(key);
                                 }
                                 else
