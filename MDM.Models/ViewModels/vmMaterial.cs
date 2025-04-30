@@ -48,7 +48,7 @@ namespace MDM.Models.ViewModels
         public Presentation OriginPresentation { get; private set; } = null;
         public List<Shape> SelectedShapes { get; set; } = new List<Shape>();
         public xmlSet XMLSets { get; set; }
-
+        public List<xmlImage> ImageList { get; set; }
 
         private ObservableCollection<vmSlide> OriginSlides { get; set; }
         public ReadOnlyObservableCollection<vmSlide> Slides => new ReadOnlyObservableCollection<vmSlide>(this.OriginSlides);
@@ -167,6 +167,7 @@ namespace MDM.Models.ViewModels
         public override void SetInitialData()
         {
             this.XMLSets = new xmlSet();
+            this.ImageList = new List<xmlImage>();
 
             this.OriginSlides = new ObservableCollection<vmSlide>();
             this.OriginSlides.CollectionChanged += OriginSlides_CollectionChanged;

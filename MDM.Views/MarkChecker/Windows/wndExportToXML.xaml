@@ -1,0 +1,50 @@
+﻿<Window x:Class="MDM.Views.MarkChecker.Windows.wndExportToXML"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MDM.Views.MarkChecker.Windows"
+        mc:Ignorable="d"
+        Title="XML로 Export 하기" Height="450" Width="800" WindowState="Maximized" WindowStartupLocation="CenterOwner">
+
+    <TabControl Margin="5">
+        <TabItem Header="짧은 문서로 내보내기">
+            <TextBlock Text="준비중..." HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </TabItem>
+        <TabItem Header="책으로 내보내기" IsSelected="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="400"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <CheckBox Content="문서 설정" IsChecked="True"/>
+
+                    </StackPanel>
+                    
+                    
+                </Grid>
+
+
+       
+                
+                
+                
+                
+            </Grid>
+        </TabItem>
+    </TabControl>
+    
+</Window>

@@ -203,6 +203,9 @@
     <Compile Include="MarkChecker\Pages\ucMarkCheckerContentsCheckingText.xaml.cs">
       <DependentUpon>ucMarkCheckerContentsCheckingText.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MarkChecker\Pages\ucMarkCheckerExportToXML.xaml.cs">
+      <DependentUpon>ucMarkCheckerExportToXML.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MarkChecker\Pages\ucMarkCheckerMain.xaml.cs">
       <DependentUpon>ucMarkCheckerMain.xaml</DependentUpon>
     </Compile>
@@ -247,6 +250,9 @@
     </Compile>
     <Compile Include="MarkChecker\Pages\XMLSettings\ucXMLSettingHeading5.xaml.cs">
       <DependentUpon>ucXMLSettingHeading5.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MarkChecker\Windows\wndExportToXML.xaml.cs">
+      <DependentUpon>wndExportToXML.xaml</DependentUpon>
     </Compile>
     <Compile Include="MarkChecker\Windows\wndHeaderNameInput.xaml.cs">
       <DependentUpon>wndHeaderNameInput.xaml</DependentUpon>
@@ -425,6 +431,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MarkChecker\Pages\ucMarkCheckerExportToXML.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MarkChecker\Pages\ucMarkCheckerMain.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -482,6 +492,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MarkChecker\Pages\XMLSettings\ucXMLSettingHeading5.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MarkChecker\Windows\wndExportToXML.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MDM.Views.MarkChecker.Windows"
         mc:Ignorable="d"
-        Title="제목 입력" Height="100" Width="400" WindowStartupLocation="CenterOwner">
+        Title="제목 입력" Height="120" Width="400" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

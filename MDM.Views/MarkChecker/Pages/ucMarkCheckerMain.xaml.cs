@@ -1,14 +1,20 @@
 ﻿using MDM.Commons.Enum;
 using MDM.Helpers;
+using MDM.Models.Attributes;
 using MDM.Models.DataModels;
 using MDM.Models.DataModels.ManualWorksXMLs;
 using MDM.Models.ViewModels;
+using MDM.Views.MarkChecker.Windows;
 using Microsoft.Office.Interop.PowerPoint;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
@@ -43,7 +49,7 @@ namespace MDM.Views.MarkChecker.Pages
                 this.mcExcelView.Material = value;
                 this.mcContentsByHeading.Material = value;
                 this.smDataLabeling.SetMaterial(value);
-                this.ucMarCheckerToXml.Material = value;
+               // this.ucMarCheckerToXml.Material = value;
                 this.mcContentChecking.Material = value;
             }
         }
@@ -356,6 +362,29 @@ namespace MDM.Views.MarkChecker.Pages
             }
         }
 
+        private string ConvertToString(object value)
+        {
+            string output = string.Empty;
+
+            if (value != null)
+            {
+                if (value is string[])
+                {
+                    string[] items = value as string[];
+                    foreach (var item in items)
+                    {
+                        output += item;
+                        if (item != items.Last()) output += ",";
+                    }
+                }
+                else
+                {
+                    output = value.ToString();
+                }
+            }
+
+            return output;
+        }
         private void SetConetentList(List<mHeading> headings, List<mContent> contentList, List<mHeading> allHeadings)
         {
             foreach (mHeading item in headings)
@@ -631,17 +660,92 @@ namespace MDM.Views.MarkChecker.Pages
         {
             try
             {
-                //xmlBook book = new xmlBook();
-                //book.Id = XMLHelper.GenerateUUId(8);
-                //book.Title = this.Material.Temp.Name;
-                //book.CreateDate = DateTime.Now;
-                //book.Type = eXMLBookType.BOOK;
-                //book.Locale = eXMLLocale.ko;
-                //book.Edition = "수행지침";
-                //book.Tags.Append("수행지침");
-                //book.Tags.Append(this.Material.Temp.Name);
+                XmlDocument xmlDoc = new XmlDocument();
+                XmlDeclaration xmlDecl = xmlDoc.CreateXmlDeclaration("1.0", "UTF-8", null);
+                xmlDoc.AppendChild(xmlDecl);
+
+
+                XmlElement bookElement = XMLHelper.GetBookXmlElement(xmlDoc, this.Material);
+                List<XmlElement> chapterElements = XMLHelper.GetChapterElements(xmlDoc, this.Material);
+                foreach (XmlElement chapter in chapterElements) bookElement.AppendChild(chapter);
+                
+                string folderName = DateTime.Now.ToString("yyyyMMddHHmmss");
+                string folderPath = Path.Combine(this.Material.DirectoryPath, string.Format("{0}_{1}", "book", folderName));
+                if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+
+                string bookFolderPath = Path.Combine(folderPath, "book");
+                if (!Directory.Exists(bookFolderPath)) Directory.CreateDirectory(bookFolderPath);
+                string bookFileName = string.Format("{0}.xml", bookElement.GetAttribute("id"));
+                string bookTargetPath = Path.Combine(bookFolderPath, bookFileName);
+                using (StreamWriter writer = new StreamWriter(bookTargetPath, false, Encoding.UTF8)) xmlDoc.Save(writer);
 
                 
+                {
+                    string imageFolderPath = Path.Combine(folderPath, "image");
+                    if (!Directory.Exists(imageFolderPath)) Directory.CreateDirectory(imageFolderPath);
+
+                    string createDateString = ((DateTimeOffset)DateTime.Now).ToUnixTimeMilliseconds().ToString();
+                    XmlDocument imageDoc = new XmlDocument();
+                    XmlDeclaration imageXmlDecl = imageDoc.CreateXmlDeclaration("1.0", "UTF-8", null);
+                    imageDoc.AppendChild(imageXmlDecl);
+                    XmlElement imagesElement = imageDoc.CreateElement("images");
+                    imageDoc.AppendChild(imagesElement);
+                    foreach (xmlImage image in this.Material.ImageList)
+                    {
+                        XmlElement imageElement = imageDoc.CreateElement("image");
+                        imageElement.SetAttribute("id", image.FileName);
+                        imagesElement.AppendChild(imageElement);
+
+                        XmlElement prorps = imageDoc.CreateElement("properties");
+                        imageElement.AppendChild(prorps);
+
+                        PropertyInfo[] pInfos = image.GetType().GetProperties();
+                        foreach (PropertyInfo p in pInfos)
+                        {
+                            xmlSubPropertyAttribute subPropAtt = p.GetCustomAttribute(typeof(xmlSubPropertyAttribute)) as xmlSubPropertyAttribute;
+                            if (subPropAtt == null) continue;
+
+                            var value = p.GetValue(image, null);
+                            string valueString = ConvertToString(value);//.ToLower();
+
+                            XmlElement xmlProp = imageDoc.CreateElement("property");
+                            xmlProp.SetAttribute("name", subPropAtt.Prorperty.Name);
+                            xmlProp.SetAttribute("value", valueString);
+                            prorps.AppendChild(xmlProp);
+                        }
+
+                        {
+                            XmlElement xmlProp = imageDoc.CreateElement("property");
+                            xmlProp.SetAttribute("name", "creator");
+                            xmlProp.SetAttribute("value", "DLENC");
+                            prorps.AppendChild(xmlProp);
+                        }
+                        {
+
+                            XmlElement xmlProp = imageDoc.CreateElement("property");
+                            xmlProp.SetAttribute("name", "create_time");
+                            xmlProp.SetAttribute("value", createDateString);
+                            prorps.AppendChild(xmlProp);
+                        }
+
+                        string targetFileName = Path.Combine(imageFolderPath, image.FileName);
+                        File.Copy(image.FilePath, targetFileName);
+                    }
+
+                    string imageFileName = string.Format("{0}.xml", "images");
+                    string imageTargetPath = Path.Combine(imageFolderPath, imageFileName);
+                    using (StreamWriter writer = new StreamWriter(imageTargetPath, false, Encoding.UTF8)) imageDoc.Save(writer);
+                }
+                
+
+
+                string targetName = string.Format("{0}_{1}.zip", "book", folderName);
+                string targetPath = Path.Combine(this.Material.DirectoryPath, targetName);
+                ZipFile.CreateFromDirectory(folderPath, targetPath);
+
+
+                string msg = "XML Export!!!";
+                MessageHelper.ShowMessage("Export To XML", msg);
             }
             catch (Exception ee)
             {
@@ -901,6 +1005,20 @@ namespace MDM.Views.MarkChecker.Pages
                 foreach (mSlide item in slides) slideList.Add(new vmSlide(item));
 
                 this.mcExcelView.ucSlideList.BindPages(slideList);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void TabItem_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            try
+            {
+                wndExportToXML wndEX = new wndExportToXML();
+                wndEX.Material = this.Material;
+                wndEX.ShowDialog();
             }
             catch (Exception ee)
             {

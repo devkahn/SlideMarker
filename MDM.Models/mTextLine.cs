@@ -10,8 +10,8 @@ namespace MDM.Models
     public class mTextLine
     {
         public int LineNumber { get; set; } = -1;
-        public string LineText { get; set; } = string.Empty;
         public int Level { get; set; } = 0;
-        public bool IsOrderedLine { get; set; } = false;
+        public string Mark { get; set; }
+        public string LineText { get; set; } = string.Empty;
     }
 }

@@ -9,6 +9,7 @@ using System.Windows.Media;
 using MDM.Commons;
 using MDM.Commons.Enum;
 using MDM.Models.DataModels;
+using MDM.Models.DataModels.ManualWorksXMLs;
 
 namespace MDM.Models.ViewModels
 {
@@ -116,8 +117,9 @@ namespace MDM.Models.ViewModels
             }
         }
         public eContentType ContentType { get; set; } = eContentType.None;
+        public xmlElementConfig XmlConfig { get; set; }
 
-        
+
         public string ImagePath
         {
             get => _ImagePath;

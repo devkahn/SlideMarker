@@ -18,17 +18,11 @@ namespace MDM.Helpers
         static List<char> openingBrachets = new List<char>() { '(', '（', '【', '「', '『', '《' };
         static List<char> closingBrackets = new List<char>() { ')', '）', '】', '」', '』', '》' };
 
-        public static string GetLineMark(string lineText)
+        public static string GetManualWorksListMark(string lineText)
         {
-            string output = string.Empty;
-
-            foreach (char c in lineText)
-            {
-                if (char.IsLetter(c)) break;
-                output += c;
-            }
-
-            return output.Trim();
+            if (IsFirstNumericListMark(lineText)) return "#";
+            if(IsFirstLinebreakMark(lineText)) return "+";
+            return "*";
         }
         public static double CalculateSimilary(string origin, string target)
         {
@@ -224,12 +218,7 @@ namespace MDM.Helpers
         {
             char firstChar = input.Trim().First();
 
-            if (char.IsDigit(firstChar))
-            {
-                char second = input.Trim()[1];
-                if (TextHelper.NumberDividerMarks.Contains(second)) return true;
-                return false;
-            }
+            if(char.IsDigit(firstChar)) return true;
             if (IsEnClosedNumbers(firstChar)) return true;
             if (IsRomanNumbers(firstChar)) return true;
 
@@ -499,21 +488,7 @@ namespace MDM.Helpers
             return output;
 
         }
-        public static List<mTextLine> ToLineList(this string[] textLines)
-        {
-            List<mTextLine> output = new List<mTextLine>();
-            int num = 0;
-            foreach (string line in textLines)
-            {
-                if (string.IsNullOrEmpty(line)) continue;
-                if (line.Trim() == string.Empty) continue;
-                mTextLine textLine = new mTextLine();
-                textLine.LineNumber = num++;
-                textLine.LineText = line;
-                output.Add(textLine);
-            }
-            return output;
-        }
+       
 
         public static string GetEmptyCharFromHead(string prevLine)
         {
@@ -540,7 +515,19 @@ namespace MDM.Helpers
         public static int GetLineLevel(string line)
         {
             string empty = GetEmptyCharFromHead(line);
-            return empty.Length / 2;
+            return empty.Length / 2 + 1;
+        }
+        internal static string GetTextWithoutNumericListMark(string input)
+        {
+            char firstChar = input.Trim().First();
+            while (!char.IsLetter(firstChar))
+            {
+                input = input.Trim().Substring(1);
+                if (input.Length == 0) break;
+                firstChar = input.Trim().First();
+            }
+
+            return input.Trim();
         }
     }
 }

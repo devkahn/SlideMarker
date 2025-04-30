@@ -218,9 +218,6 @@ namespace MDM.Views.MarkChecker.Pages
                     {
                         if (!subCon.IsEnable) continue;
 
-
-
-
                         string contentDiv = string.Empty;
                         switch (subCon.ContentType)
                         {
@@ -429,8 +426,6 @@ namespace MDM.Views.MarkChecker.Pages
                     SetXmlElement(item, xmlDoc, chapterElement, option);
                 }
             }
-
-            
         }
 
         private xmlImage SetImageElementOption(vmContent con, xmlElement optionElement)

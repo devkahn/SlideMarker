@@ -45,5 +45,10 @@ namespace MDM.Views.MarkChecker.Windows
             this.HeaderName = string.Empty;
             this.Close();
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.txtbox_NewName.Focus();
+        }
     }
 }

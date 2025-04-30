@@ -40,7 +40,7 @@
                     <Button Content="TEMP" Click="btn_Temp_Click" Visibility="Collapsed"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
-                    <Button Content="EXPORT to XML" IsEnabled="True" Click="btn_ExportXml_Click" Visibility="Collapsed"/>
+                    <Button Content="EXPORT to XML" IsEnabled="True" Click="btn_ExportXml_Click" Visibility="Visible"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,10,15,5">
@@ -81,8 +81,8 @@
             <TabItem Header="Contents By Slide" Visibility="Collapsed">
                 <smPages:ucDataLabeling x:Name="smDataLabeling"/>
             </TabItem>
-            <TabItem Header="XML 설정">
-                <local:ucMarCheckerToXml x:Name="ucMarCheckerToXml"/>
+            <TabItem Header="XML로 내보내기" MouseLeftButtonUp="TabItem_MouseLeftButtonUp" Visibility="Collapsed">
+                <!--<local:ucMarCheckerToXml x:Name="ucMarCheckerToXml"/>-->
             </TabItem>
         </TabControl>
 
