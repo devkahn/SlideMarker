@@ -49,7 +49,7 @@ namespace MDM.Views.MarkChecker.Pages
                 this.mcExcelView.Material = value;
                 this.mcContentsByHeading.Material = value;
                 this.smDataLabeling.SetMaterial(value);
-               // this.ucMarCheckerToXml.Material = value;
+                this.ucMarCheckerToXml.Material = value;
                 this.mcContentChecking.Material = value;
             }
         }
@@ -305,12 +305,19 @@ namespace MDM.Views.MarkChecker.Pages
                             SetHeaderItems(content, items);
 
                             mItem conItem = new mItem();
+                            conItem.Idx = content.Idx;
                             conItem.Uid = content.Uid;
                             conItem.ItemType = content.ContentsType;
                             conItem.Level = GetContentLevel(content);
                             conItem.LineText = content.Contents;
                             conItem.Order = content.Idx;
-                            if (conItem.ItemType == eItemType.Image.GetHashCode()) conItem.Title = TextHelper.GetImageTitleFromMarkdown(conItem.LineText);
+                            if (conItem.ItemType == eItemType.Image.GetHashCode())
+                            {
+                                conItem.Title = TextHelper.GetImageTitleFromMarkdown(conItem.LineText);
+                                string fileName = TextHelper.GetImageFileNameFromMarkdown(conItem.LineText).Split('.')[0];
+                                bool isGuid = Guid.TryParse(fileName, out Guid result);
+                                if (isGuid) conItem.Uid = fileName;
+                            }
                             items.Add(conItem);
                         }
 
@@ -752,6 +759,9 @@ namespace MDM.Views.MarkChecker.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
+
+    
+    
 
         private void btn_XMLFileOpen_Click(object sender, RoutedEventArgs e)
         {

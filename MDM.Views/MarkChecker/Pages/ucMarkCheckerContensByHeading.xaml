@@ -95,7 +95,7 @@
                             <Setter Property="BorderBrush" Value="Transparent"/>
                             <Setter Property="BorderThickness" Value="0"/>
                             <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=Grid}}"/>
-                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="auto"/>
+                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
                             
                         </Style>
                     </TreeView.Style>
@@ -130,11 +130,36 @@
                                 </Grid.Width>-->
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
-                                    
+                                    <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
-                                <Grid Width="50">
+                                <Grid Grid.Column="0" Margin="0,0,1,0">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,1,0">
+                                        <StackPanel.Resources>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="FontSize" Value="10"/>
+                                            </Style>
+                                        </StackPanel.Resources>
+                                        <TextBlock Text="L" Margin="2,0,1,0"/>
+                                        <TextBlock Text="{Binding Display_Level}"/>
+                                    </StackPanel>
+                                    <Border CornerRadius="3" Background="{StaticResource  color_Gray3}" Margin="0,5,0,5">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HeadingType}" Value="ExportNote">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                            <TextBlock Text="전" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="8" Foreground="White"/>
+                                    </Border>
+                                </Grid>
+                                
+                                <Grid Grid.Column="1" Width="50">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
@@ -159,8 +184,7 @@
                                                   
                                     </Border>
                                 </Grid>
-                               
-                                <Grid Grid.Column="1" MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=TreeView}}">
+                                <Grid Grid.Column="2" MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=TreeView}}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="auto"/>
@@ -187,7 +211,7 @@
                                         <TextBlock Text=")"/>
                                     </StackPanel>
                                 </Grid>
-                                <Border Grid.Column="2" Background="White" BorderBrush="DarkGreen" BorderThickness="1" VerticalAlignment="Center" Margin="3,3,0,3" Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}">
+                                <Border Grid.Column="3" Background="White" BorderBrush="DarkGreen" BorderThickness="1" VerticalAlignment="Center" Margin="3,3,0,3" Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}">
                                     <Border.Style>
                                         <Style TargetType="Border">
                                             <Setter Property="Visibility" Value="Visible"/>
@@ -217,6 +241,7 @@
                             <Button x:Name="btn_SelectionCopy" Content="선택 복사" Click="btn_SelectionCopy_Click"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="선택 글로" Click="btn_GenTextblock_Click"/>
                             <Button Content="제목 추가" Click="btn_CreateNewHeader_Click"/>
                         </StackPanel>
                     </Grid>
@@ -435,11 +460,13 @@
                 </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto
+                                      "/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,3,5,3">
                     <Button Content="선택 삭제" Click="btn_DeleteSelectContent_Click"/>
                     <Button Content="선택 병합" Click="btn_MergeContent_Click"/>
+                    <Button Content="글그림 병합" Click="btn_TextImageContent_Click"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,3,5,3">
                     

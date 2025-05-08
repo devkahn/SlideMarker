@@ -1066,14 +1066,8 @@ namespace MDM.Views.MarkChecker.Pages
 
                 foreach (vmContent item in seleectedList)
                 {
-                    item.Temp.SetItemType(eItemType.Text);
-
-                    string[] lines = TextHelper.SplitText(item.Temp_Content);
-                    if (lines.Length == 1)
-                    {
-                        item.ContentType = eContentType.Table;
-                        item.Temp.SetItemType(eItemType.Table);
-                    }
+                    item.ContentType = eContentType.Table;
+                    item.Temp.SetItemType(eItemType.Table);
 
 
                     (this.Tag as ucMarkCheckerContentsChecking).ucmarkcheckerCheckingTable.SetOriginList();

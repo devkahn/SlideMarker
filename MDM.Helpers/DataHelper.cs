@@ -401,25 +401,24 @@ namespace MDM.Helpers
             }
 
             string newText = string.Empty;
-            int preLevel = 0;
+            int preLevel = 1;
             foreach (int key in newLineDict.Keys.OrderBy(x=> x).ToList())
             {
                 string line = newLineDict[key];
-                int level = TextHelper.GetLineLevel(line);
-                if(preLevel < level)
-                {
-                    if(level - preLevel > 1)
-                    {
-                        string mark = string.Empty;
-                        for (int i = 0; i < preLevel + 1; i++) mark += "  ";
-                        line = string.Format("{0}{1}", mark, line.Trim());
-                    }
-                }
-                else
-                {
-                    preLevel = level;
-                }
+                //string mark = string.Empty;
 
+                //int level = TextHelper.GetLineLevel(line);
+                //if(preLevel < level)
+                //{
+                //    if(level - preLevel >= 1)
+                //    {
+                //        for (int i = 0; i < preLevel + 1; i++) mark += "  ";
+                //    }
+                //}
+
+                //preLevel = level;
+
+                //line = string.Format("{0}{1}", mark, line.Trim());
                 newText += line  + "\n";
             }
 

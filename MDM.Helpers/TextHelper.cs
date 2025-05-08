@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -192,10 +193,15 @@ namespace MDM.Helpers
             int columnCnt = GetCellValueInRowString(divider.Replace("＋", "+").Replace("+", "|")).Length;
             foreach (string ln in lines)
             {
+                int lnNum = lines.ToList().IndexOf(ln);
                 if (ln == divider) continue;
                 if (IsNoText(ln)) continue;
-                int cnt = GetCellValueInRowString(ln).Length;
-                if (columnCnt != cnt) return false;
+                string[] cells = GetCellValueInRowString(ln);
+                int cnt = cells.Length;
+                if (columnCnt != cnt)
+                {
+                    return false;
+                }
             }
 
             return true;
@@ -305,28 +311,54 @@ namespace MDM.Helpers
 
                 int levelCnt = 0;
 
-                int total = line.Length;
-                for (int i = 0; i < total; i++)
+                char firstChar = line.First();
+                while (char.IsWhiteSpace(firstChar))
                 {
-                    char c = line[i];
-                    if (c == '\t')
+                    if(firstChar == '\t')
                     {
                         levelCnt++;
                         line = line.Substring(1);
+                        firstChar = line.First();
                         continue;
                     }
-                    if (char.IsWhiteSpace(c))
+                    if(char.IsWhiteSpace(firstChar))
                     {
                         string gap = line.Substring(0, 1);
                         if(gap == "  ")
                         {
                             levelCnt++;
                             line = line.Substring(2);
+                            firstChar = line.First();
                             continue;
                         }
                     }
                     break;
                 }
+
+
+
+                //int total = line.Length;
+                //for (int i = 0; i < total; i++)
+                //{
+                //    char c = line[i];
+                //    if (c == '\t')
+                //    {
+                //        levelCnt++;
+                //        line = line.Substring(1);
+                //        continue;
+                //    }
+                //    if (char.IsWhiteSpace(c))
+                //    {
+                //        string gap = line.Substring(0, 1);
+                //        if(gap == "  ")
+                //        {
+                //            levelCnt++;
+                //            line = line.Substring(2);
+                //            continue;
+                //        }
+                //    }
+                //    break;
+                //}
 
                 string mark = "-";
                 if (TextHelper.IsFirstCharUnorderMark(line))

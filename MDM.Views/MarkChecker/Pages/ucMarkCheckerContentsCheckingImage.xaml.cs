@@ -1,5 +1,6 @@
 ﻿using MDM.Commons.Enum;
 using MDM.Helpers;
+using MDM.Models.DataModels;
 using MDM.Models.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -810,6 +811,63 @@ namespace MDM.Views.MarkChecker.Pages
             catch (Exception ee)
             {
                 ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_ReSetImageData_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                FileInfo headerInfo = FileHelper.GetOpenFileInfo();
+                if (headerInfo == null) return;
+
+                string headerJsonString = File.ReadAllText(headerInfo.FullName);
+                List<mHeading> headings = JsonHelper.ToObject<List<mHeading>>(headerJsonString);
+
+                List<mContent> imageContent = new List<mContent>();
+
+                foreach (mHeading head in headings)
+                {
+                    GetImageContent(head, imageContent);
+               
+                }
+
+
+                foreach (vmContent item in this.Origin)
+                {
+                    if (item.IsContentsValid == true) continue;
+
+                    int idx = item.Temp.Temp.Idx;
+                    mContent sameContent = imageContent.Where(x => x.Idx == idx).FirstOrDefault();
+                    if (sameContent == null) continue;
+
+                    string value = sameContent.Contents;
+                    
+                    item.Temp.SetTitle(TextHelper.GetImageTitleFromMarkdown(value));
+                    item.Temp.SetText(value);
+                    item.InitializeDisplay();
+                }
+
+
+
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+                
+            }
+        }
+
+        private void GetImageContent(mHeading head, List<mContent> imageContent)
+        {
+            foreach (mContent content in head.Contents)
+            {
+                if (content.ContentsType == 222) imageContent.Add(content);
+            }
+            foreach (mHeading child in head.Children)
+            {
+                GetImageContent(child, imageContent);
             }
         }
     }

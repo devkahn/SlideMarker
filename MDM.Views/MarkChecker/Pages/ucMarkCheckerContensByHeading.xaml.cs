@@ -6,8 +6,10 @@ using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Markup;
 using System.Windows.Media.Animation;
 using MDM.Commons;
+using MDM.Commons.Enum;
 using MDM.Helpers;
 using MDM.Models.DataModels;
 using MDM.Models.ViewModels;
@@ -1067,12 +1069,24 @@ namespace MDM.Views.MarkChecker.Pages
         {
             try
             {
+                vmHeading selectedHeading = this.treeview_Header.SelectedItem as vmHeading;
+                if (selectedHeading.Contents.Count() < 1) return;
+
                 var selectedContents = this.listbox_ContainContents.SelectedItems;
                 if (selectedContents.Count <= 1)
                 {
-                    string eMsg = "이동할 본문을 선택하세요.";
-                    MessageHelper.ShowErrorMessage("본문 병합", eMsg);
-                    return;
+                    if(selectedHeading != null)
+                    {
+                        bool hasAnyNonText = selectedHeading.Contents.Any(x => 2220 < x.ContentType.GetHashCode());
+                        if(hasAnyNonText)
+                        {
+                            string eMsg = "병합할 본문을 선택하세요.";
+                            MessageHelper.ShowErrorMessage("본문 병합", eMsg);
+                            return;
+                        }
+                    }
+
+                    this.listbox_ContainContents.SelectAll();
                 }
 
                 List<vmContent> contents = new List<vmContent>();
@@ -1102,6 +1116,98 @@ namespace MDM.Views.MarkChecker.Pages
                     this.Material.RemoveContent(con);
                 }
                 targetContent.InitializeDisplay();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_GenTextblock_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                vmHeading heading = this.treeview_Header.SelectedItem as vmHeading;
+                if (heading == null) return;
+
+                if(heading.Contents.Count() < 0)
+                {
+                    string eMsg = "컨텐츠가 없는 제목은 글로 변환할 수 없습니다.";
+                    MessageHelper.ShowErrorMessage("선택 제목 글로", eMsg);
+                    return;
+                }
+                vmContent firstContent = heading.Contents.FirstOrDefault();
+
+
+                mItem item = new mItem();
+                item.ItemType = eItemType.Text.GetHashCode();
+                item.Level = heading.Temp.Level + 1;
+                item.LineText = heading.Temp.Name;
+                item.Order = firstContent.Temp.Temp.Order - 1;
+
+                vmItem newItem = new vmItem(item);
+                newItem.SetParent(firstContent.Temp.ParentShape);
+
+                vmContent newContent = new vmContent(newItem);
+                newContent.ContentType = eContentType.NormalText;
+                newContent.ControlMenu = SetContentsContextMenu();
+                newContent.SetParentHeading(heading);
+                newContent.SetParentMaterial(this.Material);
+
+                heading.ContentsOrderBy();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_TextImageContent_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selectedContents = this.listbox_ContainContents.SelectedItems;
+
+                if(selectedContents.Count <1)
+                {
+                    this.listbox_ContainContents.SelectAll();
+                }
+                else if (selectedContents.Count != 2)
+                {
+                    string eMsg = "2개의 본문을 선택하세요.";
+                    MessageHelper.ShowErrorMessage("본문 병합", eMsg);
+                    return;
+                }
+
+                List<vmContent> contents = new List<vmContent>();
+                foreach (vmContent item in selectedContents) contents.Add(item);
+
+                vmContent textContent = contents.Where(x => (2210 < x.ContentType.GetHashCode() && x.ContentType.GetHashCode() < 2220) || x.ContentType == eContentType.None).FirstOrDefault();
+                if(textContent == null)
+                {
+                    string eMsg = "글 본문을 선택하세요.";
+                    MessageHelper.ShowErrorMessage("본문 병합", eMsg);
+                    return;
+                }
+                vmContent imageContetn = contents.Where(x => x.ContentType == eContentType.Image).FirstOrDefault();
+                if (imageContetn == null)
+                {
+                    string eMsg = "이미지 본문을 선택하세요.";
+                    MessageHelper.ShowErrorMessage("본문 병합", eMsg);
+                    return;
+                }
+
+
+                string text = textContent.Display_Content.ToString().Trim();
+                if (TextHelper.IsFirstCharUnorderMark(text)) text = text.Substring(1).Trim();
+                text = text.Replace("(", "_");
+                text = text.Replace(")", " ");
+                imageContetn.Temp.SetTitle(text.Trim());
+                imageContetn.InitializeDisplay();
+
+                textContent.IsEnable = false;
+                textContent.ParentHeading.RemoveContent(textContent);
+                this.Material.RemoveContent(textContent);
             }
             catch (Exception ee)
             {

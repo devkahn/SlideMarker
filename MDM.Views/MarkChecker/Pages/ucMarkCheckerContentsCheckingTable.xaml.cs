@@ -257,97 +257,102 @@ namespace MDM.Views.MarkChecker.Pages
             {
                 foreach (vmContent item in this.Origin)
                 {
-                    if (item.IsContentsValid == true) continue;
-
-                    string lineString = item.Temp.Temp.LineText;
-                    if (lineString.StartsWith("<table>")) continue;
-
-                    bool isValid = TextHelper.IsTableMarkdownValid(lineString);
-                    if (isValid)
-                    {
-                        string[] lines = TextHelper.SplitText(lineString);
-
-
-                        StringBuilder tableHtml = new StringBuilder();
-                        tableHtml.Append("<table>");
-                        tableHtml.Append("<thead>");
-
-                        int rowHeaderCnt = 0;
-                        bool isHeader = true;
-                        foreach (string ln in lines)
-                        {
-                            if (TextHelper.IsNoText(ln)) continue;
-
-                            if (TextHelper.IsTableDivider(ln))
-                            {
-                                rowHeaderCnt = TextHelper.GetRowHeaderCount(ln);
-                                isHeader = false;
-                                tableHtml.Append("</thead>");
-                                tableHtml.Append("<tbody>");
-                            }
-                            else
-                            {
-                                tableHtml.Append("<tr>");
-                                string[] cells = TextHelper.GetCellValueInRowString(ln);
-                                if (isHeader)
-                                {
-                                    foreach (string cell in cells)
-                                    {
-                                        string cellHtml = string.Format("<th><div>{0}</div></th>", cell.Trim());
-                                        tableHtml.Append(cellHtml);
-                                    }
-                                }
-                                else
-                                {
-                                    for (int i = 0; i < cells.Length; i++)
-                                    {
-                                        string cellValue = cells[i];
-                                        if (cellValue.Contains("\\n")) cellValue = cellValue.Replace("\\n", "\n");
-                                        string[] cellLines = TextHelper.SplitText(cellValue);
-                                        if (cellLines.Length != 1)
-                                        {
-                                            cellValue = "<ul>";
-
-                                            foreach (string cellLine in cellLines)
-                                            {
-                                                string lineValue = cellLine;
-                                                if (lineValue.First() == '-') lineValue = lineValue.Substring(1);
-                                                cellValue += string.Format("<li>{0}</li>", lineValue.Trim());
-                                            }
-
-
-                                            cellValue += "</ul>";
-                                        }
-
-
-
-                                        string cellType = i < rowHeaderCnt ? "th" : "td";
-                                        string cellHtml = string.Format("<{0}><div>{1}</div></{0}>", cellType, cellValue.Trim());
-                                        tableHtml.Append(cellHtml);
-                                    }
-                                }
-                                tableHtml.Append("</tr>");
-                            }
-                        }
-
-                        tableHtml.Append("</tbody>");
-                        tableHtml.Append("</table>");
-
-                        //item.Temp.SetText(tableHtml.ToString());
-                        item.Temp_TableHTML = tableHtml.ToString();
-                        item.InitializeDisplay();
-                        item.IsContentsValid = true;
-                    }
-                    else
-                    {
-                        item.IsContentsValid = false;
-                    }
-
+                    CheckTableContent(item);
                 }
             }
             catch (Exception ee)
             {
                 ErrorHelper.ShowError(ee);
+            }
+        }
+
+        public void CheckTableContent(vmContent item)
+        {
+            if (item.IsContentsValid == true) return;
+
+            string lineString = item.Temp.Temp.LineText;
+            if (lineString.StartsWith("<table>")) return;
+
+            bool isValid = TextHelper.IsTableMarkdownValid(lineString);
+            if (isValid)
+            {
+                string[] lines = TextHelper.SplitText(lineString);
+
+
+                StringBuilder tableHtml = new StringBuilder();
+                tableHtml.Append("<table>");
+                tableHtml.Append("<thead>");
+
+                int rowHeaderCnt = 0;
+                bool isHeader = true;
+                foreach (string ln in lines)
+                {
+                    if (TextHelper.IsNoText(ln)) continue;
+
+                    if (TextHelper.IsTableDivider(ln))
+                    {
+                        rowHeaderCnt = TextHelper.GetRowHeaderCount(ln);
+                        isHeader = false;
+                        tableHtml.Append("</thead>");
+                        tableHtml.Append("<tbody>");
+                    }
+                    else
+                    {
+                        tableHtml.Append("<tr>");
+                        string[] cells = TextHelper.GetCellValueInRowString(ln);
+                        if (isHeader)
+                        {
+                            foreach (string cell in cells)
+                            {
+                                string cellHtml = string.Format("<th><div>{0}</div></th>", cell.Trim());
+                                tableHtml.Append(cellHtml);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < cells.Length; i++)
+                            {
+                                string cellValue = cells[i];
+                                if (cellValue.Contains("\\n")) cellValue = cellValue.Replace("\\n", "\n");
+                                string[] cellLines = TextHelper.SplitText(cellValue);
+                                if (cellLines.Length != 1)
+                                {
+                                    cellValue = "<ul>";
+
+                                    foreach (string cellLine in cellLines)
+                                    {
+                                        if (TextHelper.IsNoText(cellLine)) continue;
+                                        string lineValue = cellLine;
+                                        if (lineValue.First() == '-') lineValue = lineValue.Substring(1);
+                                        cellValue += string.Format("<li>{0}</li>", lineValue.Trim());
+                                    }
+
+
+                                    cellValue += "</ul>";
+                                }
+
+
+
+                                string cellType = i < rowHeaderCnt ? "th" : "td";
+                                string cellHtml = string.Format("<{0}><div>{1}</div></{0}>", cellType, cellValue.Trim());
+                                tableHtml.Append(cellHtml);
+                            }
+                        }
+                        tableHtml.Append("</tr>");
+                    }
+                }
+
+                tableHtml.Append("</tbody>");
+                tableHtml.Append("</table>");
+
+                //item.Temp.SetText(tableHtml.ToString());
+                item.Temp_TableHTML = tableHtml.ToString();
+                item.InitializeDisplay();
+                item.IsContentsValid = true;
+            }
+            else
+            {
+                item.IsContentsValid = false;
             }
         }
 
@@ -490,6 +495,14 @@ namespace MDM.Views.MarkChecker.Pages
             catch (Exception ee)
             {
                 ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_SelectedCheck_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (vmContent item in this.listbox_headers.SelectedItems)
+            {
+                CheckTableContent(item);
             }
         }
     }

@@ -462,7 +462,6 @@ namespace MDM.Views.MarkChecker.Pages
             return newImage;
 
         }
-
         private void SetBasicProperty(XmlDocument rootDoc, XmlElement parentProps)
         {
             //create

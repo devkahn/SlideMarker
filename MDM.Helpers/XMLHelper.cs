@@ -851,20 +851,24 @@ namespace MDM.Helpers
                 {
                     string date = names.Last();
                     DateTime time = DateTime.Now;
-                    if (date.Length == 8)
+                    if(int.TryParse(date, out int dateNum))
                     {
-                        string year = date.Substring(0, 4);
-                        string month = date.Substring(4, 2);
-                        string day = date.Substring(6, 2);
-                        time = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day));
+                        if (date.Length == 8)
+                        {
+                            string year = date.Substring(0, 4);
+                            string month = date.Substring(4, 2);
+                            string day = date.Substring(6, 2);
+                            time = new DateTime(int.Parse(year), int.Parse(month), int.Parse(day));
+                        }
+                        else if (date.Length == 6)
+                        {
+                            string year = date.Substring(0, 2);
+                            string month = date.Substring(2, 2);
+                            string day = date.Substring(4, 2);
+                            time = new DateTime(2000 + int.Parse(year), int.Parse(month), int.Parse(day));
+                        }
                     }
-                    else if (date.Length == 6)
-                    {
-                        string year = date.Substring(0, 2);
-                        string month = date.Substring(2, 2);
-                        string day = date.Substring(4, 2);
-                        time = new DateTime(2000+int.Parse(year), int.Parse(month), int.Parse(day));
-                    }
+
                     output = ((DateTimeOffset)time).ToUnixTimeMilliseconds().ToString();
                 }
             }

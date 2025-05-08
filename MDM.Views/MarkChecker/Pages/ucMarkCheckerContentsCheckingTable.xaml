@@ -415,7 +415,11 @@
                 </Border>
                 <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="10"  Height="1" Background="{StaticResource color_Gray1}" VerticalAlignment="Bottom"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="0"  Text="선택한 표" Style="{StaticResource subStyle_Title_Textlbock}"/>
+                <StackPanel Grid.Row="1" Grid.Column="0">
+                    <TextBlock Grid.Row="1" Grid.Column="0"  Text="선택한 표" Style="{StaticResource subStyle_Title_Textlbock}"/>
+                    <Button Content="선택 검토" Click="btn_SelectedCheck_Click"/>
+                </StackPanel>
+                
                 <Border Grid.Row="1" Grid.Column="1" >
                     <Grid>
                         <Grid.RowDefinitions>
@@ -511,9 +515,10 @@
                                                                         <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
                                                                         <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
                                                                         <Setter Property="AcceptsReturn" Value="True"/>
+                                                                        <Setter Property="AcceptsTab" Value="False"/>
                                                                         <Style.Triggers>
                                                                             <DataTrigger Binding="{Binding IsChecked, ElementName=toggle_markdownFold}" Value="True">
-                                                                                <Setter Property="MaxHeight" Value="200"/>
+                                                                                <Setter Property="MaxHeight" Value="500"/>
                                                                             </DataTrigger>
                                                                         </Style.Triggers>
                                                                     </Style>

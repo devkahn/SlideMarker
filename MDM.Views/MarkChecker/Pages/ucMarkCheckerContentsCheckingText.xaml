@@ -505,10 +505,11 @@
                                 <Style TargetType="ListBoxItem">
                                     <!--<Setter Property="HorizontalAlignment" Value="Left"/>-->
                                     <Setter Property="MaxWidth" Value="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=ListBox}}" />
+                                    <Setter Property="MaxHeight" Value="500"/>
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ListBoxItem">
-                                                <Grid MaxWidth="{TemplateBinding MaxWidth}">
+                                                <Grid MaxWidth="{TemplateBinding MaxWidth}" MaxHeight="{TemplateBinding MaxHeight}">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="45"/>
                                                         <ColumnDefinition Width="auto"/>

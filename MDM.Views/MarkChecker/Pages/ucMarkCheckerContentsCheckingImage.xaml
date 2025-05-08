@@ -300,7 +300,7 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        
+                        <Button Content="이미지 값 되돌리기" Click="btn_ReSetImageData_Click"/>
                     </StackPanel>
                 </Grid>
             </Grid>

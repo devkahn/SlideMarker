@@ -23,6 +23,7 @@ namespace MDM.Models.ViewModels
         private eHeadingType _HeadingType = eHeadingType.Normal;
         private object _Display_StartNum = null;
         private object _Display_FinishNum = null;
+        private object _Display_Level = null;
     }
 
     public partial class vmHeading : vmViewModelbase
@@ -133,6 +134,15 @@ namespace MDM.Models.ViewModels
                 return null;
             }
         }
+        public object Display_Level
+        {
+            get => _Display_Level;
+            set
+            {
+                _Display_Level = value;
+                OnPropertyChanged(nameof(this.Display_Level));
+            }
+        }
     }
     public partial class vmHeading 
     {
@@ -155,6 +165,7 @@ namespace MDM.Models.ViewModels
         {
             this.HeadingType = (eHeadingType)this.Temp.HeadintTypeCode;
             this.Display_Name = this.Temp.Name;
+            this.Display_Level = this.Temp.Level;
         }
         public void Move(bool toFoward, int gap = 1)
         {
@@ -201,6 +212,7 @@ namespace MDM.Models.ViewModels
         public void SetChildrenLevel()
         {
             this.Temp.Level = this.Parent == null ? 1 : this.Parent.Temp.Level + 1;
+            this.Display_Level = this.Temp.Level;
             foreach (vmHeading child in this.Children)
             {
                 child.SetChildrenLevel();

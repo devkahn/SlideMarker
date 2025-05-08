@@ -81,8 +81,8 @@
             <TabItem Header="Contents By Slide" Visibility="Collapsed">
                 <smPages:ucDataLabeling x:Name="smDataLabeling"/>
             </TabItem>
-            <TabItem Header="XML로 내보내기" MouseLeftButtonUp="TabItem_MouseLeftButtonUp" Visibility="Collapsed">
-                <!--<local:ucMarCheckerToXml x:Name="ucMarCheckerToXml"/>-->
+            <TabItem Header="XML로 내보내기"  Visibility="Visible">
+                <local:ucMarCheckerToXml x:Name="ucMarCheckerToXml"/>
             </TabItem>
         </TabControl>
 
