@@ -638,8 +638,16 @@ namespace MDM.Helpers
                     case Commons.Enum.eContentType.UnOrderList:
                         valueString = GetListValueString(content);
                         break;
-                    case Commons.Enum.eContentType.Image: valueString = GetImageValueString(content); break;
-                    case Commons.Enum.eContentType.Table: valueString = GetTableValueString(content); break;
+                    case Commons.Enum.eContentType.Image: 
+                        valueString = GetImageValueString(content);
+                        xmlImage image = null;
+                        if (content.ContentType == Commons.Enum.eContentType.Image) image = SetImageElementOption(content, content.Material.XMLSets.ImageElement);
+                        if (image != null) content.ParentHeading.ParentMaterial.ImageList.Add(image);
+                        break;
+                    case Commons.Enum.eContentType.Table: 
+                        valueString = GetTableValueString(content);
+                        
+                        break;
                     case Commons.Enum.eContentType.NormalText:
                     default:
                         valueString = TextHelper.CleansingForXML(content.Temp.Temp.LineText);
