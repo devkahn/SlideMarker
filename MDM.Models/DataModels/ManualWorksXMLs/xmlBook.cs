@@ -60,14 +60,14 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [Nullable(false)]
         [Description("유형으로 대문자 BOOK 또는 ARTICLE을 입력합니다.")]
         [DefaultValue(eXMLBookType.ARTICLE)]
-        public eXMLBookType Type { get; set; } 
+        public eXMLBookType Type { get; set; } = eXMLBookType.BOOK;
 
         [XmlIgnore]
         [xmlSubProperty("locale")]
         [Nullable(false)]
         [Description("언어로 한국어는 ko, 일본어는 ja, 영어는 en_US를 입력합니다.")]
         [DefaultValue(eXMLLocale.ko)]
-        public eXMLLocale Locale { get; set; } 
+        public eXMLLocale Locale { get; set; } = eXMLLocale.ko;
 
         [XmlIgnore]
         [xmlSubProperty("tags")]
@@ -97,23 +97,23 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
     {
         [JsonProperty("disable_pdf_download")]
         [Description("웹 뷰어에서 PDF 내려받기를 허용하지 않습니다.")]
-        [DefaultValue(false)]
-        public bool IsDisablePdfDownload { get; set; } = false;
+        [DefaultValue(true)]
+        public bool IsDisablePdfDownload { get; set; } = true;
 
         [JsonProperty("disable_epub_download")]
         [Description("웹 뷰어에서 EPUB 내려받기를 허용하지 않습니다.")]
-        [DefaultValue(false)]
-        public bool IsDisableEpubDownload { get; set; } = false;
+        [DefaultValue(true)]
+        public bool IsDisableEpubDownload { get; set; } = true;
 
         [JsonProperty("disable_html_download")]
         [Description("웹 뷰어에서 HTML 내려받기를 허용하지 않습니다.")]
-        [DefaultValue(false)]
-        public bool IsDisableHtmlDownload { get; set; } = false;
+        [DefaultValue(true)]
+        public bool IsDisableHtmlDownload { get; set; } = true;
 
         [JsonProperty("use_arabic_for_front_matter")]
         [Description("권두 구성 페이지 번호로 아라비아 숫자를 사용합니다.")]
-        [DefaultValue(false)]
-        public bool IsUseArabicForFrontMatter { get; set; } = false;
+        [DefaultValue(true)]
+        public bool IsUseArabicForFrontMatter { get; set; } = true;
 
 
         [JsonProperty("start_chapter_in_odd")]
@@ -129,7 +129,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [JsonProperty("hide_toc_level")]
         [Description("차례에 보여주지 않을 제목 단계를 설정합니다.")]
 
-        public string HideLevelinContext { get; set; } = string.Empty;
+        public string HideLevelinContext { get; set; } = "HEADING4";
 
         [JsonProperty("unfold_toc")]
         [Description("기본으로 차례에 특정 제목 단계까지 열리도록 합니다.")]
@@ -138,7 +138,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
 
         [JsonProperty("unfold_toc_level")]
         [Description("기본으로 차례에서 열 제목 단계를 설정합니다.")]
-        public string UnfoldLevelinContext { get; set; } = string.Empty;
+        public string UnfoldLevelinContext { get; set; } = "HEADING3";
 
         [JsonProperty("indent_after_heading")]
         [Description("제목 단락 다음에 들여쓰기를 합니다.")]

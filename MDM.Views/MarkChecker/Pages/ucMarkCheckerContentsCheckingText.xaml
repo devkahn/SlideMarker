@@ -498,18 +498,18 @@
                                 <Style TargetType="ListBox">
                                     <Setter Property="BorderBrush" Value="Transparent"/>
                                     <Setter Property="BorderThickness" Value="0"/>
-                                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="auto"/>
+                                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Visible"/>
                                 </Style>
                             </ListBox.Style>
                             <ListBox.Resources>
                                 <Style TargetType="ListBoxItem">
                                     <!--<Setter Property="HorizontalAlignment" Value="Left"/>-->
                                     <Setter Property="MaxWidth" Value="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=ListBox}}" />
-                                    <Setter Property="MaxHeight" Value="500"/>
+                                    <!--<Setter Property="MaxHeight" Value="500"/>-->
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ListBoxItem">
-                                                <Grid MaxWidth="{TemplateBinding MaxWidth}" MaxHeight="{TemplateBinding MaxHeight}">
+                                                <Grid MaxWidth="{TemplateBinding MaxWidth}" >
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="45"/>
                                                         <ColumnDefinition Width="auto"/>
@@ -555,13 +555,13 @@
                                                             </RadioButton.Style>
                                                         </RadioButton>
                                                     </StackPanel>
-                                                    <TextBox Grid.Column="2" Margin="5" Text="{Binding Temp_Content}" 
+                                                    <TextBox Grid.Column="2" Margin="5" Text="{Binding Temp_Content}"  MinHeight="100"
                                                              HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                                                              LostFocus="TextBox_LostFocus" PreviewGotKeyboardFocus="TextBox_PreviewGotKeyboardFocus" TextChanged="TextBox_TextChanged" />
                                                     <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="10,10,25,10" Height="25">
                                                         <StackPanel.Style>
                                                             <Style TargetType="StackPanel">
-                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Setter Property="Visibility" Value="Visible"/>
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1,AncestorType=ListBoxItem}}" Value="True">
                                                                         <Setter Property="Visibility" Value="Visible"/>

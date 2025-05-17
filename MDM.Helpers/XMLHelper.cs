@@ -300,7 +300,7 @@ namespace MDM.Helpers
                 XmlElement titleProp = GetPropertXmlElement(doc, "title", material.Temp.Name);
                 if (titleProp != null) props.AppendChild(titleProp);
                 // edition
-                XmlElement editionProp = GetPropertXmlElement(doc, "edition", material.Temp.Name.Contains("수행지침") ? "수행지침" : "표준서");
+                XmlElement editionProp = GetPropertXmlElement(doc, "edition", material.Temp.Name.Contains("수행지침") ? "수행지침" : "수행지침");
                 if (editionProp != null) props.AppendChild(editionProp);
                 // author
                 XmlElement authorProp = GetPropertXmlElement(doc, "author", "DLENC");
@@ -612,20 +612,7 @@ namespace MDM.Helpers
                     string aliasValue = $"{content.Temp.Temp.Uid}_{int.Parse(content.Display_SlideNum.ToString()).ToString("0000")}";
                     XmlElement aliasProp = GetPropertXmlElement(doc, "alias", aliasValue);
                     if (aliasProp != null) props.AppendChild(aliasProp);
-                    // config
-                    string configValue = GetConfigValue(content);
-                    XmlElement configProp = GetPropertXmlElement(doc, "config", configValue);
-                    if (configProp != null) props.AppendChild(configProp);
-                    // creator
-                    XmlElement creatorProp = GetPropertXmlElement(doc, "create", "DLENC");
-                    if (creatorProp != null) props.AppendChild(creatorProp);
-                    // create_time
-                    string createValue = GetCreateDateValue();
-                    XmlElement createTimeProp = GetPropertXmlElement(doc, "create_time", createValue);
-                    if (createTimeProp != null) props.AppendChild(createTimeProp);
-                    // update_time
-                    XmlElement updateTimeProp = GetPropertXmlElement(doc, "update_time", createValue);
-                    if (updateTimeProp != null) props.AppendChild(updateTimeProp);
+
                 }
 
                 XmlElement cdataElement = doc.CreateElement("content");
@@ -639,10 +626,16 @@ namespace MDM.Helpers
                         valueString = GetListValueString(content);
                         break;
                     case Commons.Enum.eContentType.Image: 
-                        valueString = GetImageValueString(content);
                         xmlImage image = null;
                         if (content.ContentType == Commons.Enum.eContentType.Image) image = SetImageElementOption(content, content.Material.XMLSets.ImageElement);
-                        if (image != null) content.ParentHeading.ParentMaterial.ImageList.Add(image);
+                        if (image != null)
+                        {
+                            (content.Material.XMLSets.ImageElement.Config as xmlImageConfig).Width = image.Width;
+                            (content.Material.XMLSets.ImageElement.Config as xmlImageConfig).Height = image.Height;
+                            content.ParentHeading.ParentMaterial.ImageList.Add(image);
+                        }
+                        
+                        valueString = image.FileName;
                         break;
                     case Commons.Enum.eContentType.Table: 
                         valueString = GetTableValueString(content);
@@ -653,6 +646,21 @@ namespace MDM.Helpers
                         valueString = TextHelper.CleansingForXML(content.Temp.Temp.LineText);
                         break;
                 }
+
+                // config
+                string configValue = GetConfigValue(content);
+                XmlElement configProp = GetPropertXmlElement(doc, "config", configValue);
+                if (configProp != null) props.AppendChild(configProp);
+                // creator
+                XmlElement creatorProp = GetPropertXmlElement(doc, "create", "DLENC");
+                if (creatorProp != null) props.AppendChild(creatorProp);
+                // create_time
+                string createValue = GetCreateDateValue();
+                XmlElement createTimeProp = GetPropertXmlElement(doc, "create_time", createValue);
+                if (createTimeProp != null) props.AppendChild(createTimeProp);
+                // update_time
+                XmlElement updateTimeProp = GetPropertXmlElement(doc, "update_time", createValue);
+                if (updateTimeProp != null) props.AppendChild(updateTimeProp);
 
                 XmlCDataSection section = doc.CreateCDataSection(valueString);
                 cdataElement.AppendChild(section);
@@ -689,6 +697,7 @@ namespace MDM.Helpers
             foreach (int key in lineInfos.Keys.ToList())
             {
                 mTextLine lineItem = lineInfos[key];
+                if (TextHelper.IsNoText(lineItem.LineText)) continue;
 
                 string newLine = string.Empty;
                 string mark = string.Empty;

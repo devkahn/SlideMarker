@@ -95,8 +95,8 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         [xmlElementType(eXMLElementType.table)]
         [JsonProperty("table_layout")]
         [Description("표 레이아웃")]
-        [DefaultValue(eXMLElementTableLayout.fix)]
-        public eXMLElementTableLayout TableLayout { get; set; } = eXMLElementTableLayout.fix;
+        [DefaultValue(eXMLElementTableLayout.auto)]
+        public eXMLElementTableLayout TableLayout { get; set; } = eXMLElementTableLayout.auto;
 
         /// <summary>
         /// 쉼표로 구분하여 각 열의 너비를 설정합니다. 예) 30%, 200, ?

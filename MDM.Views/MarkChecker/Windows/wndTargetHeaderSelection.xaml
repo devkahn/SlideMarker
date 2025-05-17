@@ -87,7 +87,9 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            
+            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="3,0,3,0">
+                <Button Content="Root로 이동" Click="btn_GoToRoot_Click"/>
+            </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="3,0,3,0">
                 <Button Content="확인" Click="btn_Ok_Click" />

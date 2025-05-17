@@ -313,6 +313,7 @@ namespace MDM.Views.MarkChecker.Pages
                             for (int i = 0; i < cells.Length; i++)
                             {
                                 string cellValue = cells[i];
+                                if (cellValue.ToUpper() == "{NULL}") cellValue = string.Empty;
                                 if (cellValue.Contains("\\n")) cellValue = cellValue.Replace("\\n", "\n");
                                 string[] cellLines = TextHelper.SplitText(cellValue);
                                 if (cellLines.Length != 1)

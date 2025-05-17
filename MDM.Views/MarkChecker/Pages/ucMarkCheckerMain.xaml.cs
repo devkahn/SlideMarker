@@ -667,6 +667,8 @@ namespace MDM.Views.MarkChecker.Pages
         {
             try
             {
+                this.Material.ImageList.Clear();
+
                 XmlDocument xmlDoc = new XmlDocument();
                 XmlDeclaration xmlDecl = xmlDoc.CreateXmlDeclaration("1.0", "UTF-8", null);
                 xmlDoc.AppendChild(xmlDecl);

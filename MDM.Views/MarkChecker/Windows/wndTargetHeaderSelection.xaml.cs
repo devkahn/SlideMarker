@@ -57,6 +57,19 @@ namespace MDM.Views.MarkChecker.Windows
         }
 
         private void btn_Cancel_Click(object sender, RoutedEventArgs e) => this.Close();
-      
+
+        private void btn_GoToRoot_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                this.OriginHeader.SetParent(null);
+                this.DialogResult = false;
+                this.Close();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
     }
 }
