@@ -23,6 +23,7 @@ namespace MDM.Views.DataLabeling.Pages
     /// </summary>
     public partial class ucDataLabelingSildes : UserControl
     {
+        bool IsXMLOpen { get; set; } = false;
         bool IsSelectionChange { get; set; } = false;
         bool isFirstTry { get; set; } = true;
         ePageStatus StatusCode { get; set; } = ePageStatus.All;
@@ -46,9 +47,18 @@ namespace MDM.Views.DataLabeling.Pages
             InitializeComponent();
         }
 
-        public void SetMaterial(vmMaterial material)
+        public void SetMaterial(vmMaterial material, bool isMarkChecker = false)
         {
-            this.Material = material;
+            if(isMarkChecker)
+            {
+                this._Material = material;
+                this.DataContext = material;
+                this.rbtn_PageFilter_All.IsChecked = true;
+            }
+            else
+            {
+                this.Material = material;
+            }
         }
         private void MovePage()
         {
@@ -71,8 +81,9 @@ namespace MDM.Views.DataLabeling.Pages
             if (this.Material == null) return;
 
             vmSlide sameSlide = this.Material.Slides.Where(x => x.Temp.Index == index).FirstOrDefault();
-            if (sameSlide == null)
+            if (!this.IsXMLOpen && sameSlide == null)
             {
+                
                 string msg = string.Format("{0} 번 슬라이드가 없습니다.", index);
                 MessageHelper.ShowErrorMessage("Slide 이동", msg);
                 return;
@@ -97,9 +108,11 @@ namespace MDM.Views.DataLabeling.Pages
             this.txtbox_CurSlideIndex.Text = index.ToString();
             MovePage();
         }
-        public void BindPages(List<vmSlide> slideList = null)
+        public void BindPages(List<vmSlide> slideList = null, bool isXMLOpen  = false)
         {
             if (slideList == null && this.Material == null) return;
+
+            this.IsXMLOpen = isXMLOpen;
 
             List<vmSlide> pages = slideList == null ? this.Material.Slides.ToList() : slideList;
 
@@ -314,6 +327,8 @@ namespace MDM.Views.DataLabeling.Pages
                 if (this.Material != null && this.Material.OriginPresentation != null)
                 {
                     this.IsSelectionChange = true;
+                    //MessageBox.Show($"슬라이드 이동{selectedSlide.Temp.SlideId}", "슬라이드 이동", MessageBoxButton.OK, MessageBoxImage.Information);
+                    
                     this.Material.OriginPresentation.Slides.FindBySlideID(selectedSlide.Temp.SlideId).Select();
                     this.IsSelectionChange = false;
                 }

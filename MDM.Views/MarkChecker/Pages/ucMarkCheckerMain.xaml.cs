@@ -5,6 +5,7 @@ using MDM.Models.DataModels;
 using MDM.Models.DataModels.ManualWorksXMLs;
 using MDM.Models.ViewModels;
 using MDM.Views.MarkChecker.Windows;
+using Microsoft.Office.Core;
 using Microsoft.Office.Interop.PowerPoint;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
 using Application = Microsoft.Office.Interop.PowerPoint.Application;
+using Shape = Microsoft.Office.Interop.PowerPoint.Shape;
 
 namespace MDM.Views.MarkChecker.Pages
 {
@@ -790,6 +792,7 @@ namespace MDM.Views.MarkChecker.Pages
                     material.ManualworksBook = book;
                     newMaterial = new vmMaterial(material);
                     newMaterial.DirectoryPath = fInfo.DirectoryName;
+                   if(this.PowerPointApp != null)  newMaterial.SetPresentation(this.PowerPointApp.ActivePresentation);
                     break;
                 }
 
@@ -981,6 +984,7 @@ namespace MDM.Views.MarkChecker.Pages
                 }
                 this.Material = newMaterial;
                 if(this.PowerPointApp != null) this.Material.SetPresentation(this.PowerPointApp.ActivePresentation);
+                this.mcExcelView.ucSlideList.SetMaterial(this.Material);
             }
             catch (Exception ee)
             {
@@ -988,35 +992,152 @@ namespace MDM.Views.MarkChecker.Pages
             }
         }
 
-
-
-
-        public void PowerPointApp_SlideSelectionChanged(SlideRange SldRange)
-        {
-            try
-            {
-                int slideIndex = SldRange.SlideIndex;
-            }
-            catch (Exception ee)
-            {
-                ErrorHelper.ShowError(ee);
-            }
-        }
 
         private void btn_Temp_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                List<vmSlide> slideList = new List<vmSlide>();
+                if (this.PowerPointApp != null) this.PowerPointApp.SlideSelectionChanged += PowerPointApp_SlideSelectionChanged1;
+
+
+                
                 FileInfo fInfo = FileHelper.GetOpenFileInfo();
                 if (fInfo == null) return;
 
                 string pptTextJsonString = File.ReadAllText(fInfo.FullName);
                 List<mSlide> slides = JsonHelper.ToObject<List<mSlide>>(pptTextJsonString);
 
-                List<vmSlide> slideList = new List<vmSlide>();
-                foreach (mSlide item in slides) slideList.Add(new vmSlide(item));
+                
+                
 
-                this.mcExcelView.ucSlideList.BindPages(slideList);
+
+                //else
+                {
+                    List<Slide> originSlides = new List<Slide>();
+                    if(this.PowerPointApp != null)
+                    {
+                        foreach (Slide slide in this.PowerPointApp.ActivePresentation.Slides) originSlides.Add(slide);
+                    }
+                    
+
+                    foreach (mSlide item in slides)
+                    {
+                        Slide sameSlide = originSlides.Where(x=> x.SlideIndex == item.Index).FirstOrDefault();
+                        if (sameSlide == null) continue;
+                       // MessageBox.Show(sameSlide.SlideID.ToString());
+
+                        item.SlideId = sameSlide.SlideID;
+                        item.SlideNumber = sameSlide.SlideNumber;
+                        item.Name = sameSlide.Name;
+
+
+
+                    }
+
+
+
+
+                    /*
+                    foreach (Slide slide in slides)
+                    {
+                        mSlide sl = new mSlide();
+                        #region Slide 데이터 객체
+                        sl.SlideId = slide.SlideID;
+                        sl.Index = slide.SlideIndex;
+                        sl.Name = slide.Name;
+                        sl.SlideNumber = slide.SlideNumber;
+                        #endregion
+
+
+                        List<Shape> shapes = new List<Shape>();
+
+                        #region Slide Shape
+                        foreach (Shape shape in slide.Shapes)
+                        {
+                            if (shape.Type == MsoShapeType.msoGroup)
+                            {
+                                shape.Ungroup();
+                                continue;
+                            }
+
+                            bool isAny = shapes.Where(x => x != null && x.Id == shape.Id).Any();
+                            if (!isAny) shapes.Add(shape);
+                        }
+                        var masterShapes = slide.Master.Shapes;
+                        foreach (Shape shape in masterShapes)
+                        {
+                            if (shape.Type == MsoShapeType.msoGroup) shape.Ungroup();
+
+                            bool isAny = shapes.Where(x => x.Id == shape.Id).Any();
+                            if (!isAny) shapes.Add(shape);
+                        }
+                        #endregion
+
+                        List<mShape> shapeInstances = new List<mShape>();
+                        foreach (Shape shape in shapes)
+                        {
+                            if (shape.HasTable == MsoTriState.msoTrue)
+                            {
+                                mShape newTable = PowerpointHelper.GetTableShape(shape);
+                                shapeInstances.Add(newTable);
+                            }
+                            else if (shape.Type == MsoShapeType.msoPicture)
+                            {
+                                mShape newImage = PowerpointHelper.GetImageShpe(shape);
+                                shapeInstances.Add(newImage);
+                            }
+                            else if (shape.Type == MsoShapeType.msoAutoShape)
+                            {
+                                if (shape.HasTextFrame == MsoTriState.msoTrue && shape.TextFrame.HasText == MsoTriState.msoTrue)
+                                {
+                                    mShape newText = PowerpointHelper.GetTextShape(shape);
+                                    shapeInstances.Add(newText);
+                                }
+                                else
+                                {
+                                    mShape newImage = PowerpointHelper.GetImageShpe(shape);
+                                    shapeInstances.Add(newImage);
+                                }
+                            }
+                            else if (shape.HasTextFrame == MsoTriState.msoTrue && shape.TextFrame.HasText == MsoTriState.msoTrue)
+                            {
+                                mShape newText = PowerpointHelper.GetTextShape(shape);
+                                shapeInstances.Add(newText);
+                            }
+                        }
+
+
+                        sl.Shapes = shapeInstances;
+                        sl.Shapes = sl.Shapes.OrderByOriginPoint();
+                        sl.Origin = slide;
+
+
+                        vmSlide newSlide = new vmSlide(sl);
+                        slideList.Add(newSlide);
+                    }
+
+                    */
+
+                }
+
+                foreach (mSlide item in slides) slideList.Add(new vmSlide(item));
+                this.mcExcelView.ucSlideList.BindPages(slideList, true);
+                this.mcExcelView.ucSlideList.SetMaterial(this.Material, true);
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void PowerPointApp_SlideSelectionChanged1(SlideRange SldRange)
+        {
+            try
+            {
+                int slideIndex = SldRange.SlideIndex;
+                this.mcExcelView.ucSlideList.MovePage(slideIndex);
             }
             catch (Exception ee)
             {

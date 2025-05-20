@@ -70,9 +70,16 @@
                         <Setter Property="HeadersVisibility" Value="Column"/>
                         <Setter Property="ColumnHeaderHeight" Value="35"/>
                         <Setter Property="IsReadOnly" Value="True"/>
+                        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+                        <Setter Property="SelectionMode" Value="Single"/>
+                        <Setter Property="SelectionUnit" Value="FullRow"/>
                     </Style>
                 </DataGrid.Style>
                 <DataGrid.Resources>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Margin" Value="3,0,3,0"/>
+                        <Setter Property="ToolTip" Value="{Binding Text}"/>
+                    </Style>
                     <Style x:Key="subStyle_CellValue_Textblock" TargetType="TextBlock">
                         <Setter Property="HorizontalAlignment" Value="Center"/>
                         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -84,7 +91,7 @@
                     </Style>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="Pg" Width="30">
+                    <DataGridTemplateColumn Header="Pg" Width="40">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Display_SlideNum}" Style="{StaticResource subStyle_CellValue_Textblock}"/>
@@ -131,7 +138,8 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="5">
-                        <Button Content="temp" Click="btn_FindPage_Click" Visibility="Visible"/>
+                        <Button Content="temp" Click="btn_FindPage_Click4" Visibility="Visible"/>
+                        <Button Content="reset" Click="btn_reset_click" Visibility="Visible"/>
                     </StackPanel>
                      
                     
