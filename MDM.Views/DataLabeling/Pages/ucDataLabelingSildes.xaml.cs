@@ -28,7 +28,6 @@ namespace MDM.Views.DataLabeling.Pages
         bool isFirstTry { get; set; } = true;
         ePageStatus StatusCode { get; set; } = ePageStatus.All;
         ePageStatus ChangeCode { get; set; } = ePageStatus.All;
-
         private vmMaterial _Material = null;
         private vmMaterial Material
         {
@@ -41,6 +40,9 @@ namespace MDM.Views.DataLabeling.Pages
                 BindPages();
             }
         }
+
+
+        public ListBox SlideListbox => this.listbox_Pages;
 
         public ucDataLabelingSildes()
         {
@@ -329,7 +331,7 @@ namespace MDM.Views.DataLabeling.Pages
                     this.IsSelectionChange = true;
                     //MessageBox.Show($"슬라이드 이동{selectedSlide.Temp.SlideId}", "슬라이드 이동", MessageBoxButton.OK, MessageBoxImage.Information);
                     
-                    this.Material.OriginPresentation.Slides.FindBySlideID(selectedSlide.Temp.SlideId).Select();
+                    if(selectedSlide != null)  this.Material.OriginPresentation.Slides.FindBySlideID(selectedSlide.Temp.SlideId).Select();
                     this.IsSelectionChange = false;
                 }
             }

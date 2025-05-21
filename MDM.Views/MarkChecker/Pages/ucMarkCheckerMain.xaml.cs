@@ -1,4 +1,5 @@
-﻿using MDM.Commons.Enum;
+﻿using Markdig.Helpers;
+using MDM.Commons.Enum;
 using MDM.Helpers;
 using MDM.Models.Attributes;
 using MDM.Models.DataModels;
@@ -18,6 +19,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Xml;
 using Application = Microsoft.Office.Interop.PowerPoint.Application;
 using Shape = Microsoft.Office.Interop.PowerPoint.Shape;
@@ -286,42 +288,12 @@ namespace MDM.Views.MarkChecker.Pages
                         List<mItem> items = new List<mItem>();
                         foreach (mContent content in slideDic[key])
                         {
-                            mSlide sameSlide = slides.Where(x => x.SlideNumber == key).FirstOrDefault();
-                            if (sameSlide == null)
-                            {
-                                sameSlide = new mSlide();
-                                sameSlide.SlideNumber = content.SlideIdx;
-                                sameSlide.Index = sameSlide.SlideNumber;
-                                slides.Add(sameSlide);
-                            }
+                            
 
-                            sameSlide.Description += content.Description + "\n" + content.Message + "\n";
-                            if (TextHelper.IsNoText(content.Contents))
-                            {
-                                sameSlide.Status = ePageStatus.Exception.GetHashCode();
-                                continue;
-                            }
-
-                            sameSlide.Status = ePageStatus.Completed.GetHashCode();
-
-                            SetHeaderItems(content, items);
-
-                            mItem conItem = new mItem();
-                            conItem.Idx = content.Idx;
-                            conItem.Uid = content.Uid;
-                            conItem.ItemType = content.ContentsType;
-                            conItem.Level = GetContentLevel(content);
-                            conItem.LineText = content.Contents;
-                            conItem.Order = content.Idx;
-                            if (conItem.ItemType == eItemType.Image.GetHashCode())
-                            {
-                                conItem.Title = TextHelper.GetImageTitleFromMarkdown(conItem.LineText);
-                                string fileName = TextHelper.GetImageFileNameFromMarkdown(conItem.LineText).Split('.')[0];
-                                bool isGuid = Guid.TryParse(fileName, out Guid result);
-                                if (isGuid) conItem.Uid = fileName;
-                            }
-                            items.Add(conItem);
                         }
+
+
+
 
                         foreach (mItem item in items)
                         {
@@ -764,8 +736,7 @@ namespace MDM.Views.MarkChecker.Pages
             }
         }
 
-    
-    
+
 
         private void btn_XMLFileOpen_Click(object sender, RoutedEventArgs e)
         {
@@ -792,21 +763,21 @@ namespace MDM.Views.MarkChecker.Pages
                     material.ManualworksBook = book;
                     newMaterial = new vmMaterial(material);
                     newMaterial.DirectoryPath = fInfo.DirectoryName;
-                   if(this.PowerPointApp != null)  newMaterial.SetPresentation(this.PowerPointApp.ActivePresentation);
+                    if (this.PowerPointApp != null) newMaterial.SetPresentation(this.PowerPointApp.ActivePresentation);
                     break;
                 }
 
                 List<mContent> contentList = new List<mContent>();
                 List<mChapter> chapters = newMaterial.Temp.ManualworksBook.Chapters;
-                if(newMaterial.Temp.ManualworksBook.Type == "ARTICLE")
+                if (newMaterial.Temp.ManualworksBook.Type == "ARTICLE")
                 {
                     Dictionary<int, string> headings = new Dictionary<int, string>();
                     foreach (mElement item in chapters[0].Elements)
                     {
-                        if(item.Type.ToLower().Contains("heading"))
+                        if (item.Type.ToLower().Contains("heading"))
                         {
                             int level = int.Parse(item.Type.Last().ToString());
-                            if(!headings.ContainsKey(level)) headings.Add(level, string.Empty);
+                            if (!headings.ContainsKey(level)) headings.Add(level, string.Empty);
                             headings[level] = item.Value;
 
                             foreach (int key in headings.Keys.ToList())
@@ -818,7 +789,7 @@ namespace MDM.Views.MarkChecker.Pages
                         else
                         {
                             mContent newContent = new mContent();
-                            newContent.Contents = item.Value;   
+                            newContent.Contents = item.Value;
                             foreach (int key in headings.Keys)
                             {
                                 switch (key)
@@ -833,7 +804,7 @@ namespace MDM.Views.MarkChecker.Pages
                                     case 8: newContent.Heading8String = headings[key]; break;
                                     case 9: newContent.Heading9String = headings[key]; break;
                                     case 10: newContent.Heading10String = headings[key]; break;
-                                    default:break;
+                                    default: break;
                                 }
                             }
 
@@ -858,7 +829,7 @@ namespace MDM.Views.MarkChecker.Pages
                             if (item.Type.ToLower().Contains("heading"))
                             {
                                 int level = int.Parse(item.Type.Last().ToString());
-                                if (!headings.ContainsKey(level)) headings.Add(level+1, string.Empty);
+                                if (!headings.ContainsKey(level)) headings.Add(level + 1, string.Empty);
                                 headings[level] = item.Value;
 
                                 foreach (int key in headings.Keys.ToList())
@@ -983,6 +954,93 @@ namespace MDM.Views.MarkChecker.Pages
                     newSlide.ConvertAndSetContents();
                 }
                 this.Material = newMaterial;
+                if (this.PowerPointApp != null) this.Material.SetPresentation(this.PowerPointApp.ActivePresentation);
+                this.mcExcelView.ucSlideList.SetMaterial(this.Material);
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_XMLFileOpen_Click2(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                FileInfo fInfo = FileHelper.GetOpenFileInfo("파일 열기", eFILE_TYPE.XML);
+                if (fInfo == null) return;
+
+                XmlDocument xDoc = new XmlDocument();
+                xDoc.Load(fInfo.FullName);
+
+
+                vmMaterial newMaterial = null;
+                foreach (var item in xDoc.ChildNodes)
+                {
+                    XmlElement element = item as XmlElement;
+                    if (element == null) continue;
+                    if (element.Name != "book") continue;
+
+                    mBook book = element.ToBook();
+                    //Chapter 가져와야 함
+                    mMaterial material = new mMaterial();
+                    material.Name = book.Title;
+                    material.ManualworksBook = book;
+                    newMaterial = new vmMaterial(material);
+                    newMaterial.DirectoryPath = fInfo.DirectoryName;
+                   if(this.PowerPointApp != null)  newMaterial.SetPresentation(this.PowerPointApp.ActivePresentation);
+                    break;
+                }
+
+                List<mItem> itemList = new List<mItem>();
+                List<mChapter> chapters = newMaterial.Temp.ManualworksBook.Chapters;
+                
+                foreach (mChapter chap in chapters)
+                {
+                    int conCount = (chapters.IndexOf(chap) +1) * 1000;
+
+                    string h1Index = conCount.ToString();
+                    h1Index += "00000";
+                    mItem newItem = new mItem();
+                    newItem.Order = int.Parse(h1Index);
+                    newItem.LineText = chap.Title;
+                    newItem.ItemType = eItemType.Header.GetHashCode();
+                    newItem.Level = 1;
+                    itemList.Add(newItem); 
+
+
+                    List<mItem> items = GetItemList(chap);
+                    foreach (mItem item in items)
+                    {
+                        string index = conCount.ToString();
+                        index += item.Order.ToString();
+                        item.Order = int.Parse(index);  
+                        itemList.Add(item);
+                    }
+                }
+
+
+                mSlide slide = new mSlide();
+                slide.SlideNumber = -1;
+                slide.Index = -1;
+                
+                foreach (mItem item in itemList)
+                {
+                    mShape newShape = new mShape();
+                    newShape.ShapeType = item.ItemType;
+                    if (item.ItemType == 210) newShape.ShapeType = eShapeType.Text.GetHashCode();
+                    newShape.Top = item.Order;
+                    newShape.Text = item.LineText;
+                    newShape.Lines.Add(item);
+
+                    slide.Shapes.Add(newShape);
+                }
+
+                vmSlide newSlide = new vmSlide(slide);
+                newSlide.SetParentMaterial(newMaterial);
+                newSlide.ConvertAndSetContents();
+
+                this.Material = newMaterial;
                 if(this.PowerPointApp != null) this.Material.SetPresentation(this.PowerPointApp.ActivePresentation);
                 this.mcExcelView.ucSlideList.SetMaterial(this.Material);
             }
@@ -992,54 +1050,144 @@ namespace MDM.Views.MarkChecker.Pages
             }
         }
 
+        private List<mItem> GetItemList(mChapter chap)
+        {
+            List<mItem> output = new List<mItem>();
+
+            int cnt = 10000;
+            foreach (mElement ele in chap.Elements.OrderBy(x=> x.Order))
+            {
+                mItem newItem = new mItem();
+                newItem.Order = cnt + ele.Order;
+                newItem.LineText = ele.Value;
+
+                string typeString = ele.Type;
+                if (typeString.ToLower().Contains("heading"))
+                {
+                    newItem.ItemType = eItemType.Header.GetHashCode();
+                    newItem.Level = int.Parse(typeString.Last().ToString()) + 1;
+                }
+                else
+                {
+                    switch (ele.Type)
+                    {
+                        case "image": newItem.ItemType = eItemType.Image.GetHashCode(); break;
+                        case "table": newItem.ItemType = eItemType.Table.GetHashCode(); break;
+                        default: newItem.ItemType = eItemType.Text.GetHashCode(); break;
+                    }
+                    newItem.Level = 100;
+                }
+                output.Add(newItem);
+            }
+            return output;
+        }
+
+        private List<mContent> GetContentList(List<mElement> elements, bool isBookDocument = false)
+        {
+            List<mContent> output = new List<mContent>();
+
+            string headgin1String = string.Empty;
+            string headgin2String = string.Empty;
+            string headgin3String = string.Empty;
+            string headgin4String = string.Empty;
+            string headgin5String = string.Empty;
+
+            foreach (mElement elem in elements)
+            {
+                string elementType = elem.Type;
+                if (elementType.ToLower().Contains("heading"))
+                {
+                    int level = int.Parse(elementType.Last().ToString());
+                    switch (level)
+                    {
+                        case 1:
+                            headgin1String = elem.Value;
+                            headgin2String = string.Empty;
+                            headgin3String = string.Empty;
+                            headgin4String = string.Empty;
+                            headgin5String = string.Empty;
+                            break;
+                        case 2:
+                            headgin2String = elem.Value;
+                            headgin3String = string.Empty;
+                            headgin4String = string.Empty;
+                            headgin5String = string.Empty;
+                            break;
+                        case 3:
+                            headgin3String = elem.Value;
+                            headgin4String = string.Empty;
+                            headgin5String = string.Empty;
+                            break;
+                        case 4:
+                            headgin4String = elem.Value;
+                            headgin5String = string.Empty;
+                            break;
+                        case 5:
+                            headgin5String = elem.Value;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    mContent newContent = new mContent();
+                    newContent.ContentOrder = elements.IndexOf(elem) * 10;
+
+                    newContent.Contents = elem.Value;
+
+                    switch (elem.Type)
+                    {
+                        case "image": newContent.ContentsType = 222; break;
+                        case "table": newContent.ContentsType = 223; break;
+                        default:
+                            int lineCnt = TextHelper.SplitText(elem.Value).Length;
+                            if (lineCnt == 0) newContent.ContentsType = 2211;
+                            else newContent.ContentsType = 2212;
+                            break;
+                    }
+
+                    if(isBookDocument)
+                    {
+                        newContent.Heading2String = headgin1String;
+                        newContent.Heading3String = headgin2String;
+                        newContent.Heading4String = headgin3String;
+                        newContent.Heading5String = headgin4String;
+                        newContent.Heading6String = headgin5String;
+                    }
+                    else
+                    {
+                        newContent.Heading1String = headgin1String;
+                        newContent.Heading2String = headgin2String;
+                        newContent.Heading3String = headgin3String;
+                        newContent.Heading4String = headgin4String;
+                        newContent.Heading5String = headgin5String;
+                    }
+                    
+
+                    output.Add(newContent);
+                }
+            }
+
+            return output;
+        }
 
         private void btn_Temp_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                List<mSlide> slides = new List<mSlide>();
                 List<vmSlide> slideList = new List<vmSlide>();
-                if (this.PowerPointApp != null) this.PowerPointApp.SlideSelectionChanged += PowerPointApp_SlideSelectionChanged1;
-
-
-                
-                FileInfo fInfo = FileHelper.GetOpenFileInfo();
-                if (fInfo == null) return;
-
-                string pptTextJsonString = File.ReadAllText(fInfo.FullName);
-                List<mSlide> slides = JsonHelper.ToObject<List<mSlide>>(pptTextJsonString);
-
-                
-                
-
-
-                //else
+                if (this.PowerPointApp != null)
                 {
+                    this.PowerPointApp.SlideSelectionChanged += PowerPointApp_SlideSelectionChanged1;
+
                     List<Slide> originSlides = new List<Slide>();
-                    if(this.PowerPointApp != null)
-                    {
-                        foreach (Slide slide in this.PowerPointApp.ActivePresentation.Slides) originSlides.Add(slide);
-                    }
-                    
+                    if (this.PowerPointApp != null) foreach (Slide slide in this.PowerPointApp.ActivePresentation.Slides) originSlides.Add(slide);
 
-                    foreach (mSlide item in slides)
-                    {
-                        Slide sameSlide = originSlides.Where(x=> x.SlideIndex == item.Index).FirstOrDefault();
-                        if (sameSlide == null) continue;
-                       // MessageBox.Show(sameSlide.SlideID.ToString());
+                    //MessageBox.Show(originSlides.Count.ToString(), "originSlides");
 
-                        item.SlideId = sameSlide.SlideID;
-                        item.SlideNumber = sameSlide.SlideNumber;
-                        item.Name = sameSlide.Name;
-
-
-
-                    }
-
-
-
-
-                    /*
-                    foreach (Slide slide in slides)
+                    foreach (Slide slide in originSlides)
                     {
                         mSlide sl = new mSlide();
                         #region Slide 데이터 객체
@@ -1049,9 +1197,7 @@ namespace MDM.Views.MarkChecker.Pages
                         sl.SlideNumber = slide.SlideNumber;
                         #endregion
 
-
                         List<Shape> shapes = new List<Shape>();
-
                         #region Slide Shape
                         foreach (Shape shape in slide.Shapes)
                         {
@@ -1077,54 +1223,65 @@ namespace MDM.Views.MarkChecker.Pages
                         List<mShape> shapeInstances = new List<mShape>();
                         foreach (Shape shape in shapes)
                         {
-                            if (shape.HasTable == MsoTriState.msoTrue)
-                            {
-                                mShape newTable = PowerpointHelper.GetTableShape(shape);
-                                shapeInstances.Add(newTable);
-                            }
-                            else if (shape.Type == MsoShapeType.msoPicture)
-                            {
-                                mShape newImage = PowerpointHelper.GetImageShpe(shape);
-                                shapeInstances.Add(newImage);
-                            }
-                            else if (shape.Type == MsoShapeType.msoAutoShape)
+                            if (shape.Type == MsoShapeType.msoAutoShape)
                             {
                                 if (shape.HasTextFrame == MsoTriState.msoTrue && shape.TextFrame.HasText == MsoTriState.msoTrue)
                                 {
                                     mShape newText = PowerpointHelper.GetTextShape(shape);
                                     shapeInstances.Add(newText);
                                 }
-                                else
-                                {
-                                    mShape newImage = PowerpointHelper.GetImageShpe(shape);
-                                    shapeInstances.Add(newImage);
-                                }
+                                //else
+                                //{
+                                //    mShape newImage = PowerpointHelper.GetImageShpe(shape);
+                                //    shapeInstances.Add(newImage);
+                                //}
                             }
                             else if (shape.HasTextFrame == MsoTriState.msoTrue && shape.TextFrame.HasText == MsoTriState.msoTrue)
                             {
                                 mShape newText = PowerpointHelper.GetTextShape(shape);
                                 shapeInstances.Add(newText);
                             }
+                            //else if (shape.HasTable == MsoTriState.msoTrue)
+                            //{
+                            //    mShape newTable = PowerpointHelper.GetTableShape(shape);
+                            //    shapeInstances.Add(newTable);
+                            //}
+                            //else if (shape.Type == MsoShapeType.msoPicture)
+                            //{
+                            //    mShape newImage = PowerpointHelper.GetImageShpe(shape);
+                            //    shapeInstances.Add(newImage);
+                            //}
                         }
-
 
                         sl.Shapes = shapeInstances;
                         sl.Shapes = sl.Shapes.OrderByOriginPoint();
                         sl.Origin = slide;
 
-
-                        vmSlide newSlide = new vmSlide(sl);
-                        slideList.Add(newSlide);
+                        slides.Add(sl);
                     }
+                }
+                else
+                {
+                    FileInfo fInfo = FileHelper.GetOpenFileInfo();
+                    if (fInfo == null) return;
 
-                    */
-
+                    string pptTextJsonString = File.ReadAllText(fInfo.FullName);
+                    slides = JsonHelper.ToObject<List<mSlide>>(pptTextJsonString);
                 }
 
-                foreach (mSlide item in slides) slideList.Add(new vmSlide(item));
+
+                //MessageBox.Show(slides.Count.ToString(), "slides");
+                this.Material.ClearSlides();
+                foreach (mSlide item in slides)
+                {
+                    vmSlide newSlide = new vmSlide(item);
+                    newSlide.SetParentMaterial(this.Material);
+                    newSlide.OnModifyStatusChanged(true);
+                    slideList.Add(newSlide);
+                }
                 this.mcExcelView.ucSlideList.BindPages(slideList, true);
                 this.mcExcelView.ucSlideList.SetMaterial(this.Material, true);
-
+                //MessageBox.Show(this.Material.Slides.Count.ToString(), "Material.Slides");
             }
             catch (Exception ee)
             {

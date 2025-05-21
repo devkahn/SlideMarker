@@ -151,8 +151,6 @@ namespace ManualDataManager.Views.Pages
                         continue;
                     }
 
-                   
-
                     mSlide sl = new mSlide();
                     #region Slide 데이터 객체
                     sl.SlideId = slide.SlideID;

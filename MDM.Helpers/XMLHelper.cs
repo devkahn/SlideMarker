@@ -217,15 +217,17 @@ namespace MDM.Helpers
         {
             mChapter output = new mChapter();
 
+            int cnt = 0;
             foreach (var item in chapter.ChildNodes)
             {
                 XmlElement element = item as XmlElement;
                 if (element == null) continue;
 
+                
                 switch (element.Name)
                 {
                     case "properties": SetPorperiesToElement(output, element); break;
-                    case "element": output.Elements.Add(element.ToElement()); break;
+                    case "element": output.Elements.Add(element.ToElement(++cnt)); break;
                     default:
                         string eMsg = string.Format("NEW ELEMENT : {0}", element.Name);
                         MessageHelper.ShowErrorMessage("새로운 Element", eMsg);
@@ -235,9 +237,10 @@ namespace MDM.Helpers
 
             return output;
         }
-        public static mElement ToElement(this XmlElement element)
+        public static mElement ToElement(this XmlElement element, int index)
         {
             mElement output = new mElement();
+            output.Order = index;
 
             Dictionary<string, string> attribues = GetAttribute(element);
             if (attribues.ContainsKey("id")) output.Idx = attribues["id"];

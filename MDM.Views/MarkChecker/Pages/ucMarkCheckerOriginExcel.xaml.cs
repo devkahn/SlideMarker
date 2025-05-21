@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -21,6 +23,9 @@ using MDM.Models.DataModels;
 using MDM.Models.ViewModels;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.PowerPoint;
+using Path = System.IO.Path;
+using Point = System.Windows.Point;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace MDM.Views.MarkChecker.Pages
 {
@@ -29,6 +34,10 @@ namespace MDM.Views.MarkChecker.Pages
     /// </summary>
     public partial class ucMarkCheckerOriginExcel : UserControl
     {
+        bool IsSlideListChanged { get; set; } = false;
+        bool IsContentDatagridChaged { get; set; } = false;
+
+
 
         private vmMaterial _Material = null;
         public vmMaterial Material
@@ -45,9 +54,96 @@ namespace MDM.Views.MarkChecker.Pages
         public ucMarkCheckerOriginExcel()
         {
             InitializeComponent();
-            
+            this.ucSlideList.SlideListbox.SelectionChanged += SlideListbox_SelectionChanged;
         }
 
+        private void SlideListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (this.IsContentDatagridChaged) return;
+
+                if (e.AddedItems.Count == 0) return;
+
+                int page = this.Material.CurrentSlide.Temp.Index;
+                if (this.Material.OriginPresentation != null) this.Material.OriginPresentation.Slides.FindBySlideID(this.Material.CurrentSlide.Temp.SlideId).Select();
+
+                var contents = this.Material.Contents.Where(x => x.Display_SlideNum.ToString() == page.ToString());
+                if (contents == null) return;
+                if(contents.Count()  == 0)
+                {
+                    this.dg_Contents.UnselectAll();
+                }
+
+                this.IsSlideListChanged = true;
+
+                this.dg_Contents.SelectedItems.Clear();
+                foreach (vmContent item in contents)
+                {
+                    this.dg_Contents.SelectedItems.Add(item);
+                }
+
+                var selectedItem = contents.FirstOrDefault();
+                if(selectedItem != null) this.dg_Contents.ScrollIntoView(selectedItem);
+
+                //var container = dg_Contents.ItemContainerGenerator.ContainerFromItem(selectedItem) as DataGridRow;
+                //if (container != null)
+                //{
+                //    var verticalOffset = container.TransformToVisual(dg_Contents).Transform(new Point(0, 0)).Y;
+                //    var verticalCenter = (dg_Contents.ActualHeight - container.ActualHeight) / 2;
+                //    dg_Contents.ScrollIntoView(selectedItem); // 먼저 기본 스크롤링 처리
+
+                //    var scrollViewer = FindVisualChild<ScrollViewer>(dg_Contents);
+                //    scrollViewer.ScrollToVerticalOffset(verticalOffset - verticalCenter); // 중앙 정렬
+                //}
+
+                this.IsSlideListChanged = false;
+
+            }
+            catch (Exception ee)
+            {
+                this.IsSlideListChanged = false;
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private void dg_Contents_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (this.IsSlideListChanged) return;
+
+                if (e.AddedItems == null || e.AddedItems.Count == 0) return;
+
+
+                vmContent content = e.AddedItems[0] as vmContent;
+                if (content == null) return;
+
+
+                int page = int.Parse(content.Display_SlideNum.ToString());
+                if (page == -1) return;
+
+                List<vmSlide> slides = this.ucSlideList.SlideListbox.ItemsSource as List<vmSlide>;
+                if (slides == null) return;
+
+                vmSlide sameSlide = slides.Where(x => x.Temp.Index == page).FirstOrDefault();
+                if (sameSlide == null) return;
+
+                this.IsContentDatagridChaged = true;
+
+                //this.ucSlideList.SlideListbox.SelectedItem = sameSlide;
+                //this.ucSlideList.SlideListbox.ScrollIntoView(this.ucSlideList.SlideListbox.SelectedItem);
+                //if(this.Material.OriginPresentation != null) this.Material.OriginPresentation.Slides.FindBySlideID(this.Material.CurrentSlide.Temp.SlideId).Select();
+
+
+                this.IsContentDatagridChaged = false;
+
+            }
+            catch (Exception ee)
+            {
+                this.IsContentDatagridChaged = false;
+                ErrorHelper.ShowError(ee);
+            }
+        }
         private void btn_FindPage_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -213,16 +309,16 @@ namespace MDM.Views.MarkChecker.Pages
             try
             {
                 List<vmContent> checkContent = this.Material.Contents.ToList();
-                List<vmSlide> slides = this.ucSlideList.listbox_Pages.ItemsSource as List<vmSlide>;
+                List<vmSlide> slides = this.Material.Slides.Where(x=> x.Status.Status != Commons.Enum.ePageStatus.Exception).ToList();
 
                 FirstCheck(checkContent, slides);
                 BetweenCheck(checkContent, slides);
                 ForthCheck(checkContent, slides);
                 ThirdCheck(checkContent, slides);
-                
 
 
-                
+
+                CheckSlideWithContent(slides);
 
 
 
@@ -384,7 +480,7 @@ namespace MDM.Views.MarkChecker.Pages
                 List<vmSlide> slides = this.ucSlideList.listbox_Pages.ItemsSource as List<vmSlide>;
 
                 CheckWithHeadingContent(checkContent, slides);
-                BetweenCheck(checkContent, slides);
+                //BetweenCheck(checkContent, slides);
 
 
 
@@ -396,7 +492,83 @@ namespace MDM.Views.MarkChecker.Pages
                 ErrorHelper.ShowError(ee);
             }
         }
+        private void btn_FindPage_Click5(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                List<vmContent> checkContent = this.Material.Contents.ToList();
+                List<vmSlide> slides = this.Material.Slides.Where(x => x.Status.Status != Commons.Enum.ePageStatus.Exception).ToList();
 
+                int lastPageNum = 0;
+                List<vmContent> tempList = new List<vmContent>();
+                foreach (vmContent item in checkContent)
+                {
+                    this.dg_Contents.SelectedItem = item;
+                    this.dg_Contents.ScrollIntoView(this.dg_Contents.SelectedItem);
+
+                    if (item.Display_SlideNum.ToString() != "-1") continue;
+
+                    if (item.Temp.ItemType != Commons.Enum.eItemType.Text)
+                    {
+                        vmContent last = tempList.LastOrDefault();
+                        if (last != null && last.ParentHeading != item.ParentHeading) tempList.Clear();
+                        tempList.Add(item);
+                    }
+                    else
+                    {
+                        int checkCnt = 0;
+                        int lastIndex = 0;
+                        for (int num = lastIndex; num < slides.Count; num++)
+                        {
+                            if (checkCnt == 5) break;
+
+                            vmContent last = tempList.LastOrDefault();
+                            if (last != null && last.ParentHeading != item.ParentHeading) tempList.Clear();
+                            tempList.Add(item);
+
+                            vmSlide current = slides[num];
+                            if (current.Status.Status != Commons.Enum.ePageStatus.None) continue;
+                            if (current.Temp.Index < lastPageNum) continue;
+
+                            bool hasContent = HasContent2(current, item);
+
+                    
+                            
+                            checkCnt++;
+                            if (hasContent)
+                            {
+                                lastIndex = num;
+                                lastPageNum = current.Temp.Index;
+                                foreach (vmContent temp in tempList) temp.SetSlideNum(lastPageNum);
+                                tempList.Clear();
+                            }
+
+                            if (tempList.Count == 0) break;
+
+                        }
+                    }
+
+                }
+
+
+
+
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void CheckSlideWithContent(List<vmSlide> slides)
+        {
+            foreach (vmSlide item in slides)
+            {
+                bool hasContent = this.Material.Contents.Any(x => x.Display_SlideNum.ToString() == item.Temp.Index.ToString());
+                item.OnModifyStatusChanged(!hasContent);
+            }
+        }
         private void CheckWithHeadingContent(List<vmContent> checkContent, List<vmSlide> slides)
         {
             List<vmContent> tempList = new List<vmContent>();
@@ -481,14 +653,6 @@ namespace MDM.Views.MarkChecker.Pages
                 #endregion
             }
         }
-
-
-
-
-
-
-
-
         private bool HasSlideText(vmSlide current, string headerValue)
         {
             for (int i = 0; i < current.Shapes.Count; i++)
@@ -503,7 +667,6 @@ namespace MDM.Views.MarkChecker.Pages
 
             return false;
         }
-
         private void ForthCheck(List<vmContent> checkContent, List<vmSlide> slides)
         {
             int lastPageNum = 0;
@@ -652,7 +815,6 @@ namespace MDM.Views.MarkChecker.Pages
                             {
                                 foreach (vmContent noPageCon in tempList) noPageCon.SetSlideNum(prePage);
                             }
-                            /*
                             else if (prePage + 1 == nextPage)
                             {
                                 foreach (vmContent noPageCon in tempList)
@@ -738,7 +900,7 @@ namespace MDM.Views.MarkChecker.Pages
                                     }
                                 }
                             }
-                                */
+                                
                             else
                             {
                                 var betweenSlides = slides.Where(x => prePage < int.Parse(x.Display_Index.ToString()) && int.Parse(x.Display_Index.ToString()) < nextPage);
@@ -822,10 +984,6 @@ namespace MDM.Views.MarkChecker.Pages
 
             }
         }
-
-
-        
-
         private void SetPageToContent(List<vmHeading> children, List<vmSlide> slides)
         {
             foreach (vmHeading header in children)
@@ -1132,16 +1290,109 @@ namespace MDM.Views.MarkChecker.Pages
             return output;
 
         }
-
         private void btn_reset_click(object sender, RoutedEventArgs e)
         {
             try
             {
+                List<vmSlide> slides = this.Material.Slides.Where(x => x.Status.Status != Commons.Enum.ePageStatus.Exception).ToList();
+                foreach (vmSlide item in slides)
+                {
+                    item.OnModifyStatusChanged(true);
+                }
+
                 foreach (vmContent item in this.Material.Contents)
                 {
                     item.SetSlideNum(-1);
                 }
                 this.txtblock_NopageCount.Text = this.Material.Contents.Where(x => x.Display_SlideNum.ToString() == "-1").Count().ToString();
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+        private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T)
+                    return (T)child;
+
+                var result = FindVisualChild<T>(child);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+        private void btn_UserMapping_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                vmSlide current = this.Material.CurrentSlide;
+                if (current == null)
+                {
+                    string eMsg = "No Slide";
+                    MessageHelper.ShowErrorMessage("임의 매핑", eMsg);
+                    return;
+                }
+
+                var contents = this.dg_Contents.SelectedItems;
+                if(contents == null || contents.Count == 0)
+                {
+                    string eMsg = "No Contents";
+                    MessageHelper.ShowErrorMessage("임의 매핑", eMsg);
+                    return;
+                }
+
+                int page = current.Temp.Index;
+                foreach (vmContent item in contents)
+                {
+                    item.SetSlideNum(page);
+                }
+
+            }
+            catch (Exception ee)
+            {
+                ErrorHelper.ShowError(ee);
+            }
+        }
+
+        private void btn_SaveSLides_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                List<mSlide> slides = new List<mSlide>();
+
+                foreach (vmSlide item in this.Material.Slides)
+                {
+                    if (item.Status.Status == Commons.Enum.ePageStatus.Exception) continue;
+
+                    item.UpdateOriginData();
+                    mSlide slide = item.Temp;
+                    slides.Add(slide);
+                }
+
+                string powerpointPath = this.Material.OriginPresentation.Application.ActivePresentation.FullName;
+                FileInfo fInfo = new FileInfo(powerpointPath);
+                if (!fInfo.Exists)
+                {
+                    string tempPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+                    fInfo = new FileInfo(tempPath); 
+                }
+                
+
+                string jsonString = JsonHelper.ToJsonString(slides);
+                string targetPath = Path.Combine(fInfo.DirectoryName, $"slides_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json");
+                if (File.Exists(targetPath))
+                {
+                    File.Delete(targetPath);
+                }
+                File.WriteAllText(targetPath, jsonString);
+
+                string msg = "Json 생성 완료";
+                MessageHelper.ShowMessage("Json 파일 생성", msg);
+
             }
             catch (Exception ee)
             {

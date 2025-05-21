@@ -19,11 +19,61 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="75"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <mdmPages:ucDataLabelingSildes x:Name="ucSlideList" Visibility="Visible"/>
-        <Grid Grid.Column="1" Margin="5">
+        <mdmPages:ucDataLabelingSildes x:Name="ucSlideList" Visibility="Visible" Width="200"/>
+        <Grid Grid.Column="1" Margin="5" >
+            <Grid.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                    <Setter Property="MinHeight" Value="50"/>
+                    <Setter Property="Margin" Value="5,3,5,3"/>
+
+                </Style>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition />
+                <RowDefinition Height="35"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Button Content="SAVE" Click="btn_SaveSLides_Click" Height="15"/>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <Button Click="btn_FindPage_Click2" Visibility="Visible">
+                        <TextBlock> 전체 <LineBreak/> 매핑 </TextBlock>
+                    </Button>
+                </StackPanel>
+                <StackPanel Grid.Row="1">
+                    <Button Click="btn_UserMapping_Click" Visibility="Visible">
+                        <TextBlock> 임의 <LineBreak/> 매핑</TextBlock>
+                    </Button>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Margin="0">
+                    
+                    <Button Click="btn_reset_click" Visibility="Visible">
+                        <TextBlock> 전체 <LineBreak/> 리셋 </TextBlock>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+
+            
+
+        </Grid>
+        
+        
+        <Grid Grid.Column="2" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="35"/>
                 <RowDefinition />
@@ -64,14 +114,14 @@
                 </Grid>
             </Border>
 
-            <DataGrid Grid.Row="1" x:Name="dg_Contents">
+            <DataGrid Grid.Row="1" x:Name="dg_Contents" SelectionChanged="dg_Contents_SelectionChanged">
                 <DataGrid.Style>
                     <Style TargetType="DataGrid" BasedOn="{StaticResource baseStyle_Common_Datagrid}">
                         <Setter Property="HeadersVisibility" Value="Column"/>
                         <Setter Property="ColumnHeaderHeight" Value="35"/>
                         <Setter Property="IsReadOnly" Value="True"/>
                         <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
-                        <Setter Property="SelectionMode" Value="Single"/>
+                        <Setter Property="SelectionMode" Value="Extended"/>
                         <Setter Property="SelectionUnit" Value="FullRow"/>
                     </Style>
                 </DataGrid.Style>
@@ -109,6 +159,7 @@
                     <DataGridTextColumn Header="제목_Lv8" Binding="{Binding Heading8.Display_Name}"/>
                     <DataGridTextColumn Header="제목_Lv9" Binding="{Binding Heading9.Display_Name}"/>
                     <DataGridTextColumn Header="제목_Lv10" Binding="{Binding Heading10.Display_Name}"/>
+                    <DataGridTextColumn Header="Order" Binding="{Binding Temp.Temp.Order}"/>
                     <DataGridTextColumn Header="본문 유형" Binding="{Binding Display_ContentType}"/>
                     <DataGridTextColumn Header="본문" Binding="{Binding Display_Content}"/>
                     <DataGridTextColumn Header="비고" Binding="{Binding Display_Description}"/>
@@ -138,8 +189,7 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="5">
-                        <Button Content="temp" Click="btn_FindPage_Click4" Visibility="Visible"/>
-                        <Button Content="reset" Click="btn_reset_click" Visibility="Visible"/>
+
                     </StackPanel>
                      
                     

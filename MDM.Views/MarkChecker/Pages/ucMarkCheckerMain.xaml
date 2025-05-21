@@ -34,7 +34,7 @@
                 </StackPanel.Resources>
                 <StackPanel Orientation="Horizontal">
                     <Button x:Name="btn_FileOpen" Content="OPEN" Click="btn_FileOpen_Click2"/>
-                    <Button x:Name="btn_XMLFileOpen" Content="XML OPEN" Click="btn_XMLFileOpen_Click" IsEnabled="True"/>
+                    <Button x:Name="btn_XMLFileOpen" Content="XML OPEN" Click="btn_XMLFileOpen_Click2" IsEnabled="True"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
                     <Button Content="TEMP" Click="btn_Temp_Click" Visibility="Visible"/>

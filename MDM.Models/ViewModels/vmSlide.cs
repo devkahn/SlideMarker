@@ -371,7 +371,7 @@ namespace MDM.Models.ViewModels
                         case 10: parent = level9Header; break;
                         default: break;
                     }
-                    List<vmHeading> headingList = parent == null ? this.Material.Headings.ToList() : parent.Children.ToList();
+                    List<vmHeading> headingList = parent == null ? this.Material.RootHeadings.ToList() : parent.Children.ToList();
 
                     vmHeading sameHeading = headingList.Where(x => x.Temp.Level == item.Temp.Level && x.Temp.Name == item.Temp.LineText).FirstOrDefault();
                     if (sameHeading == null)
@@ -403,22 +403,22 @@ namespace MDM.Models.ViewModels
                 {
                     vmContent newContent = new vmContent(item);
                     newContent.SetParentMaterial(this.Material);
-                    switch (item.Temp.Level)
-                    {
-                        case 1: newContent.SetParentHeading(level1Header); break;
-                        case 2: newContent.SetParentHeading(level1Header); break;
-                        case 3: newContent.SetParentHeading(level2Header); break;
-                        case 4: newContent.SetParentHeading(level3Header); break;
-                        case 5: newContent.SetParentHeading(level4Header); break;
-                        case 6: newContent.SetParentHeading(level5Header); break;
-                        case 7: newContent.SetParentHeading(level6Header); break;
-                        case 8: newContent.SetParentHeading(level7Header); break;
-                        case 9: newContent.SetParentHeading(level8Header); break;
-                        case 10: newContent.SetParentHeading(level9Header); break;
-                        default: break;
-                    }
 
 
+                    vmHeading parentHeading = null;
+                    if (level1Header != null) parentHeading = level1Header;
+                    if (level2Header != null) parentHeading = level2Header;
+                    if (level3Header != null) parentHeading = level3Header;
+                    if (level4Header != null) parentHeading = level4Header;
+                    if (level5Header != null) parentHeading = level5Header;
+                    if (level6Header != null) parentHeading = level6Header;
+                    if (level7Header != null) parentHeading = level7Header;
+                    if (level8Header != null) parentHeading = level8Header;
+                    if (level9Header != null) parentHeading = level9Header;
+                    if (level10Header != null) parentHeading = level10Header;
+                    
+
+                    newContent.SetParentHeading(parentHeading);
                 }
             }
         }
