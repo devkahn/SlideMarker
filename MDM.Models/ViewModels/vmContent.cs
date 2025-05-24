@@ -346,7 +346,8 @@ namespace MDM.Models.ViewModels
     {
         public override void InitializeDisplay()
         {
-            this.Display_SlideNum = this.Temp.ParentShape.ParentSlide.Temp.SlideNumber;
+            this.Display_SlideNum = -1;
+            if(this.Temp.ParentShape != null && this.Temp.ParentShape.ParentSlide != null) this.Display_SlideNum = this.Temp.ParentShape.ParentSlide.Temp.SlideNumber;
 
             switch (this.Temp.ItemType)
             {

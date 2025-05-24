@@ -371,7 +371,7 @@ namespace MDM.Models.ViewModels
                         case 10: parent = level9Header; break;
                         default: break;
                     }
-                    List<vmHeading> headingList = parent == null ? this.Material.RootHeadings.ToList() : parent.Children.ToList();
+                    List<vmHeading> headingList = parent == null ? this.Material.Headings.ToList() : parent.Children.ToList();
 
                     vmHeading sameHeading = headingList.Where(x => x.Temp.Level == item.Temp.Level && x.Temp.Name == item.Temp.LineText).FirstOrDefault();
                     if (sameHeading == null)

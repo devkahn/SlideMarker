@@ -163,6 +163,7 @@ namespace MDM.Models.ViewModels
             {
                 this.OriginContents.Remove(content);    
             }
+            OnPropertyChanged(nameof(this.Contents));
         }
         public override void SetInitialData()
         {

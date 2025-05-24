@@ -685,6 +685,7 @@ namespace MDM.Helpers
             for (int i = 0; i < lines.Length; i++)
             {
                 string value = lines[i];
+                if (TextHelper.IsNoText(value)) continue;
 
                 mTextLine newLineItem = new mTextLine();
                 newLineItem.LineNumber = i;

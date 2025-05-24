@@ -264,13 +264,13 @@ namespace MDM.Views.MarkChecker.Pages
                     string jsonString = File.ReadAllText(fInfo.FullName);
                     contentList = JsonHelper.ToObject<List<mContent>>(jsonString) as List<mContent>;
                 }
-                { 
-            
+                {
+
                     int cnt = 0;
                     Dictionary<int, List<mContent>> slideDic = new Dictionary<int, List<mContent>>();
                     foreach (mContent content in contentList)
                     {
-                        if(content.Idx == -1) content.Idx = (cnt++) * 10;
+                        if (content.Idx == -1) content.Idx = (cnt++) * 10;
                         int slideNum = content.SlideIdx;
                         if (!slideDic.ContainsKey(slideNum)) slideDic.Add(slideNum, new List<mContent>());
                         slideDic[slideNum].Add(content);
@@ -288,12 +288,42 @@ namespace MDM.Views.MarkChecker.Pages
                         List<mItem> items = new List<mItem>();
                         foreach (mContent content in slideDic[key])
                         {
-                            
+                            mSlide sameSlide = slides.Where(x => x.SlideNumber == key).FirstOrDefault();
+                            if (sameSlide == null)
+                            {
+                                sameSlide = new mSlide();
+                                sameSlide.SlideNumber = content.SlideIdx;
+                                sameSlide.Index = sameSlide.SlideNumber;
+                                slides.Add(sameSlide);
+                            }
 
+                            sameSlide.Description += content.Description + "\n" + content.Message + "\n";
+                            if (TextHelper.IsNoText(content.Contents))
+                            {
+                                sameSlide.Status = ePageStatus.Exception.GetHashCode();
+                                continue;
+                            }
+
+                            sameSlide.Status = ePageStatus.Completed.GetHashCode();
+
+                            SetHeaderItems(content, items);
+
+                            mItem conItem = new mItem();
+                            conItem.Idx = content.Idx;
+                            conItem.Uid = content.Uid;
+                            conItem.ItemType = content.ContentsType;
+                            conItem.Level = GetContentLevel(content);
+                            conItem.LineText = content.Contents;
+                            conItem.Order = content.Idx;
+                            if (conItem.ItemType == eItemType.Image.GetHashCode())
+                            {
+                                conItem.Title = TextHelper.GetImageTitleFromMarkdown(conItem.LineText);
+                                string fileName = TextHelper.GetImageFileNameFromMarkdown(conItem.LineText).Split('.')[0];
+                                bool isGuid = Guid.TryParse(fileName, out Guid result);
+                                if (isGuid) conItem.Uid = fileName;
+                            }
+                            items.Add(conItem);
                         }
-
-
-
 
                         foreach (mItem item in items)
                         {
@@ -321,8 +351,8 @@ namespace MDM.Views.MarkChecker.Pages
                         }
                         vmSlide newSlide = new vmSlide(slide);
                         newSlide.SetParentMaterial(newMaterial);
-                        
-                        if(headingList.Count > 0)
+
+                        if (headingList.Count > 0)
                         {
                             newSlide.ConvertAndSetContents(headingList, contentList);
                         }
@@ -331,7 +361,7 @@ namespace MDM.Views.MarkChecker.Pages
                             newSlide.ConvertAndSetContents();
                         }
 
-                        
+
                     }
                 }
 
@@ -1020,25 +1050,53 @@ namespace MDM.Views.MarkChecker.Pages
                 }
 
 
-                mSlide slide = new mSlide();
-                slide.SlideNumber = -1;
-                slide.Index = -1;
+
+                Dictionary<int, vmHeading> headingByLevelDictionary = new Dictionary<int, vmHeading>();
+                for (int i = 0; i <= 10; i++) headingByLevelDictionary.Add(i, null);
                 
+                vmHeading parent = null;
                 foreach (mItem item in itemList)
                 {
-                    mShape newShape = new mShape();
-                    newShape.ShapeType = item.ItemType;
-                    if (item.ItemType == 210) newShape.ShapeType = eShapeType.Text.GetHashCode();
-                    newShape.Top = item.Order;
-                    newShape.Text = item.LineText;
-                    newShape.Lines.Add(item);
+                    mShape shape = new mShape();
+                    shape.ShapeType = item.ItemType;
+                    if (item.ItemType == 210) shape.ShapeType = eShapeType.Text.GetHashCode();
+                    shape.Top = itemList.IndexOf(item);
+                    shape.Text = item.LineText;
+                    vmShape newShape = new vmShape(shape);
 
-                    slide.Shapes.Add(newShape);
+                    vmItem newItem = new vmItem(item);
+                    newItem.SetParent(newShape);
+
+
+                    if (item.ItemType == eItemType.Header.GetHashCode())
+                    {
+                        int level = item.Level;
+                        parent = headingByLevelDictionary[level - 1];
+                        var childrenOfParent = parent == null ? newMaterial.RootHeadings : parent.Children;
+
+                        vmHeading sameHeading = childrenOfParent.Where(x => x.Temp.Name == item.LineText).FirstOrDefault();
+                        if(sameHeading == null)
+                        {
+                            mHeading heading = new mHeading() { Level = item.Level, Name = item.LineText };
+                            sameHeading = new vmHeading(heading);
+                            sameHeading.SetParentMaterial(newMaterial);
+                            sameHeading.SetParent(parent);
+                        }
+
+                        headingByLevelDictionary[level] = sameHeading;
+                        for (int i = level + 1; i <= 10; i++) headingByLevelDictionary[i] = null;
+
+                        parent = sameHeading;
+                    }
+                    else
+                    {
+                  
+                        vmContent newContent = new vmContent(newItem);
+                        newContent.SetParentMaterial(newMaterial);
+                        newContent.SetParentHeading(parent);
+                    }
                 }
 
-                vmSlide newSlide = new vmSlide(slide);
-                newSlide.SetParentMaterial(newMaterial);
-                newSlide.ConvertAndSetContents();
 
                 this.Material = newMaterial;
                 if(this.PowerPointApp != null) this.Material.SetPresentation(this.PowerPointApp.ActivePresentation);
@@ -1059,7 +1117,11 @@ namespace MDM.Views.MarkChecker.Pages
             {
                 mItem newItem = new mItem();
                 newItem.Order = cnt + ele.Order;
-                newItem.LineText = ele.Value;
+
+                string value = TextHelper.RemoveNoTextLine(ele.Value);
+
+
+                newItem.LineText = value;
 
                 string typeString = ele.Type;
                 if (typeString.ToLower().Contains("heading"))

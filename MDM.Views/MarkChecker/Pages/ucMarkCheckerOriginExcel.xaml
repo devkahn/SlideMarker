@@ -29,47 +29,57 @@
                 <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
                     <Setter Property="MinHeight" Value="50"/>
                     <Setter Property="Margin" Value="5,3,5,3"/>
-
                 </Style>
             </Grid.Resources>
             <Grid.RowDefinitions>
-                <RowDefinition Height="35"/>
-                <RowDefinition />
-                <RowDefinition Height="35"/>
+                <RowDefinition/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0">
-                <Button Content="SAVE" Click="btn_SaveSLides_Click" Height="15"/>
-            </Grid>
-
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0">
-                    <Button Click="btn_FindPage_Click2" Visibility="Visible">
-                        <TextBlock> 전체 <LineBreak/> 매핑 </TextBlock>
+            <StackPanel>
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="TextAlignment" Value="Center"/>
+                        <Setter Property="FontSize" Value="10"/>
+                    </Style>
+                </StackPanel.Resources>
+                <StackPanel>
+                    <Button Content="SAVE" Click="btn_SaveSLides_Click" MinHeight="0" Height="30"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Margin="0,5,0,10">
+                    <Button Click="btn_AllFind_Click" Visibility="Visible">
+                        <TextBlock> 전체 <LineBreak/> 매핑</TextBlock>
                     </Button>
                 </StackPanel>
-                <StackPanel Grid.Row="1">
-                    <Button Click="btn_UserMapping_Click" Visibility="Visible">
+                <StackPanel Grid.Row="2" Margin="0,5,0,10">
+                    <Button Click="btn_Basic_Click" Visibility="Visible">
+                        <TextBlock> 기본 <LineBreak/> 매핑</TextBlock>
+                    </Button>
+                    <Button Click="btn_ZeroPage_Click" Visibility="Visible">
+                        <TextBlock> 사이(0) <LineBreak/> 매핑</TextBlock>
+                    </Button>
+                    <Button Click="btn_OnePage_Click" Visibility="Visible">
+                        <TextBlock> 사이(1) <LineBreak/> 매핑</TextBlock>
+                    </Button>
+                    <Button Click="btn_BeteenSlide_Click" Visibility="Visible">
+                        <TextBlock TextAlignment="Center"> 사이<LineBreak/>슬라이드 <LineBreak/> 매핑</TextBlock>
+                    </Button>
+                    <Button Click="btn_MasterNote_Click" Visibility="Visible">
+                        <TextBlock> 전문가 <LineBreak/> 매핑</TextBlock>
+                    </Button>
+                    <Button Click="btn_UserMapping_Click" Background="LightCyan" Visibility="Visible" Margin="5,20,5,5">
                         <TextBlock> 임의 <LineBreak/> 매핑</TextBlock>
                     </Button>
                 </StackPanel>
 
-                <StackPanel Grid.Row="2" Margin="0">
-                    
+            </StackPanel>
+            <StackPanel Grid.Row="1">
+                <StackPanel Grid.Row="3"  Margin="0,5,0,0">
                     <Button Click="btn_reset_click" Visibility="Visible">
-                        <TextBlock> 전체 <LineBreak/> 리셋 </TextBlock>
+                        <TextBlock> 전체 <LineBreak/> 리셋</TextBlock>
                     </Button>
-                </StackPanel>
-            </Grid>
-
-
-            
-
+                </StackPanel>                
+            </StackPanel>
         </Grid>
         
         
@@ -105,8 +115,37 @@
                             <TextBlock Text="{Binding Items.Count, ElementName=dg_Contents}" Margin="2,0,2,0"/>
                             <TextBlock Text=")"/>
                         </StackPanel>
-
-                        <TextBlock x:Name="txtblock_NopageCount" Text="" FontWeight="Bold" Foreground="Yellow" VerticalAlignment="Center" Margin="5"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0">
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="Pink"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <TextBlock Text="Selected Items : "/>
+                            <TextBlock Text="{Binding SelectedItems.Count, ElementName=dg_Contents}" FontWeight="Bold" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0">
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="Yellow"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <TextBlock Text="No pages : "/>
+                            <TextBlock x:Name="txtblock_NopageCount" Text="" FontWeight="Bold" />
+                            <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                                <StackPanel.Resources>
+                                    <Style TargetType="Button" BasedOn="{StaticResource baseStyle_Common_Button}">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Margin" Value="2"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <Button Uid="-1" Content="◀" Click="btn_findNoPage_Click"/>
+                                <Button Uid="1" Content="▶" Click="btn_findNoPage_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                       
                     </StackPanel>
                     
                     
@@ -188,8 +227,14 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="5">
-
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <Button Content="선택 삭제" Click="btn_DeleteContent_Click"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <Button Content="중복 제거" Click="btn_RemoveDuplication_Click"/>
+                        </StackPanel>
+                        
                     </StackPanel>
                      
                     
