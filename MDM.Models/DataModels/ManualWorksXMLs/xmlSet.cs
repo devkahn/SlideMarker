@@ -19,7 +19,7 @@ namespace MDM.Models.DataModels.ManualWorksXMLs
         public xmlElement Heading2Element { get; set; } = new xmlElement();
         public xmlElement Heading3Element { get; set; } = new xmlElement();
         public xmlElement Heading4Element { get; set; } = new xmlElement();
-        public xmlElement Heading5Element { get; set; } = new xmlElement() { Config = new xmlHeading1Config() };
+        public xmlElement Heading5Element { get; set; } = new xmlElement();
         public xmlElement NoteElement { get; set; } = new xmlElement() { Config = new xmlNoteCongif() };
 
     }
